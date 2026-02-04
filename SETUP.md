@@ -122,7 +122,7 @@ sudo apt-get install pandoc texlive-latex-base texlive-fonts-recommended texlive
 
 # Generate PDF
 cat book/README.md book/chapters/*.md > combined.md
-pandoc combined.md -o book.pdf --pdf-engine=pdflatex --toc --number-sections
+pandoc combined.md -o book.pdf --pdf-engine=xelatex --toc --number-sections
 ```
 
 ## Troubleshooting
