@@ -18,6 +18,18 @@ jobs:
     container:
       image: pandoc/latex:latest
     steps:
+
+      - name: Install git
+        run: |
+            apk update
+            apk add git
+
+      - name: Configure git for container
+        run: |
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+    
       - name: Checkout
         uses: actions/checkout@v4
 
@@ -57,16 +69,7 @@ jobs:
           name: book-pdf
           path: book/agentic-workflows-book.pdf
 
-      - name: Install git
-        run: |
-            apk update
-            apk add git
 
-      - name: Configure git for container
-        run: |
-          git config --global --add safe.directory "$GITHUB_WORKSPACE"
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
       - name: Create or update PDF PR
         id: cpr
