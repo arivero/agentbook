@@ -55,6 +55,175 @@ Key behaviors to remember:
 - **Markdown instruction updates can often be edited directly** (the runtime loads the markdown body).
 - **Shared components** can be stored as markdown files without `on:`; they are imported, not compiled.
 
+## Compilation Model Examples
+
+GH-AW compilation is mostly a structural translation: frontmatter becomes the workflow header, the markdown body is packaged as a script or prompt payload, and imports are inlined or referenced. The compiled `.lock.yml` is the contract GitHub Actions executes. The examples below show how a markdown workflow turns into a compiled job.
+
+### Example 1: Issue Triage Workflow
+
+**Source markdown (`triage.md`)**
+
+```markdown
+---
+on:
+  issues:
+    types: [opened]
+permissions:
+  contents: read
+  issues: write
+tools:
+  github:
+    toolsets: [issues]
+engine: copilot
+---
+
+# Triage this issue
+Read issue #${{ github.event.issue.number }} and summarize it.
+Then add labels: needs-triage and needs-owner.
+```
+
+**Compiled workflow (`triage.lock.yml`)**
+
+```yaml
+name: GH-AW triage
+on:
+  issues:
+    types: [opened]
+permissions:
+  contents: read
+  issues: write
+jobs:
+  agent:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run GH-AW agent
+        uses: github/agentic-workflows@v1
+        with:
+          engine: copilot
+          tools: github:issues
+          prompt: |
+            # Triage this issue
+            Read issue #${{ github.event.issue.number }} and summarize it.
+            Then add labels: needs-triage and needs-owner.
+```
+
+**What changed during compilation**
+
+- Frontmatter was converted into workflow metadata (`on`, `permissions`, `jobs`).
+- `engine` and `tools` moved into the `with:` block for the GH-AW runner.
+- The markdown body became the `prompt` payload executed by the agent.
+
+### Example 2: Reusable Component + Import
+
+**Component (`shared/common-tools.md`)**
+
+```markdown
+---
+tools:
+  bash:
+  edit:
+engine: copilot
+---
+```
+
+**Workflow using an import (`docs-refresh.md`)**
+
+```markdown
+---
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+imports:
+  - shared/common-tools.md
+---
+
+# Refresh docs
+Update the changelog with the latest release notes.
+```
+
+**Compiled workflow (`docs-refresh.lock.yml`)**
+
+```yaml
+name: GH-AW docs refresh
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  agent:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run GH-AW agent
+        uses: github/agentic-workflows@v1
+        with:
+          engine: copilot
+          tools: bash,edit
+          prompt: |
+            # Refresh docs
+            Update the changelog with the latest release notes.
+```
+
+**What changed during compilation**
+
+- `imports` were resolved and merged with the workflow frontmatter.
+- The component’s `tools` and `engine` were applied to the final workflow.
+- Only workflows with `on:` are compiled; components remain markdown-only.
+
+### Example 3: Safe Outputs in the Compiled Job
+
+**Source markdown (`release-notes.md`)**
+
+```markdown
+---
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+  pull-requests: write
+tools:
+  edit:
+safe_outputs:
+  pull_request_body:
+    format: markdown
+engine: copilot
+---
+
+# Draft release notes
+Summarize commits since the last tag and open a PR with the notes.
+```
+
+**Compiled workflow (`release-notes.lock.yml`)**
+
+```yaml
+name: GH-AW release notes
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+  pull-requests: write
+jobs:
+  agent:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run GH-AW agent
+        uses: github/agentic-workflows@v1
+        with:
+          engine: copilot
+          tools: edit
+          safe-outputs:
+            pull_request_body:
+              format: markdown
+          prompt: |
+            # Draft release notes
+            Summarize commits since the last tag and open a PR with the notes.
+```
+
+**What changed during compilation**
+
+- `safe_outputs` became `safe-outputs` input for the GH-AW runner.
+- The prompt stayed identical; guardrails are enforced by the compiled job.
+
 ## Tools, Safe Inputs, and Safe Outputs
 
 GH-AW workflows are designed for safety by default. Agents run with minimal access and must declare tools explicitly.
