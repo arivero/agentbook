@@ -1,0 +1,38 @@
+# Build artifacts
+_site/
+.sass-cache/
+.jekyll-cache/
+.jekyll-metadata
+combined.md
+*.pdf
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Temporary files
+/tmp/
+*.tmp
+*.temp
+
+# Dependencies
+node_modules/
+vendor/
+.bundle/
+
+# Local development
+.env
+.env.local

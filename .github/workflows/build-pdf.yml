@@ -1,0 +1,56 @@
+name: Build PDF
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'book/**/*.md'
+  workflow_dispatch:
+
+jobs:
+  build-pdf:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Pandoc
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y pandoc texlive-latex-base texlive-fonts-recommended texlive-latex-extra
+
+      - name: Combine markdown files
+        run: |
+          cat book/README.md > combined.md
+          echo -e "\n\n" >> combined.md
+          cat book/chapters/01-introduction.md >> combined.md
+          echo -e "\n\n" >> combined.md
+          cat book/chapters/02-orchestration.md >> combined.md
+          echo -e "\n\n" >> combined.md
+          cat book/chapters/03-scaffolding.md >> combined.md
+          echo -e "\n\n" >> combined.md
+          cat book/chapters/04-skills-tools.md >> combined.md
+
+      - name: Convert to PDF
+        run: |
+          pandoc combined.md -o agentic-workflows-book.pdf \
+            --pdf-engine=pdflatex \
+            --toc \
+            --number-sections \
+            -V geometry:margin=1in \
+            -V documentclass=report
+
+      - name: Upload PDF artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: book-pdf
+          path: agentic-workflows-book.pdf
+
+      - name: Create Release on Tag
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v1
+        with:
+          files: agentic-workflows-book.pdf
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

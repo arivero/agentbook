@@ -1,0 +1,123 @@
+name: Process Issue Suggestions
+
+on:
+  issues:
+    types: [opened, labeled]
+
+permissions:
+  issues: write
+  contents: write
+  pull-requests: write
+
+jobs:
+  analyze-suggestion:
+    runs-on: ubuntu-latest
+    if: contains(github.event.issue.labels.*.name, 'suggestion') || github.event.action == 'opened'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Add suggestion label if not present
+        if: github.event.action == 'opened' && !contains(github.event.issue.labels.*.name, 'suggestion')
+        uses: actions/github-script@v7
+        with:
+          script: |
+            // Auto-label new issues as suggestions
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              labels: ['suggestion', 'needs-review']
+            });
+
+      - name: Comment on new suggestion
+        if: github.event.action == 'opened'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const comment = `Thank you for your suggestion! 🤖
+            
+            This issue has been automatically labeled and will be reviewed by our automated workflows.
+            
+            If your suggestion is related to:
+            - **Agentic workflows**: How agents automate tasks
+            - **Agent orchestration**: Coordinating multiple agents
+            - **Agentic scaffolding**: Infrastructure for agents
+            - **Skills and tools**: Agent capabilities
+            
+            It will be processed and potentially incorporated into the book!
+            
+            The workflow will:
+            1. Analyze the suggestion for relevance
+            2. Create content updates if approved
+            3. Update the book's markdown and PDF versions
+            4. Publish changes to GitHub Pages
+            5. Create a blog post about the update
+            
+            Stay tuned for updates! 📚`;
+            
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: comment
+            });
+
+      - name: Check if suggestion is in scope
+        id: check_scope
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const issue = context.payload.issue;
+            const title = issue.title.toLowerCase();
+            const body = issue.body?.toLowerCase() || '';
+            
+            const keywords = [
+              'agent', 'workflow', 'orchestration', 'scaffolding',
+              'skill', 'tool', 'automation', 'llm', 'ai'
+            ];
+            
+            const isRelevant = keywords.some(keyword => 
+              title.includes(keyword) || body.includes(keyword)
+            );
+            
+            if (isRelevant) {
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue.number,
+                labels: ['relevant', 'ready-for-agent']
+              });
+              
+              await github.rest.issues.removeLabel({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue.number,
+                name: 'needs-review'
+              }).catch(() => {});
+              
+              return { relevant: true };
+            } else {
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue.number,
+                labels: ['out-of-scope']
+              });
+              
+              return { relevant: false };
+            }
+
+      - name: Notify if out of scope
+        if: steps.check_scope.outputs.relevant == 'false'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: `Thank you for your suggestion. However, this doesn't appear to be directly related to the book's topics (agentic workflows, orchestration, scaffolding, or skills/tools). 
+              
+              If you believe this is an error, please add more context about how it relates to these topics.`
+            });
