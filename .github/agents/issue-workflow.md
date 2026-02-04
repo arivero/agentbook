@@ -50,6 +50,9 @@ documentation, finds external sources, and assesses the novelty and value.
 **Labels added:** `researched`
 **Output:** Detailed research report as issue comment
 
+**Optional substitute:** `issue-triage-lite.md` can replace Stages 1–2 for
+low-risk issues when a single acknowledgment + research pass is sufficient.
+
 ### Stage 3: Multi-Model Discussion
 Two different AI models provide their perspectives:
 
@@ -61,6 +64,9 @@ Two different AI models provide their perspectives:
 **Labels added:** `discussed`
 **Output:** Two perspective comments from different models
 
+**Optional substitute:** `issue-synthesis.md` can replace Stage 3 when a single
+consolidated perspective is preferred.
+
 ### Stage 4: Content Writing
 The **Writer Agent** synthesizes all contributions and drafts actual content.
 It creates or updates book chapters and opens a pull request.
@@ -69,6 +75,9 @@ It creates or updates book chapters and opens a pull request.
 **Agent:** issue-writer.md
 **Labels added:** `content-drafted`
 **Output:** Pull request with new content
+
+**Optional substitute:** `issue-fast-track.md` can replace Stages 4–5 for small,
+low-risk edits that can be delivered in one PR.
 
 ### Stage 5: Completion
 After the PR is merged, the **Completion Agent** summarizes the outcome,
