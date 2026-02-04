@@ -423,6 +423,110 @@ The workflow is defined using GitHub Agentic Workflows (GH-AW). The repository i
 
 For a detailed explanation of the workflow architecture and why GH-AW is the canonical approach, see the repository's [WORKFLOWS.md](../../WORKFLOWS.md) documentation.
 
+## Multi-Agent Platform Compatibility
+
+Modern repositories need to support multiple AI agent platforms. Different coding assistants—GitHub Copilot, Claude, OpenAI Codex, and others—each have their own ways of receiving project-specific instructions. This section explains how to structure a repository for cross-platform agent compatibility.
+
+### The Challenge of Agent Diversity
+
+When multiple AI agents work with your repository, you face a coordination challenge:
+
+- **GitHub Copilot** reads `.github/copilot-instructions.md` for project-specific guidance
+- **Claude** uses `CLAUDE.md` or project context from AGENTS.md files
+- **Codex/ChatGPT** can be configured with custom instructions or system prompts
+- **Generic agents** look for `AGENTS.md` as the emerging standard
+
+Each platform has slightly different expectations, but the core information they need is similar.
+
+### Repository Documentation as Agent Configuration
+
+Your repository's documentation files serve dual purposes—they guide human contributors AND configure AI agents. Key files include:
+
+| File | Human Purpose | Agent Purpose |
+|------|---------------|---------------|
+| `README.md` | Project overview | Context for understanding the codebase |
+| `CONTRIBUTING.md` | Contribution guidelines | Workflow rules and constraints |
+| `.github/copilot-instructions.md` | N/A | Copilot-specific configuration |
+| `AGENTS.md` | N/A | Generic agent instructions |
+| `CLAUDE.md` | N/A | Claude-specific configuration |
+
+### The copilot-instructions.md File
+
+GitHub Copilot reads `.github/copilot-instructions.md` to understand how to work with your repository. This file should include:
+
+```markdown
+# Copilot Instructions for [Project Name]
+
+## Project Overview
+Brief description of what this project does.
+
+## Tech Stack
+- **Language**: Python 3.11
+- **Framework**: FastAPI
+- **Database**: PostgreSQL
+- **Testing**: pytest
+
+## Coding Guidelines
+- Follow PEP 8 style guide
+- All functions require type hints
+- Tests are required for new features
+
+## File Structure
+Describe important directories and their purposes.
+
+## Build and Test Commands
+- `make test` - Run all tests
+- `make lint` - Run linters
+- `make build` - Build the project
+
+## Important Constraints
+- Never commit secrets or credentials
+- Protected paths: `.github/workflows/`, `secrets/`
+- All PRs require review before merge
+```
+
+### Cross-Platform Strategy
+
+For maximum compatibility across AI agent platforms, follow these practices:
+
+1. **Use AGENTS.md as the canonical source** for project instructions
+2. **Create platform-specific files** that import or reference AGENTS.md content
+3. **Keep instructions DRY** by avoiding duplication across files
+4. **Test with multiple agents** to ensure instructions work correctly
+
+Example hierarchy:
+
+```
+project/
+├── AGENTS.md                      # Canonical agent instructions
+├── CLAUDE.md                      # Claude-specific (may reference AGENTS.md)
+├── .github/
+│   └── copilot-instructions.md    # Copilot-specific (may reference AGENTS.md)
+└── src/
+    └── AGENTS.md                  # Module-specific instructions
+```
+
+### This Repository's Approach
+
+This book repository demonstrates multi-platform compatibility:
+
+- **`.github/copilot-instructions.md`** - Detailed Copilot configuration with project structure, coding guidelines, and constraints
+- **Chapter 4 and Chapter 7** discuss AGENTS.md as the emerging standard
+- **Documentation files** (README, CONTRIBUTING, etc.) provide context any agent can use
+- **GH-AW workflows** use the `engine: copilot` setting but the pattern works with other engines
+
+The key insight is that well-structured documentation benefits both human developers and AI agents. When you write clear README files, contribution guidelines, and coding standards, you're simultaneously creating better agent configuration.
+
+### Best Practices for Agent-Friendly Repositories
+
+1. **Be explicit about constraints**: Clearly state what agents should NOT do
+2. **Document your tech stack**: Agents perform better when they understand the tools in use
+3. **Describe the project structure**: Help agents navigate your codebase efficiently
+4. **Provide examples**: Show preferred patterns through code examples
+5. **List protected paths**: Specify files agents should not modify
+6. **Include build/test commands**: Enable agents to verify their changes
+7. **State coding conventions**: Help agents write consistent code
+
 ## Future of GitHub Agents
 
 ### Emerging Capabilities
@@ -453,7 +557,9 @@ For a detailed explanation of the workflow architecture and why GH-AW is the can
 
 6. **Security** must be designed into agent workflows from the start.
 
-7. **This book** demonstrates these concepts through its own multi-agent maintenance workflow.
+7. **Multi-platform compatibility** is achieved through well-structured documentation (copilot-instructions.md, AGENTS.md, etc.).
+
+8. **This book** demonstrates these concepts through its own multi-agent maintenance workflow.
 
 ## Learn More
 
@@ -472,6 +578,18 @@ This book's repository includes comprehensive documentation that demonstrates OS
 - **[CODE_OF_CONDUCT](../../CODE_OF_CONDUCT.md)** - Community guidelines
 - **[LICENSE](../../LICENSE)** - MIT License
 
+### Agent Configuration Files
+
+These files configure how AI agents work with this repository:
+
+- **[.github/copilot-instructions.md](../../.github/copilot-instructions.md)** - GitHub Copilot-specific configuration including project structure, coding guidelines, and constraints
+
 These documents serve as both useful references and examples of how to structure documentation for projects using agentic workflows.
+
+### Related Chapters
+
+- **[Chapter 4: Skills and Tools](04-skills-tools.md)** - Covers AGENTS.md standard and MCP protocol for tool management
+- **[Chapter 5: GitHub Agentic Workflows](05-gh-agentic-workflows.md)** - GH-AW specification and engine configuration
+- **[Chapter 7: Agents for Coding](07-agents-for-coding.md)** - Detailed coverage of coding agent platforms
 
 ---

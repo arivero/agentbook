@@ -6,9 +6,9 @@ This repository implements a **living, self-maintaining book** about agentic wor
 
 ## What Was Created
 
-### 📚 Book Content (1199+ lines)
+### 📚 Book Content (2500+ lines)
 
-**6 Comprehensive Chapters:**
+**8 Comprehensive Chapters:**
 
 1. **Introduction to Agentic Workflows** (2,982 characters)
    - Defines agentic workflows and key concepts
@@ -35,7 +35,7 @@ This repository implements a **living, self-maintaining book** about agentic wor
    - Skill development and composition
    - Import and registry patterns
 
-5. **GitHub Agentic Workflows (GH-AW)** (new chapter)
+5. **GitHub Agentic Workflows (GH-AW)**
    - GH-AW workflow structure and compilation model
    - Imports, tools, and safe outputs
    - ResearchPlanAssign for continuous book updates
@@ -47,6 +47,20 @@ This repository implements a **living, self-maintaining book** about agentic wor
    - Implementing GitHub Agents
    - Security considerations
    - Real-world example: This book's multi-agent workflow
+
+7. **Agents for Coding**
+   - Evolution from autocomplete to autonomous coding agents
+   - Single-agent vs multi-agent architectures
+   - The AGENTS.md standard for project configuration
+   - Leading platforms (GitHub Copilot, Claude Code, Cursor AI)
+   - Best practices for coding agent deployment
+
+8. **Agents for Mathematics and Physics**
+   - Theorem proving agents and proof assistants
+   - Symbolic computation with CAS integration
+   - Physics simulation agents
+   - Educational scaffolding for STEM
+   - Verification pipelines and reproducibility
 
 ### 🌐 GitHub Pages Setup
 
@@ -187,7 +201,9 @@ agentbook/
 │   │   ├── 03-scaffolding.md         # Chapter 3
 │   │   ├── 04-skills-tools.md        # Chapter 4
 │   │   ├── 05-gh-agentic-workflows.md # Chapter 5
-│   │   └── 06-github-agents.md       # Chapter 6 (new)
+│   │   ├── 06-github-agents.md       # Chapter 6
+│   │   ├── 07-agents-for-coding.md   # Chapter 7
+│   │   └── 08-agents-for-math-physics.md # Chapter 8
 │   ├── README.md                     # Book introduction
 │   └── index.md                      # Book homepage
 ├── blog/
@@ -209,13 +225,13 @@ agentbook/
 
 ## Statistics
 
-- **Total Files Created**: 28+
-- **Lines of Book Content**: 1,500+
-- **Total Documentation**: ~12,000 words
-- **Chapters**: 6 comprehensive chapters
+- **Total Files Created**: 30+
+- **Lines of Book Content**: 3,000+
+- **Total Documentation**: ~20,000 words
+- **Chapters**: 8 comprehensive chapters
 - **Agent Definitions**: 7 GH-AW agent files
-- **Workflows**: 3 automated workflows
-- **Code Examples**: 40+ throughout chapters
+- **Workflows**: 6 automated workflows (3 GH-AW + 3 standard)
+- **Code Examples**: 60+ throughout chapters
 
 ## Next Steps for Users
 
