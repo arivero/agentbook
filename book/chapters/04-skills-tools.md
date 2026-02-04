@@ -866,7 +866,7 @@ There is no formal `skills.md` standard, but skill documentation patterns are em
 
 **Personality and Values**
 
-Some frameworks experiment with "soul" or personality configuration:
+Some frameworks experiment with "soul" or personality configuration. Note that "soul" is a metaphorical term used in some AI agent frameworks to describe an agent's core personality, values, and behavioral guidelines—it's industry jargon rather than a formal technical specification:
 
 - **System prompts** defining agent persona and communication style
 - **Value alignment** specifying ethical guidelines and constraints
