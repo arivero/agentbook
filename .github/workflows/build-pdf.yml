@@ -73,7 +73,10 @@ jobs:
           name: book-pdf
           path: book/agentic-workflows-book.pdf
 
-
+      - name: Stage PDF for commit
+        run: |
+          git add -f book/agentic-workflows-book.pdf
+          git status
 
       - name: Create or update PDF PR
         id: cpr

@@ -5,6 +5,7 @@ _site/
 .jekyll-metadata
 combined.md
 *.pdf
+!book/agentic-workflows-book.pdf
 
 # Logs
 *.log
