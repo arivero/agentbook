@@ -450,4 +450,22 @@ The workflow is defined in `.github/workflows/process-suggestions.yml` and uses 
 
 7. **This book** demonstrates these concepts through its own multi-agent maintenance workflow.
 
+## Learn More
+
+### Repository Documentation
+
+This book's repository includes comprehensive documentation that demonstrates OSS best practices:
+
+- **[README](../../README.md)** - Overview and quick start guide
+- **[CONTRIBUTING](../../CONTRIBUTING.md)** - How to contribute using the multi-agent workflow
+- **[SETUP](../../SETUP.md)** - Installation and configuration instructions
+- **[WORKFLOW_PLAYBOOK](../../WORKFLOW_PLAYBOOK.md)** - Agentic workflow maintenance patterns
+- **[PROJECT_SUMMARY](../../PROJECT_SUMMARY.md)** - Complete project overview
+- **[SECURITY_SUMMARY](../../SECURITY_SUMMARY.md)** - Security practices and scan results
+- **[CHANGELOG](../../CHANGELOG.md)** - Version history and changes
+- **[CODE_OF_CONDUCT](../../CODE_OF_CONDUCT.md)** - Community guidelines
+- **[LICENSE](../../LICENSE)** - MIT License
+
+These documents serve as both useful references and examples of how to structure documentation for projects using agentic workflows.
+
 ---

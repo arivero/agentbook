@@ -4,13 +4,15 @@ Thank you for your interest in contributing to this self-maintaining book! 🤖
 
 ## How This Book Works
 
-This book is **self-maintaining** through automated workflows. When you contribute, you're not just adding to a static document—you're feeding into a living system that:
+This book is **self-maintaining** through automated workflows using **GitHub Agentic Workflows (GH-AW)**. When you contribute, you're not just adding to a static document—you're feeding into a living system that:
 
-1. Analyzes your contribution
-2. Processes it through AI agents
+1. Analyzes your contribution using AI agents
+2. Processes it through multiple specialized agents
 3. Updates the book automatically
 4. Publishes changes to the web
 5. Announces updates via blog posts
+
+**Agentic Workflow Technology**: This repository uses GH-AW (GitHub Agentic Workflows), a specification that turns markdown into secure, composable repository automation. Learn more in [Chapter 5 of the book](book/chapters/05-gh-agentic-workflows.md).
 
 For maintainers and agents, see the [Agentic Workflow Playbook](WORKFLOW_PLAYBOOK.md) for the research → plan → assign loop and required artifacts per update.
 
@@ -114,10 +116,15 @@ Avoid:
 
 1. **Automatic Labeling**: Issues are auto-labeled on creation
 2. **Relevance Check**: Workflows check if the topic is in scope
-3. **Agent Assignment**: Relevant issues are tagged for agent processing
+3. **Agent Processing**: Relevant issues go through our multi-agent workflow
 4. **Content Update**: Agents update the book based on the suggestion
 5. **Publication**: Changes are automatically published
 6. **Notification**: You'll be notified when your suggestion is incorporated
+
+**What happens to rejected suggestions:**
+- If a suggestion is **out of scope** or **declined**, it will be moved to [GitHub Discussions](https://github.com/arivero/agentbook/discussions)
+- This allows the community to continue the conversation
+- Out-of-scope topics might still be valuable for general discussion
 
 ### For Pull Requests
 
@@ -157,9 +164,12 @@ Before submitting:
 
 ## Communication
 
+- **Suggestions**: Open an issue with the "suggestion" label
 - **Questions**: Open an issue with the "question" label
-- **Discussions**: Use GitHub Discussions (if enabled)
+- **General Discussion**: Use [GitHub Discussions](https://github.com/arivero/agentbook/discussions) for topics outside the book's scope
 - **Urgent Issues**: Tag with "urgent" label
+
+**Note**: Issues that are out of scope or declined will be converted to Discussions so the community can continue the conversation.
 
 ## Code of Conduct
 
