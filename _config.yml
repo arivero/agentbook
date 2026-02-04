@@ -32,6 +32,9 @@ exclude:
   - .git
   - .github
   - README.md
+  - vendor
+  - Gemfile
+  - Gemfile.lock
 
 # Include
 include:
