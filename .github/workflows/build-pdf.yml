@@ -67,12 +67,12 @@ jobs:
           git config --global --add safe.directory "$GITHUB_WORKSPACE"
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git remote set-url origin "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}"
 
       - name: Create or update PDF PR
         id: cpr
         uses: peter-evans/create-pull-request@v8
         with:
+          token: ${{ github.token }}
           commit-message: "Update generated PDF"
           title: "Update generated PDF"
           body: "Automated update of the generated PDF."
