@@ -11,14 +11,11 @@ on:
 jobs:
   build-pdf:
     runs-on: ubuntu-latest
+    container:
+      image: pandoc/latex:latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Install Pandoc
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y pandoc texlive-latex-base texlive-fonts-recommended texlive-latex-extra
 
       - name: Combine markdown files
         run: |
