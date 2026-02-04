@@ -8,6 +8,9 @@ on:
       - 'book/**/*.md'
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   build-pdf:
     runs-on: ubuntu-latest
