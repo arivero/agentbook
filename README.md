@@ -40,6 +40,12 @@ How GH-AW turns markdown into secure, composable repository automation.
 ### [GitHub Agents](book/chapters/06-github-agents.md)
 Deep dive into GitHub Copilot, Copilot Coding Agent, and multi-agent orchestration.
 
+### [Agents for Coding](book/chapters/07-agents-for-coding.md)
+Specialized architectures and scaffolding patterns for coding agents, including the AGENTS.md standard.
+
+### [Agents for Mathematics and Physics](book/chapters/08-agents-for-math-physics.md)
+Scientific agents for theorem proving, symbolic computation, and physics simulations.
+
 ## 🚀 How It Works
 
 1. **Community Input**: Open an issue with a suggestion

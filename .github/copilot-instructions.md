@@ -56,7 +56,9 @@ agentbook/
 │   │   ├── 03-scaffolding.md         # Agentic Scaffolding
 │   │   ├── 04-skills-tools.md        # Skills and Tools Management
 │   │   ├── 05-gh-agentic-workflows.md # GitHub Agentic Workflows
-│   │   └── 06-github-agents.md       # GitHub Agents
+│   │   ├── 06-github-agents.md       # GitHub Agents
+│   │   ├── 07-agents-for-coding.md   # Agents for Coding
+│   │   └── 08-agents-for-math-physics.md # Agents for Mathematics and Physics
 │   ├── README.md                     # Book introduction
 │   └── index.md                      # Book homepage
 ├── blog/
