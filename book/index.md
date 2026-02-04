@@ -46,11 +46,18 @@ Overview of the book and what you'll learn.
 - Tool Discovery and Documentation
 - Best Practices
 
+### Chapter 5: [GitHub Agentic Workflows (GH-AW)](chapters/05-gh-agentic-workflows.html)
+- What GH-AW is and why it matters
+- Workflow structure and compilation
+- Tools, safe inputs, and safe outputs
+- Imports and reusable components
+- ResearchPlanAssign for self-maintaining books
+
 ---
 
 ## How to Read This Book
 
-- **Linear**: Read from Chapter 1 through Chapter 4 for a complete introduction
+- **Linear**: Read from Chapter 1 through Chapter 5 for a complete introduction
 - **Reference**: Jump to specific chapters based on your current needs
 - **Examples**: Focus on code examples to see concepts in action
 - **Practical**: Try implementing the patterns as you read

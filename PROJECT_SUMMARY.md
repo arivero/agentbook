@@ -8,7 +8,7 @@ This repository implements a **living, self-maintaining book** about agentic wor
 
 ### 📚 Book Content (1199+ lines)
 
-**4 Comprehensive Chapters:**
+**5 Comprehensive Chapters:**
 
 1. **Introduction to Agentic Workflows** (2,982 characters)
    - Defines agentic workflows and key concepts
@@ -34,6 +34,11 @@ This repository implements a **living, self-maintaining book** about agentic wor
    - Creating custom tools with examples
    - Skill development and composition
    - Import and registry patterns
+
+5. **GitHub Agentic Workflows (GH-AW)** (new chapter)
+   - GH-AW workflow structure and compilation model
+   - Imports, tools, and safe outputs
+   - ResearchPlanAssign for continuous book updates
 
 ### 🌐 GitHub Pages Setup
 
@@ -78,6 +83,7 @@ This repository implements a **living, self-maintaining book** about agentic wor
 - `README.md`: Project overview, features, and quick start
 - `CONTRIBUTING.md`: Comprehensive contribution guide (5,355 characters)
 - `SETUP.md`: Detailed setup and troubleshooting guide
+- `WORKFLOW_PLAYBOOK.md`: GH-AW maintenance loop for the book
 - `PROJECT_SUMMARY.md`: This document
 
 ### 🎫 Issue Templates
@@ -161,7 +167,8 @@ agentbook/
 │   │   ├── 01-introduction.md      # Chapter 1
 │   │   ├── 02-orchestration.md     # Chapter 2
 │   │   ├── 03-scaffolding.md       # Chapter 3
-│   │   └── 04-skills-tools.md      # Chapter 4
+│   │   ├── 04-skills-tools.md      # Chapter 4
+│   │   └── 05-gh-agentic-workflows.md # Chapter 5
 │   ├── README.md                    # Book introduction
 │   └── index.md                     # Book homepage
 ├── blog/
@@ -176,6 +183,7 @@ agentbook/
 ├── CONTRIBUTING.md                  # Contribution guide
 ├── index.md                         # Site homepage
 ├── PROJECT_SUMMARY.md              # This file
+├── WORKFLOW_PLAYBOOK.md            # GH-AW maintenance playbook
 ├── README.md                        # Project README
 └── SETUP.md                         # Setup instructions
 ```
