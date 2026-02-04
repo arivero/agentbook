@@ -9,7 +9,8 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
+  pull-requests: write
 
 jobs:
   build-pdf:
@@ -45,16 +46,40 @@ jobs:
             -V geometry:margin=1in \
             -V documentclass=report
 
+      - name: Move PDF into repo
+        run: |
+          mkdir -p book
+          mv agentic-workflows-book.pdf book/agentic-workflows-book.pdf
+
       - name: Upload PDF artifact
         uses: actions/upload-artifact@v4
         with:
           name: book-pdf
-          path: agentic-workflows-book.pdf
+          path: book/agentic-workflows-book.pdf
+
+      - name: Create or update PDF PR
+        id: cpr
+        uses: peter-evans/create-pull-request@v6
+        with:
+          commit-message: "Update generated PDF"
+          title: "Update generated PDF"
+          body: "Automated update of the generated PDF."
+          branch: "automation/update-pdf"
+          delete-branch: true
+          add-paths: |
+            book/agentic-workflows-book.pdf
+
+      - name: Enable auto-merge for PDF PR
+        if: ${{ steps.cpr.outputs.pull-request-number }}
+        uses: peter-evans/enable-pull-request-automerge@v3
+        with:
+          pull-request-number: ${{ steps.cpr.outputs.pull-request-number }}
+          merge-method: squash
 
       - name: Create Release on Tag
         if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v1
         with:
-          files: agentic-workflows-book.pdf
+          files: book/agentic-workflows-book.pdf
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

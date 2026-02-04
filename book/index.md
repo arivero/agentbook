@@ -73,7 +73,7 @@ Overview of the book and what you'll learn.
 ## Formats
 
 - **Online**: You're reading it now!
-- **PDF**: Download from [GitHub Actions](https://github.com/arivero/agentbook/actions/workflows/build-pdf.yml)
+- **PDF**: Download from [GitHub Actions](https://github.com/arivero/agentbook/actions/workflows/build-pdf.yml) or the [repo PDF](https://github.com/arivero/agentbook/raw/main/book/agentic-workflows-book.pdf)
 - **Source**: Read the [markdown files](https://github.com/arivero/agentbook/tree/main/book) on GitHub
 
 ---

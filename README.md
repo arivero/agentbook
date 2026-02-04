@@ -17,7 +17,7 @@ This book doesn't just teach about agentic workflows—it **uses them**! The boo
 ## 📖 Read the Book
 
 - **Online**: [https://arivero.github.io/agentbook](https://arivero.github.io/agentbook) (GitHub Pages)
-- **PDF**: Download from [GitHub Actions artifacts](https://github.com/arivero/agentbook/actions/workflows/build-pdf.yml)
+- **PDF**: Download from [GitHub Actions artifacts](https://github.com/arivero/agentbook/actions/workflows/build-pdf.yml) or the [repo PDF](https://github.com/arivero/agentbook/raw/main/book/agentic-workflows-book.pdf)
 - **Source**: Browse the [book directory](book)
 
 ## 🎯 What You'll Learn
