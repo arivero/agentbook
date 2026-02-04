@@ -487,6 +487,53 @@ class DocumentedTool:
         return doc
 ```
 
+## MCP in 2026: Modern Tooling and Adoption
+
+The **Model Context Protocol (MCP)** has become a practical standard for connecting agents to tools and data sources. In 2026, it is less about novel capability and more about **reliable interoperability**: the same tool server can be used by multiple agent clients with consistent schemas, permissions, and response formats.
+
+### What MCP Brings to Tools
+
+- **Portable tool definitions**: JSON schemas and well-known server metadata make tools discoverable across clients.
+- **Safer tool execution**: capability-scoped permissions, explicit parameters, and auditable tool calls.
+- **Composable context**: servers can enrich model context with structured resources (files, APIs, or databases) without bespoke glue code.
+
+### Modern Usage Patterns (2026)
+
+1. **Server-based tool catalogs**
+   - Teams deploy MCP servers per domain (e.g., "repo-tools", "ops-tools", "research-tools").
+   - Clients discover available tools at runtime and choose based on metadata, not hardcoded lists.
+
+2. **Context stitching**
+   - Agents gather context from multiple servers (docs, tickets, metrics) and assemble it into a task-specific prompt.
+   - The server provides structured resources so the client can keep the prompt lean.
+
+3. **Permission-first workflows**
+   - Tool calls are scoped by project, environment, or role.
+   - Audit logs track who called what tool with which inputs.
+
+4. **Fallback-first reliability**
+   - Clients maintain fallbacks when a server is down (cached data, read-only mirrors, or alternative tool servers).
+
+### Acceptance Across Major Clients
+
+MCP is broadly accepted as a **tooling interoperability layer**. The specifics vary by vendor, but the pattern is consistent: MCP servers expose the tools and resources, while clients orchestrate tool calls and manage safety policies.
+
+- **Codex**  
+  Codex clients commonly use MCP servers to standardize tool access (repo browsing, test execution, task automation). MCP reduces per-project wiring by centralizing tool definitions and auth. The main adoption pattern is organization-level MCP servers that provide consistent tools across multiple repos.
+
+- **GitHub Copilot**  
+  Copilot deployments increasingly treat MCP as a bridge between editor experiences and organization tooling. This typically means MCP servers that expose repo-aware tools (search, CI status, documentation retrieval) so the assistant can operate with consistent, policy-driven access.
+
+- **Claude**  
+  Claude integrations often use MCP to provide structured context sources (knowledge bases, issue trackers, dashboards). The MCP server becomes the policy boundary, while the client focuses on prompt composition and response quality.
+
+### Practical Guidance for Authors and Teams
+
+- **Document your MCP servers** like any other tool: include schemas, permissions, and usage examples.
+- **Version tool contracts** so clients can adopt changes incrementally.
+- **Prefer narrow, composable tools** over large monolithic endpoints.
+- **Treat MCP as infrastructure**: invest in uptime, monitoring, and security reviews.
+
 ## Best Practices
 
 ### 1. Version Tools and Skills

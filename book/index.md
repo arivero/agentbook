@@ -41,6 +41,7 @@ Overview of the book and what you'll learn.
 - Understanding Skills vs. Tools
 - Tool Design Principles
 - Creating Custom Tools
+- MCP in 2026: Modern tooling and adoption
 - Skill Development
 - Importing and Using Skills
 - Tool Discovery and Documentation
