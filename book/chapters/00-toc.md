@@ -36,20 +36,20 @@ title: Table of Contents
    - Skill development
    - Best practices
 
-5. **[GitHub Agentic Workflows (GH-AW)](05-gh-agentic-workflows.html)**
-   - What GH-AW is and why it matters
-   - Workflow structure and compilation
-   - Tools, safe inputs, safe outputs
-   - Imports and shared components
-   - ResearchPlanAssign for self-maintaining books
-
-6. **[GitHub Agents](06-github-agents.html)**
+5. **[GitHub Agents](06-github-agents.html)**
    - GitHub Copilot and Copilot Coding Agent
    - Agent capabilities and limitations
    - Multi-agent orchestration patterns
    - Implementing GitHub Agents
    - Security considerations
    - Real-world example: This book
+
+6. **[GitHub Agentic Workflows (GH-AW)](05-gh-agentic-workflows.html)**
+   - What GH-AW is and why it matters
+   - Workflow structure and compilation
+   - Tools, safe inputs, safe outputs
+   - Imports and shared components
+   - ResearchPlanAssign for self-maintaining books
 
 ---
 

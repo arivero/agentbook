@@ -23,8 +23,8 @@ title: "Agentic Workflows: A Practical Guide"
 
 ---
 
-{% include_relative chapters/05-gh-agentic-workflows.md %}
+{% include_relative chapters/06-github-agents.md %}
 
 ---
 
-{% include_relative chapters/06-github-agents.md %}
+{% include_relative chapters/05-gh-agentic-workflows.md %}

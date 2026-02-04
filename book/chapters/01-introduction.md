@@ -63,7 +63,7 @@ To work with agentic workflows, you need:
 - Tools and frameworks for agent development
 - Infrastructure for agent execution
 
-In the following chapters, we'll explore how to orchestrate agents, build scaffolding for agent-driven systems, and manage skills and tools effectively.
+In the following chapters, we'll explore how to orchestrate agents, build scaffolding for agent-driven systems, manage skills and tools effectively, and apply those foundations to GitHub Agents and GitHub Agentic Workflows.
 
 ## Key Takeaways
 

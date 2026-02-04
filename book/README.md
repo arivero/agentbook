@@ -10,6 +10,8 @@ This book is a living document that explores the fascinating world of agentic wo
 - **Agent Orchestration**: Coordinating multiple agents to work together effectively
 - **Agentic Scaffolding**: Building the infrastructure for agent-driven development
 - **Skills and Tools**: How to use, import, and compose agent capabilities
+- **GitHub Agents**: Applying agentic patterns within GitHub tooling
+- **GitHub Agentic Workflows**: Building reusable workflows for agent-driven automation
 
 ## Structure
 
@@ -17,7 +19,8 @@ This book is a living document that explores the fascinating world of agentic wo
 2. [Agent Orchestration](chapters/02-orchestration.md)
 3. [Agentic Scaffolding](chapters/03-scaffolding.md)
 4. [Skills and Tools Management](chapters/04-skills-tools.md)
-5. [GitHub Agentic Workflows (GH-AW)](chapters/05-gh-agentic-workflows.md)
+5. [GitHub Agents](chapters/06-github-agents.md)
+6. [GitHub Agentic Workflows (GH-AW)](chapters/05-gh-agentic-workflows.md)
 
 ## Contributing
 
