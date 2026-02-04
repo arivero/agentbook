@@ -49,7 +49,21 @@ Read issue #${{ github.event.issue.number }} and summarize it.
 
 GH-AW compiles markdown workflows into `.lock.yml` GitHub Actions workflows. The compiled file is what GitHub actually executes, but the markdown remains the authoritative source. This gives you readable automation with predictable execution.
 
-Key behaviors to remember:
+### File Location
+
+Both the source markdown files and the compiled `.lock.yml` files live in the `.github/workflows/` directory:
+
+```
+.github/workflows/
+├── triage.md          # Source (human-editable)
+├── triage.lock.yml    # Compiled (auto-generated, do not edit)
+├── docs-refresh.md
+└── docs-refresh.lock.yml
+```
+
+Use `gh aw compile` in your repository root to generate `.lock.yml` files from your markdown sources. Only edit the `.md` files; the `.lock.yml` files are regenerated on compile.
+
+### Key Behaviors
 
 - **Frontmatter edits require recompile**.
 - **Markdown instruction updates can often be edited directly** (the runtime loads the markdown body).
@@ -61,7 +75,7 @@ GH-AW compilation is mostly a structural translation: frontmatter becomes the wo
 
 ### Example 1: Issue Triage Workflow
 
-**Source markdown (`triage.md`)**
+**Source markdown (`.github/workflows/triage.md`)**
 
 ```markdown
 ---
@@ -82,7 +96,7 @@ Read issue #${{ github.event.issue.number }} and summarize it.
 Then add labels: needs-triage and needs-owner.
 ```
 
-**Compiled workflow (`triage.lock.yml`)**
+**Compiled workflow (`.github/workflows/triage.lock.yml`)**
 
 ```yaml
 name: GH-AW triage
@@ -115,7 +129,7 @@ jobs:
 
 ### Example 2: Reusable Component + Import
 
-**Component (`shared/common-tools.md`)**
+**Component (`.github/workflows/shared/common-tools.md`)**
 
 ```markdown
 ---
@@ -126,7 +140,7 @@ engine: copilot
 ---
 ```
 
-**Workflow using an import (`docs-refresh.md`)**
+**Workflow using an import (`.github/workflows/docs-refresh.md`)**
 
 ```markdown
 ---
@@ -142,7 +156,7 @@ imports:
 Update the changelog with the latest release notes.
 ```
 
-**Compiled workflow (`docs-refresh.lock.yml`)**
+**Compiled workflow (`.github/workflows/docs-refresh.lock.yml`)**
 
 ```yaml
 name: GH-AW docs refresh
@@ -172,7 +186,7 @@ jobs:
 
 ### Example 3: Safe Outputs in the Compiled Job
 
-**Source markdown (`release-notes.md`)**
+**Source markdown (`.github/workflows/release-notes.md`)**
 
 ```markdown
 ---
@@ -193,7 +207,7 @@ engine: copilot
 Summarize commits since the last tag and open a PR with the notes.
 ```
 
-**Compiled workflow (`release-notes.lock.yml`)**
+**Compiled workflow (`.github/workflows/release-notes.lock.yml`)**
 
 ```yaml
 name: GH-AW release notes
