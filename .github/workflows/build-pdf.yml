@@ -35,7 +35,7 @@ jobs:
       - name: Convert to PDF
         run: |
           pandoc combined.md -o agentic-workflows-book.pdf \
-            --pdf-engine=pdflatex \
+            --pdf-engine=xelatex \
             --toc \
             --number-sections \
             -V geometry:margin=1in \
