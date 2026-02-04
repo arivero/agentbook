@@ -57,6 +57,11 @@ jobs:
           name: book-pdf
           path: book/agentic-workflows-book.pdf
 
+      - name: Install git
+        run: |
+          apt-get update
+          apt-get install -y git
+
       - name: Create or update PDF PR
         id: cpr
         uses: peter-evans/create-pull-request@v6
