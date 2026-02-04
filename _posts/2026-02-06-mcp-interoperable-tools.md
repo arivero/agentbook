@@ -1,20 +1,20 @@
 ---
 layout: post
-title: "MCP in 2026: Interoperable Tools for Agents"
+title: "MCP: Interoperable Tools for Agents"
 date: 2026-02-06
 ---
 
-We just expanded **Chapter 4: Skills and Tools Management** with a new section on the **Model Context Protocol (MCP)** and how it is used in 2026.
+We just expanded **Chapter 4: Skills and Tools Management** with a new section on the **Model Context Protocol (MCP)** and how it shapes modern agent tooling.
 
-## Why This Matters Now
+## Why This Matters
 
 MCP has shifted from an emerging idea to a **shared tool interoperability layer**. Instead of wiring every assistant to every system, teams define tools once in MCP servers and let multiple clients discover and use them safely.
 
 ## What the New Section Covers
 
 - How MCP enables portable tool definitions and safer execution
-- Common 2026 usage patterns (server catalogs, context stitching, permission-first workflows)
-- Realistic adoption notes for **Codex**, **GitHub Copilot**, and **Claude**
+- Common usage patterns (server catalogs, context stitching, permission-first workflows)
+- Adoption notes for **Codex**, **GitHub Copilot**, and **Claude**
 - Practical guidance for documenting and versioning MCP tool contracts
 
 ## Read the Update
