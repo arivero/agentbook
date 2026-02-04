@@ -9,15 +9,19 @@
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
       line-height: 1.6;
-      max-width: 900px;
+      margin: 0;
+      color: #333;
+      background-color: #fff;
+    }
+    .layout-container {
+      max-width: 1200px;
       margin: 0 auto;
       padding: 20px;
-      color: #333;
     }
     header {
       border-bottom: 2px solid #e1e4e8;
       padding-bottom: 20px;
-      margin-bottom: 30px;
+      margin-bottom: 20px;
     }
     h1, h2, h3, h4, h5, h6 {
       color: #24292e;
@@ -55,6 +59,42 @@
     nav a {
       margin-right: 15px;
     }
+    .book-layout {
+      display: flex;
+      gap: 32px;
+      align-items: flex-start;
+    }
+    .book-sidebar {
+      flex: 0 0 280px;
+      max-height: calc(100vh - 220px);
+      position: sticky;
+      top: 20px;
+      overflow-y: auto;
+      padding-right: 16px;
+      border-right: 1px solid #e1e4e8;
+    }
+    .book-sidebar h2 {
+      margin-top: 0;
+      font-size: 1.25em;
+      border-bottom: none;
+    }
+    .book-sidebar ul {
+      list-style: none;
+      margin: 0;
+      padding-left: 0;
+    }
+    .book-sidebar li {
+      margin: 6px 0;
+    }
+    .book-sidebar ul ul {
+      margin-left: 12px;
+      padding-left: 12px;
+      border-left: 1px solid #e1e4e8;
+    }
+    .book-content {
+      flex: 1;
+      min-width: 0;
+    }
     footer {
       margin-top: 50px;
       padding-top: 20px;
@@ -62,10 +102,22 @@
       color: #586069;
       font-size: 0.9em;
     }
+    @media (max-width: 960px) {
+      .book-layout {
+        flex-direction: column;
+      }
+      .book-sidebar {
+        position: static;
+        max-height: none;
+        border-right: none;
+        border-bottom: 1px solid #e1e4e8;
+        padding-bottom: 16px;
+      }
+    }
   </style>
 </head>
 <body>
-  <header>
+  <header class="layout-container">
     <h1><a href="https://arivero.github.io/agentbook/">{{ site.title }}</a></h1>
     <p>{{ site.description }}</p>
     <nav>
@@ -75,12 +127,20 @@
       <a href="https://github.com/arivero/agentbook">GitHub</a>
     </nav>
   </header>
-  
-  <main>
-    {{ content }}
-  </main>
-  
-  <footer>
+
+  <div class="layout-container">
+    <div class="book-layout">
+      <aside class="book-sidebar">
+        <h2>Contents</h2>
+        {% include book-toc.html %}
+      </aside>
+      <main class="book-content">
+        {{ content }}
+      </main>
+    </div>
+  </div>
+
+  <footer class="layout-container">
     <p>This book is self-maintained using agentic workflows. <a href="https://github.com/arivero/agentbook">Contribute on GitHub</a></p>
   </footer>
 </body>
