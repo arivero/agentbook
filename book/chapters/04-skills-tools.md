@@ -487,6 +487,30 @@ class DocumentedTool:
         return doc
 ```
 
+## Integrations: Connecting Tools to Real-World Surfaces
+
+**Integrations** sit above tools and skills. They represent packaged connectors to real systems (chat apps, device surfaces, data sources, or automation backends) that deliver a coherent user experience. Think of them as the **distribution layer** for tools and skills: they bundle auth, event routing, permissions, and UX entry points.
+
+**How integrations relate to tools and skills:**
+
+- **Tools** are atomic actions (send a message, fetch a calendar event, post to Slack).
+- **Skills** orchestrate tools to solve tasks (triage inbox, compile meeting notes, run a daily report).
+- **Integrations** wrap tools + skills into deployable connectors with lifecycle management (pairing, secrets, rate limits, onboarding, and UI hooks).
+
+In practice, a single integration might expose multiple tools and enable multiple skills. The integration is the bridge between agent capabilities and the messy realities of authentication, permissions, and channel-specific constraints.
+
+## Case Study: OpenClaw and pi-mono
+
+**OpenClaw** is a personal, local-first AI assistant that runs a gateway control plane and connects to many chat providers and device surfaces. It emphasizes multi-channel inboxes, tool access, and skill management inside a user-owned runtime.
+
+OpenClaw is built on the **pi-mono** ecosystem. The pi-mono monorepo provides an agent runtime, tool calling infrastructure, and multi-provider LLM APIs that OpenClaw can leverage to keep the assistant portable across models and deployments.
+
+Key takeaways for skills/tools architecture:
+
+- **Gateway + runtime separation** keeps tools and skills consistent while integrations change: the gateway handles channels and routing, while pi-mono-style runtimes handle tool execution.
+- **Integration catalogs** (like OpenClaw’s integrations list and skill registry) are a user-facing map of capability. They surface what tools can do and what skills are available without forcing users to understand low-level APIs.
+- **Skills become reusable assets** once tied to integrations: a “Slack triage” skill can target different workspaces without changing the underlying tools, as long as the integration provides the same tool contracts.
+
 ## MCP in 2026: Modern Tooling and Adoption
 
 The **Model Context Protocol (MCP)** has become a practical standard for connecting agents to tools and data sources. In 2026, it is less about novel capability and more about **reliable interoperability**: the same tool server can be used by multiple agent clients with consistent schemas, permissions, and response formats.
