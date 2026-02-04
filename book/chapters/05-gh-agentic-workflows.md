@@ -65,8 +65,6 @@ Use `gh aw compile` in your repository root to generate `.lock.yml` files from y
 
 ### Key Behaviors
 
-Key behaviors to remember:
-
 - **Frontmatter edits require recompile**.
 - **Markdown instruction updates can often be edited directly** (the runtime loads the markdown body).
 - **Shared components** can be stored as markdown files without `on:`; they are imported, not compiled.
