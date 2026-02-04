@@ -14,6 +14,8 @@ This book is **self-maintaining** through automated workflows using **GitHub Age
 
 **Agentic Workflow Technology**: This repository uses GH-AW (GitHub Agentic Workflows), a specification that turns markdown into secure, composable repository automation. Learn more in [Chapter 5 of the book](book/chapters/05-gh-agentic-workflows.md).
 
+**Workflow Details**: For a comprehensive guide to how our workflows operate and why we chose GH-AW, see [WORKFLOWS.md](WORKFLOWS.md).
+
 For maintainers and agents, see the [Agentic Workflow Playbook](WORKFLOW_PLAYBOOK.md) for the research → plan → assign loop and required artifacts per update.
 
 ## Ways to Contribute

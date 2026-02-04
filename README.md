@@ -108,17 +108,18 @@ agentbook/
 
 ## 🔧 Workflows
 
-Our repository uses **GitHub Agentic Workflows (GH-AW)** to automate content processing:
+Our repository uses **GitHub Agentic Workflows (GH-AW)** as the canonical approach to automate content processing.
 
+**Active Workflows:**
 - **`pages.yml`**: Deploys to GitHub Pages
 - **`build-pdf.yml`**: Generates PDF version
-- **GH-AW Workflows**: Agentic issue processing using GitHub's agentic-workflows engine
+- **GH-AW Workflows** (`.lock.yml` files): Agentic issue processing
   - `issue-triage-lite.lock.yml`: Initial triage and acknowledgment
   - `issue-synthesis.lock.yml`: Research synthesis and recommendations
   - `issue-fast-track.lock.yml`: Fast-track small changes
-- **`process-suggestions.yml`**: Multi-stage GitHub Actions workflow (fallback/example)
+- **`process-suggestions.yml`**: Legacy multi-stage workflow (maintained as fallback/example)
 
-The `.lock.yml` files represent our canonical agentic approach using the GH-AW specification.
+See [WORKFLOWS.md](WORKFLOWS.md) for detailed workflow documentation and the rationale for using GH-AW.
 
 ## 📜 License
 
@@ -128,6 +129,7 @@ This work is licensed under the [MIT License](LICENSE) and available for educati
 
 - **[README](README.md)** - Project overview and quick start
 - **[CONTRIBUTING](CONTRIBUTING.md)** - How to contribute content
+- **[WORKFLOWS](WORKFLOWS.md)** - Detailed workflow guide (GH-AW vs legacy)
 - **[SETUP](SETUP.md)** - Installation and configuration guide
 - **[WORKFLOW_PLAYBOOK](WORKFLOW_PLAYBOOK.md)** - GH-AW maintenance process
 - **[PROJECT_SUMMARY](PROJECT_SUMMARY.md)** - Comprehensive project overview

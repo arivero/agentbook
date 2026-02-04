@@ -11,12 +11,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - LICENSE file (MIT License)
 - CODE_OF_CONDUCT.md (Contributor Covenant 2.0)
 - CHANGELOG.md to track changes
+- WORKFLOWS.md - Comprehensive workflow documentation explaining GH-AW vs legacy approaches
 - Documentation references in README for issue submission process
 - Policy for rejected issues to move to GitHub Discussions
+- Documentation links in book Chapter 6
 
 ### Changed
 - Standardized documentation structure following OSS best practices
-- Clarified workflow approach: Using GH-AW (GitHub Agentic Workflows) as canonical method
+- Clarified workflow approach: GH-AW workflows (.lock.yml) are canonical, process-suggestions.yml is legacy fallback
+- Updated README with comprehensive documentation section
+- Updated CONTRIBUTING with workflow details and rejected issue policy
+- Marked process-suggestions.yml as legacy fallback with explanation
+- Enhanced Chapter 6 with repository documentation references
 
 ## [0.1.0] - 2026-02-04
 

@@ -416,7 +416,12 @@ This very book uses GitHub Agents for self-maintenance:
 
 ### Configuration
 
-The workflow is defined in `.github/workflows/process-suggestions.yml` and uses agent definitions from `.github/agents/`.
+The workflow is defined using GitHub Agentic Workflows (GH-AW). The repository includes:
+- GH-AW workflows: `.github/workflows/issue-*.lock.yml`
+- Agent definitions: `.github/agents/*.md`
+- Legacy fallback: `.github/workflows/process-suggestions.yml`
+
+For a detailed explanation of the workflow architecture and why GH-AW is the canonical approach, see the repository's [WORKFLOWS.md](../../WORKFLOWS.md) documentation.
 
 ## Future of GitHub Agents
 
@@ -458,6 +463,7 @@ This book's repository includes comprehensive documentation that demonstrates OS
 
 - **[README](../../README.md)** - Overview and quick start guide
 - **[CONTRIBUTING](../../CONTRIBUTING.md)** - How to contribute using the multi-agent workflow
+- **[WORKFLOWS](../../WORKFLOWS.md)** - Detailed workflow guide and GH-AW explanation
 - **[SETUP](../../SETUP.md)** - Installation and configuration instructions
 - **[WORKFLOW_PLAYBOOK](../../WORKFLOW_PLAYBOOK.md)** - Agentic workflow maintenance patterns
 - **[PROJECT_SUMMARY](../../PROJECT_SUMMARY.md)** - Complete project overview
