@@ -199,19 +199,33 @@ jobs:
               '06-github-agents.md'
             ];
             
+            // Shared keywords for scope checking (same as Stage 1)
+            const scopeKeywords = [
+              'agent', 'workflow', 'orchestration', 'scaffolding',
+              'skill', 'tool', 'automation', 'llm', 'ai', 'copilot',
+              'github', 'actions', 'model', 'prompt', 'context'
+            ];
+            
             let existingTopics = [];
+            let readErrors = [];
             for (const ch of chapters) {
               try {
                 const content = fs.readFileSync('book/chapters/' + ch, 'utf8');
                 const headings = content.match(/^##?\s+.+$/gm) || [];
                 existingTopics.push({ chapter: ch, headings: headings.slice(0, 5) });
               } catch (e) {
-                // Chapter does not exist yet
+                // Log which chapter failed to read
+                readErrors.push(ch + ': ' + e.message);
               }
             }
             
+            if (readErrors.length > 0) {
+              console.log('Failed to read chapters: ' + readErrors.join(', '));
+            }
+            
             const issueBody = context.payload.issue.body || '';
-            const keywords = (issueBody.match(/\b(agent|workflow|orchestration|scaffolding|tool|skill|github|copilot|ai|llm)\b/gi) || []).join(', ') || 'None specific';
+            const keywordPattern = new RegExp('\\b(' + scopeKeywords.join('|') + ')\\b', 'gi');
+            const detectedKeywords = (issueBody.match(keywordPattern) || []).join(', ') || 'None specific';
             
             const tableRows = existingTopics.map(t => 
               '| ' + t.chapter + ' | ' + t.headings.slice(0, 3).map(h => h.replace(/^#+\s*/, '')).join(', ') + ' |'
@@ -232,7 +246,7 @@ jobs:
               '',
               'Based on my analysis of the suggestion:',
               '',
-              '**Keywords Detected:** ' + keywords,
+              '**Keywords Detected:** ' + detectedKeywords,
               '',
               '**Potential Chapter Fit:**',
               '- If about agent coordination: Chapter 2 (Orchestration)',
