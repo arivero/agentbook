@@ -34,6 +34,9 @@ Building the infrastructure and frameworks that enable agents to operate effecti
 ### [Skills and Tools Management](book/chapters/04-skills-tools.md)
 How to create, import, and compose agent capabilities for maximum effectiveness.
 
+### [GitHub Agentic Workflows (GH-AW)](book/chapters/05-gh-agentic-workflows.md)
+How GH-AW turns markdown into secure, composable repository automation.
+
 ## 🚀 How It Works
 
 1. **Community Input**: Open an issue with a suggestion

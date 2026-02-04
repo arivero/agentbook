@@ -28,6 +28,9 @@ Build the infrastructure that enables agents to operate effectively.
 ### 🛠️ [Skills and Tools](book/chapters/04-skills-tools.html)
 Master the art of creating, importing, and composing agent capabilities.
 
+### 🧭 [GitHub Agentic Workflows (GH-AW)](book/chapters/05-gh-agentic-workflows.html)
+Learn how GitHub Agentic Workflows turn markdown into secure, composable automation.
+
 ## How This Book Works
 
 1. **Community Suggestions**: Anyone can open an issue with suggestions

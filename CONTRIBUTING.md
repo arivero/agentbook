@@ -12,6 +12,8 @@ This book is **self-maintaining** through automated workflows. When you contribu
 4. Publishes changes to the web
 5. Announces updates via blog posts
 
+For maintainers and agents, see the [Agentic Workflow Playbook](WORKFLOW_PLAYBOOK.md) for the research → plan → assign loop and required artifacts per update.
+
 ## Ways to Contribute
 
 ### 1. Suggest Content (Recommended)
