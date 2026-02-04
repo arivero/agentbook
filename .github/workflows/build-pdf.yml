@@ -19,10 +19,10 @@ jobs:
       image: pandoc/latex:latest
     steps:
 
-      - name: Install git
+      - name: Install git and gh
         run: |
             apk update
-            apk add git
+            apk add git github-cli
 
       - name: Configure git for container
         run: |
