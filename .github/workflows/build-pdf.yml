@@ -80,6 +80,7 @@ jobs:
 
       - name: Create or update PDF PR
         id: cpr
+        continue-on-error: true
         uses: peter-evans/create-pull-request@v8
         with:
           token: ${{ github.token }}
@@ -91,8 +92,16 @@ jobs:
           add-paths: |
             book/agentic-workflows-book.pdf
 
+      - name: PR creation status
+        if: ${{ steps.cpr.outcome == 'failure' }}
+        run: |
+          echo "::warning::PR creation failed. This may be because GitHub Actions is not permitted to create pull requests."
+          echo "::warning::To enable PR creation, go to Settings → Actions → General → Workflow permissions and enable 'Allow GitHub Actions to create and approve pull requests'."
+          echo "::notice::The PDF was still built successfully and is available as an artifact."
+
       - name: Enable auto-merge for PDF PR
         if: ${{ steps.cpr.outputs.pull-request-number }}
+        continue-on-error: true
         uses: peter-evans/enable-pull-request-automerge@v3
         with:
           token: ${{ github.token }}
