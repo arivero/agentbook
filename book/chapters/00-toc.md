@@ -32,6 +32,7 @@ title: Table of Contents
 4. **[Skills and Tools Management](04-skills-tools.html)**
    - Tools vs. Skills
    - Creating custom tools
+   - MCP in 2026: Modern tooling and adoption
    - Skill development
    - Best practices
 
