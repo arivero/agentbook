@@ -8,7 +8,7 @@ This repository implements a **living, self-maintaining book** about agentic wor
 
 ### 📚 Book Content (1199+ lines)
 
-**5 Comprehensive Chapters:**
+**6 Comprehensive Chapters:**
 
 1. **Introduction to Agentic Workflows** (2,982 characters)
    - Defines agentic workflows and key concepts
@@ -40,6 +40,14 @@ This repository implements a **living, self-maintaining book** about agentic wor
    - Imports, tools, and safe outputs
    - ResearchPlanAssign for continuous book updates
 
+6. **GitHub Agents** (11,700+ characters)
+   - GitHub Copilot and Copilot Coding Agent
+   - Agent capabilities and limitations
+   - Multi-agent orchestration patterns
+   - Implementing GitHub Agents
+   - Security considerations
+   - Real-world example: This book's multi-agent workflow
+
 ### 🌐 GitHub Pages Setup
 
 **Complete Jekyll Configuration:**
@@ -65,17 +73,19 @@ This repository implements a **living, self-maintaining book** about agentic wor
 2. **`build-pdf.yml`**: Generate PDF Version
    - Triggers on changes to book content
    - Uses optimized Docker container (pandoc/latex)
-   - Combines all chapters
+   - Combines all chapters (including Chapter 6)
    - Creates downloadable PDF artifact
    - Secure permissions configuration
 
-3. **`process-suggestions.yml`**: Handle Issue Suggestions
-   - Triggers on new issues
-   - Auto-labels with `suggestion` and `needs-review`
-   - Posts welcome comment explaining the process
-   - Checks relevance using keyword analysis
-   - Labels as `relevant` or `out-of-scope`
-   - Prepares for agent processing
+3. **`process-suggestions.yml`**: Multi-Agent Issue Processing
+   - Triggers on new issues and label changes
+   - **Stage 1**: ACK Agent acknowledges and validates
+   - **Stage 2**: Research Agent analyzes novelty
+   - **Stage 3**: Multi-model discussion (Claude & Copilot perspectives)
+   - **Stage 4**: Writer Agent drafts content
+   - **Stage 5**: Completion Agent finalizes and closes
+   - Human checkpoints for quality control
+   - Label-based workflow state management
 
 ### 📋 Documentation
 
@@ -155,48 +165,57 @@ The book serves as both:
 ```
 agentbook/
 ├── .github/
+│   ├── agents/                       # GH-AW agent definitions
+│   │   ├── issue-ack.md              # Acknowledgment agent
+│   │   ├── issue-research.md         # Research agent
+│   │   ├── issue-discuss-claude.md   # Claude perspective agent
+│   │   ├── issue-discuss-copilot.md  # Copilot perspective agent
+│   │   ├── issue-writer.md           # Content writer agent
+│   │   ├── issue-complete.md         # Completion agent
+│   │   └── issue-workflow.md         # Main orchestration workflow
 │   ├── ISSUE_TEMPLATE/
-│   │   └── suggestion.yml          # Issue template for suggestions
+│   │   └── suggestion.yml            # Issue template for suggestions
 │   └── workflows/
-│       ├── pages.yml                # Deploy to GitHub Pages
-│       ├── build-pdf.yml           # Generate PDF
-│       └── process-suggestions.yml  # Process issues
+│       ├── pages.yml                 # Deploy to GitHub Pages
+│       ├── build-pdf.yml             # Generate PDF
+│       └── process-suggestions.yml   # Multi-agent issue processing
 ├── book/
 │   ├── chapters/
-│   │   ├── 00-toc.md               # Table of contents
-│   │   ├── 01-introduction.md      # Chapter 1
-│   │   ├── 02-orchestration.md     # Chapter 2
-│   │   ├── 03-scaffolding.md       # Chapter 3
-│   │   ├── 04-skills-tools.md      # Chapter 4
-│   │   └── 05-gh-agentic-workflows.md # Chapter 5
-│   ├── README.md                    # Book introduction
-│   └── index.md                     # Book homepage
+│   │   ├── 00-toc.md                 # Table of contents
+│   │   ├── 01-introduction.md        # Chapter 1
+│   │   ├── 02-orchestration.md       # Chapter 2
+│   │   ├── 03-scaffolding.md         # Chapter 3
+│   │   ├── 04-skills-tools.md        # Chapter 4
+│   │   ├── 05-gh-agentic-workflows.md # Chapter 5
+│   │   └── 06-github-agents.md       # Chapter 6 (new)
+│   ├── README.md                     # Book introduction
+│   └── index.md                      # Book homepage
 ├── blog/
-│   └── index.md                     # Blog listing
+│   └── index.md                      # Blog listing
 ├── _layouts/
-│   ├── default.html                 # Main layout
-│   └── post.html                    # Blog post layout
+│   ├── default.html                  # Main layout
+│   └── post.html                     # Blog post layout
 ├── _posts/
-│   └── 2026-02-04-welcome.md       # First blog post
-├── .gitignore                       # Ignore build artifacts
-├── _config.yml                      # Jekyll configuration
-├── CONTRIBUTING.md                  # Contribution guide
-├── index.md                         # Site homepage
-├── PROJECT_SUMMARY.md              # This file
-├── WORKFLOW_PLAYBOOK.md            # GH-AW maintenance playbook
-├── README.md                        # Project README
-└── SETUP.md                         # Setup instructions
+│   └── 2026-02-04-welcome.md         # First blog post
+├── .gitignore                        # Ignore build artifacts
+├── _config.yml                       # Jekyll configuration
+├── CONTRIBUTING.md                   # Contribution guide
+├── index.md                          # Site homepage
+├── PROJECT_SUMMARY.md                # This file
+├── WORKFLOW_PLAYBOOK.md              # GH-AW maintenance playbook
+├── README.md                         # Project README
+└── SETUP.md                          # Setup instructions
 ```
 
 ## Statistics
 
-- **Total Files Created**: 21
-- **Lines of Book Content**: 1,199+
-- **Total Documentation**: ~10,000 words
-- **Chapters**: 4 comprehensive chapters
+- **Total Files Created**: 28+
+- **Lines of Book Content**: 1,500+
+- **Total Documentation**: ~12,000 words
+- **Chapters**: 6 comprehensive chapters
+- **Agent Definitions**: 7 GH-AW agent files
 - **Workflows**: 3 automated workflows
-- **Code Examples**: 30+ throughout chapters
-- **Commits**: 4 focused commits
+- **Code Examples**: 40+ throughout chapters
 
 ## Next Steps for Users
 

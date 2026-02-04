@@ -42,6 +42,14 @@ title: Table of Contents
    - Imports and shared components
    - ResearchPlanAssign for self-maintaining books
 
+6. **[GitHub Agents](06-github-agents.html)**
+   - GitHub Copilot and Copilot Coding Agent
+   - Agent capabilities and limitations
+   - Multi-agent orchestration patterns
+   - Implementing GitHub Agents
+   - Security considerations
+   - Real-world example: This book
+
 ---
 
 [← Back to Book Home](../index.html)

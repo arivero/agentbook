@@ -31,6 +31,10 @@ jobs:
           cat book/chapters/03-scaffolding.md >> combined.md
           echo -e "\n\n" >> combined.md
           cat book/chapters/04-skills-tools.md >> combined.md
+          echo -e "\n\n" >> combined.md
+          cat book/chapters/05-gh-agentic-workflows.md >> combined.md
+          echo -e "\n\n" >> combined.md
+          cat book/chapters/06-github-agents.md >> combined.md
 
       - name: Convert to PDF
         run: |

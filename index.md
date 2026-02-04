@@ -31,6 +31,9 @@ Master the art of creating, importing, and composing agent capabilities.
 ### 🧭 [GitHub Agentic Workflows (GH-AW)](book/chapters/05-gh-agentic-workflows.html)
 Learn how GitHub Agentic Workflows turn markdown into secure, composable automation.
 
+### 🤝 [GitHub Agents](book/chapters/06-github-agents.html)
+Explore GitHub Copilot, Copilot Coding Agent, and multi-agent orchestration patterns.
+
 ## How This Book Works
 
 1. **Community Suggestions**: Anyone can open an issue with suggestions
