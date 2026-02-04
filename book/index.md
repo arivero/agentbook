@@ -7,6 +7,8 @@ title: "Agentic Workflows: A Practical Guide"
 
 A living book about agentic workflows, agent orchestration, and agentic scaffolding.
 
+[Download PDF](https://github.com/arivero/agentbook/releases/latest/download/agentic-workflows-book.pdf)
+
 ## Chapters
 
 {% assign chapter_pages = site.pages | where_exp: "page", "page.path contains 'book/chapters/'" | where_exp: "page", "page.order" | sort: "order" %}

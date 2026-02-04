@@ -5,7 +5,7 @@ title: Agentic Workflows Book
 
 # Agentic Workflows Book
 
-[Read the book]({{ "/book/" | relative_url }})
+[Read the book]({{ "/book/" | relative_url }}) | [Download PDF](https://github.com/arivero/agentbook/releases/latest/download/agentic-workflows-book.pdf)
 
 ## Latest posts
 
