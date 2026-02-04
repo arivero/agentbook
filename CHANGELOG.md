@@ -15,14 +15,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Documentation references in README for issue submission process
 - Policy for rejected issues to move to GitHub Discussions
 - Documentation links in book Chapter 6
+- Multi-Agent Platform Compatibility section in Chapter 6 covering copilot-instructions.md, AGENTS.md, and CLAUDE.md
+- References to Chapters 7 and 8 in README and documentation
 
 ### Changed
 - Standardized documentation structure following OSS best practices
 - Clarified workflow approach: GH-AW workflows (.lock.yml) are canonical, process-suggestions.yml is legacy fallback
-- Updated README with comprehensive documentation section
+- Updated README with comprehensive documentation section and chapters 7-8
 - Updated CONTRIBUTING with workflow details and rejected issue policy
 - Marked process-suggestions.yml as legacy fallback with explanation
-- Enhanced Chapter 6 with repository documentation references
+- Enhanced Chapter 6 with repository documentation references and agent configuration files section
+- Updated copilot-instructions.md to include chapters 7-8 in structure
+- Updated PROJECT_SUMMARY.md to reflect 8 chapters and updated statistics
+
+### Fixed
+- build-pdf.yml now includes chapters 07 (Agents for Coding) and 08 (Agents for Mathematics and Physics)
 
 ## [0.1.0] - 2026-02-04
 

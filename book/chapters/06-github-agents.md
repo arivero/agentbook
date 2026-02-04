@@ -432,7 +432,7 @@ Modern repositories need to support multiple AI agent platforms. Different codin
 When multiple AI agents work with your repository, you face a coordination challenge:
 
 - **GitHub Copilot** reads `.github/copilot-instructions.md` for project-specific guidance
-- **Claude** uses `CLAUDE.md` or project context from AGENTS.md files
+- **Claude** uses `CLAUDE.md` for dedicated configuration, or can read `AGENTS.md` files for project context
 - **Codex/ChatGPT** can be configured with custom instructions or system prompts
 - **Generic agents** look for `AGENTS.md` as the emerging standard
 
@@ -511,7 +511,7 @@ project/
 This book repository demonstrates multi-platform compatibility:
 
 - **`.github/copilot-instructions.md`** - Detailed Copilot configuration with project structure, coding guidelines, and constraints
-- **Chapter 4 and Chapter 7** discuss AGENTS.md as the emerging standard
+- **Chapters 4 and 7** discuss AGENTS.md as the emerging standard
 - **Documentation files** (README, CONTRIBUTING, etc.) provide context any agent can use
 - **GH-AW workflows** use the `engine: copilot` setting but the pattern works with other engines
 
