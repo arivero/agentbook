@@ -1,26 +1,10 @@
-{% assign chapters = site.data.book.chapters | sort: "order" %}
+{% assign chapter_pages = site.pages | where_exp: "page", "page.path contains 'book/chapters/'" | where_exp: "page", "page.order" | sort: "order" %}
 <ul>
-  {% for chapter in chapters %}
+  {% for chapter in chapter_pages %}
+    {% if chapter.order > 0 %}
     <li>
-      <a href="#{{ chapter.slug }}">{{ chapter.title }}</a>
-      {% if chapter.sections %}
-        <ul>
-          {% for section in chapter.sections %}
-            <li>
-              <a href="#{{ section.slug }}">{{ section.title }}</a>
-              {% if section.sections %}
-                <ul>
-                  {% for subsection in section.sections %}
-                    <li>
-                      <a href="#{{ subsection.slug }}">{{ subsection.title }}</a>
-                    </li>
-                  {% endfor %}
-                </ul>
-              {% endif %}
-            </li>
-          {% endfor %}
-        </ul>
-      {% endif %}
+      <a href="{{ chapter.url | relative_url }}">{{ chapter.title }}</a>
     </li>
+    {% endif %}
   {% endfor %}
 </ul>
