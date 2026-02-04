@@ -9,14 +9,21 @@
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
       line-height: 1.6;
-      margin: 0;
       color: #333;
+      background-color: #f6f8fa;
+      margin: 0;
+      padding: 0;
+    }
+    .page-shell {
+      max-width: 1200px;
+      margin: 24px auto;
       background-color: #fff;
+      border: 1px solid #e1e4e8;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
     }
     .layout-container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 20px;
+      padding: 24px;
     }
     header {
       border-bottom: 2px solid #e1e4e8;
@@ -95,6 +102,14 @@
       flex: 1;
       min-width: 0;
     }
+    .book-chapter {
+      margin-bottom: 48px;
+    }
+    .book-chapter hr {
+      margin: 40px 0;
+      border: 0;
+      border-top: 1px solid #e1e4e8;
+    }
     footer {
       margin-top: 50px;
       padding-top: 20px;
@@ -117,31 +132,33 @@
   </style>
 </head>
 <body>
-  <header class="layout-container">
-    <h1><a href="https://arivero.github.io/agentbook/">{{ site.title }}</a></h1>
-    <p>{{ site.description }}</p>
-    <nav>
-      <a href="https://arivero.github.io/agentbook/">Home</a>
-      <a href="book">Book</a>
-      <a href="blog">Blog</a>
-      <a href="https://github.com/arivero/agentbook">GitHub</a>
-    </nav>
-  </header>
+  <div class="page-shell">
+    <header class="layout-container">
+      <h1><a href="{{ "/" | relative_url }}">{{ site.title }}</a></h1>
+      <p>{{ site.description }}</p>
+      <nav>
+        <a href="{{ "/" | relative_url }}">Home</a>
+        <a href="{{ "/book/" | relative_url }}">Book</a>
+        <a href="{{ "/blog/" | relative_url }}">Blog</a>
+        <a href="https://github.com/arivero/agentbook">GitHub</a>
+      </nav>
+    </header>
 
-  <div class="layout-container">
-    <div class="book-layout">
-      <aside class="book-sidebar">
-        <h2>Contents</h2>
-        {% include book-toc.html %}
-      </aside>
-      <main class="book-content">
-        {{ content }}
-      </main>
+    <div class="layout-container">
+      <div class="book-layout">
+        <aside class="book-sidebar">
+          <h2>Contents</h2>
+          {% include book-toc.html %}
+        </aside>
+        <main class="book-content">
+          {{ content }}
+        </main>
+      </div>
     </div>
-  </div>
 
-  <footer class="layout-container">
-    <p>This book is self-maintained using agentic workflows. <a href="https://github.com/arivero/agentbook">Contribute on GitHub</a></p>
-  </footer>
+    <footer class="layout-container">
+      <p>This book is self-maintained using agentic workflows. <a href="https://github.com/arivero/agentbook">Contribute on GitHub</a></p>
+    </footer>
+  </div>
 </body>
 </html>

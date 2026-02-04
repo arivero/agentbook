@@ -3,7 +3,11 @@
   {% for chapter in chapter_pages %}
     {% if chapter.order > 0 %}
     <li>
-      <a href="{{ chapter.url | relative_url }}">{{ chapter.title }}</a>
+      {% if page.book_continuous %}
+        <a href="#chapter-{{ chapter.order }}">{{ chapter.title }}</a>
+      {% else %}
+        <a href="{{ chapter.url | relative_url }}">{{ chapter.title }}</a>
+      {% endif %}
     </li>
     {% endif %}
   {% endfor %}

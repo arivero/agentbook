@@ -2,6 +2,8 @@ title: Agentic Workflows Book
 description: A living book about agentic workflows, agent orchestration, and agentic scaffolding
 theme: jekyll-theme-minimal
 markdown: kramdown
+url: "https://arivero.github.io"
+baseurl: "/agentbook"
 
 # Build settings
 highlighter: rouge
