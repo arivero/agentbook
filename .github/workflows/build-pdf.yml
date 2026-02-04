@@ -98,16 +98,14 @@ jobs:
           echo "::warning::PR creation failed. This may be because GitHub Actions is not permitted to create pull requests."
           echo "::warning::To enable PR creation, go to Settings → Actions → General → Workflow permissions and enable 'Allow GitHub Actions to create and approve pull requests'."
           echo "::notice::The PDF was still built successfully and is available as an artifact."
-
-      - name: Enable auto-merge for PDF PR
+          
+      - name: Enable Pull Request Automerge
         if: ${{ steps.cpr.outputs.pull-request-number }}
         continue-on-error: true
-        uses: peter-evans/enable-pull-request-automerge@v3
-        with:
-          token: ${{ github.token }}
-          pull-request-number: ${{ steps.cpr.outputs.pull-request-number }}
-          merge-method: squash
-
+        run: gh pr merge --merge --auto --squash ${{ steps.cpr.outputs.pull-request-number }}
+        env:
+          GH_TOKEN: ${{ secrets.PAT }}
+        
       - name: Create Release on Tag
         if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v1
