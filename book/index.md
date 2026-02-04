@@ -53,6 +53,14 @@ Overview of the book and what you'll learn.
 - Imports and reusable components
 - ResearchPlanAssign for self-maintaining books
 
+### Chapter 6: [GitHub Agents](chapters/06-github-agents.html)
+- GitHub Copilot and Copilot Coding Agent
+- Agent capabilities (reading, writing, reasoning)
+- Multi-agent orchestration patterns
+- Implementing GitHub Agents in your workflows
+- Security considerations and best practices
+- Real-world example: This book's multi-agent workflow
+
 ---
 
 ## How to Read This Book

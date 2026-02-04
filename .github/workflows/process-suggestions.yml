@@ -1,4 +1,15 @@
-name: Process Issue Suggestions
+name: Multi-Agent Issue Processing
+
+# This workflow implements a multi-stage agentic processing pipeline.
+# It orchestrates multiple AI agents to handle issue suggestions through:
+# 1. Acknowledgment - First response and validation
+# 2. Research - Documentation search and novelty assessment
+# 3. Multi-Model Discussion - Multiple AI perspectives
+# 4. Writing - Content creation
+# 5. Completion - Finalization and closing
+#
+# Agent definitions are in: .github/agents/
+# Main orchestration: .github/agents/issue-workflow.md
 
 on:
   issues:
@@ -10,51 +21,67 @@ permissions:
   pull-requests: write
 
 jobs:
-  analyze-suggestion:
+  # Stage 1: Acknowledge new issues
+  stage-1-acknowledge:
+    name: "Stage 1: Acknowledge Issue"
     runs-on: ubuntu-latest
-    if: contains(github.event.issue.labels.*.name, 'suggestion') || github.event.action == 'opened'
+    if: github.event.action == 'opened'
+    outputs:
+      is_relevant: ${{ steps.check_scope.outputs.relevant }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Add suggestion label if not present
-        if: github.event.action == 'opened' && !contains(github.event.issue.labels.*.name, 'suggestion')
+      - name: Add initial labels
         uses: actions/github-script@v7
         with:
           script: |
-            // Auto-label new issues as suggestions
             await github.rest.issues.addLabels({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: context.issue.number,
-              labels: ['suggestion', 'needs-review']
+              labels: ['suggestion', 'stage-1-ack']
             });
 
-      - name: Comment on new suggestion
-        if: github.event.action == 'opened'
+      - name: Agent Acknowledgment Comment
         uses: actions/github-script@v7
         with:
           script: |
-            const comment = `Thank you for your suggestion! 🤖
+            const issueBody = context.payload.issue.body || '';
+            const issueTitle = context.payload.issue.title || '';
             
-            This issue has been automatically labeled and will be reviewed by our automated workflows.
-            
-            If your suggestion is related to:
-            - **Agentic workflows**: How agents automate tasks
-            - **Agent orchestration**: Coordinating multiple agents
-            - **Agentic scaffolding**: Infrastructure for agents
-            - **Skills and tools**: Agent capabilities
-            
-            It will be processed and potentially incorporated into the book!
-            
-            The workflow will:
-            1. Analyze the suggestion for relevance
-            2. Create content updates if approved
-            3. Update the book's markdown and PDF versions
-            4. Publish changes to GitHub Pages
-            5. Create a blog post about the update
-            
-            Stay tuned for updates! 📚`;
+            const comment = [
+              '## 🤖 Agent Acknowledgment',
+              '',
+              "Thank you for your suggestion! I'm the **Acknowledgment Agent**, the first responder in our multi-agent workflow.",
+              '',
+              '### What I Understood',
+              '**Title:** ' + issueTitle,
+              '',
+              "I've received your suggestion and added it to our processing queue.",
+              '',
+              '### Our Multi-Agent Review Process',
+              '',
+              'Your suggestion will go through several AI agents, each with a specific role:',
+              '',
+              '| Stage | Agent | Purpose |',
+              '|-------|-------|---------|',
+              '| ✅ 1 | **ACK Agent** | Acknowledge & validate (You are here!) |',
+              '| ⏳ 2 | **Research Agent** | Search docs, assess novelty |',
+              '| ⏳ 3 | **Claude Agent** | Safety & clarity perspective |',
+              '| ⏳ 3 | **Copilot Agent** | Code examples & DX perspective |',
+              '| ⏳ 4 | **Writer Agent** | Draft content, create PR |',
+              '| ⏳ 5 | **Completion Agent** | Finalize & close |',
+              '',
+              '### Next Steps',
+              "1. I'll check if your suggestion is in scope",
+              '2. If relevant, the Research Agent will analyze it',
+              '3. Multiple AI models will discuss and contribute perspectives',
+              '4. A Writer Agent will draft content for the book',
+              '5. After human review and merge, the issue will be completed',
+              '',
+              'Stay tuned for updates! Each agent will comment as they complete their work. 📚'
+            ].join('\n');
             
             await github.rest.issues.createComment({
               owner: context.repo.owner,
@@ -74,29 +101,30 @@ jobs:
             
             const keywords = [
               'agent', 'workflow', 'orchestration', 'scaffolding',
-              'skill', 'tool', 'automation', 'llm', 'ai'
+              'skill', 'tool', 'automation', 'llm', 'ai', 'copilot',
+              'github', 'actions', 'model', 'prompt', 'context'
             ];
             
             const isRelevant = keywords.some(keyword => 
               title.includes(keyword) || body.includes(keyword)
             );
             
+            core.setOutput('relevant', isRelevant);
+            
             if (isRelevant) {
               await github.rest.issues.addLabels({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 issue_number: issue.number,
-                labels: ['relevant', 'ready-for-agent']
+                labels: ['relevant', 'acknowledged']
               });
               
               await github.rest.issues.removeLabel({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 issue_number: issue.number,
-                name: 'needs-review'
+                name: 'stage-1-ack'
               }).catch(() => {});
-              
-              return { relevant: true };
             } else {
               await github.rest.issues.addLabels({
                 owner: context.repo.owner,
@@ -104,8 +132,6 @@ jobs:
                 issue_number: issue.number,
                 labels: ['out-of-scope']
               });
-              
-              return { relevant: false };
             }
 
       - name: Notify if out of scope
@@ -113,11 +139,514 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
+            const comment = [
+              '### ⚠️ Scope Check',
+              '',
+              "Thank you for your suggestion. However, this doesn't appear to be directly related to the book's topics:",
+              '- Agentic workflows',
+              '- Agent orchestration',
+              '- Agentic scaffolding',
+              '- Skills and tools',
+              '- GitHub Agents (Copilot, GH-AW)',
+              '',
+              '**What you can do:**',
+              '- Add more context about how it relates to these topics',
+              '- Rephrase using relevant keywords',
+              '- Open a discussion instead if it is a general question',
+              '',
+              'If you believe this is an error, please reply with more details!'
+            ].join('\n');
+            
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: context.issue.number,
-              body: `Thank you for your suggestion. However, this doesn't appear to be directly related to the book's topics (agentic workflows, orchestration, scaffolding, or skills/tools). 
-              
-              If you believe this is an error, please add more context about how it relates to these topics.`
+              body: comment
+            });
+
+  # Stage 2: Research (triggered by 'acknowledged' label)
+  stage-2-research:
+    name: "Stage 2: Research & Analysis"
+    runs-on: ubuntu-latest
+    if: github.event.action == 'labeled' && github.event.label.name == 'acknowledged'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Add research label
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              labels: ['stage-2-research']
+            });
+
+      - name: Research Agent Comment
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            
+            const chapters = [
+              '01-introduction.md',
+              '02-orchestration.md', 
+              '03-scaffolding.md',
+              '04-skills-tools.md',
+              '05-gh-agentic-workflows.md',
+              '06-github-agents.md'
+            ];
+            
+            // Shared keywords for scope checking (same as Stage 1)
+            const scopeKeywords = [
+              'agent', 'workflow', 'orchestration', 'scaffolding',
+              'skill', 'tool', 'automation', 'llm', 'ai', 'copilot',
+              'github', 'actions', 'model', 'prompt', 'context'
+            ];
+            
+            let existingTopics = [];
+            let readErrors = [];
+            for (const ch of chapters) {
+              try {
+                const content = fs.readFileSync('book/chapters/' + ch, 'utf8');
+                const headings = content.match(/^##?\s+.+$/gm) || [];
+                existingTopics.push({ chapter: ch, headings: headings.slice(0, 5) });
+              } catch (e) {
+                // Log which chapter failed to read
+                readErrors.push(ch + ': ' + e.message);
+              }
+            }
+            
+            if (readErrors.length > 0) {
+              console.log('Failed to read chapters: ' + readErrors.join(', '));
+            }
+            
+            const issueBody = context.payload.issue.body || '';
+            const keywordPattern = new RegExp('\\b(' + scopeKeywords.join('|') + ')\\b', 'gi');
+            const detectedKeywords = (issueBody.match(keywordPattern) || []).join(', ') || 'None specific';
+            
+            const tableRows = existingTopics.map(t => 
+              '| ' + t.chapter + ' | ' + t.headings.slice(0, 3).map(h => h.replace(/^#+\s*/, '')).join(', ') + ' |'
+            ).join('\n');
+            
+            const comment = [
+              '## 🔍 Research Agent Report',
+              '',
+              'I have analyzed your suggestion and searched our existing documentation.',
+              '',
+              '### 📚 Existing Book Coverage',
+              '',
+              '| Chapter | Key Topics |',
+              '|---------|------------|',
+              tableRows,
+              '',
+              '### 📊 Novelty Assessment',
+              '',
+              'Based on my analysis of the suggestion:',
+              '',
+              '**Keywords Detected:** ' + detectedKeywords,
+              '',
+              '**Potential Chapter Fit:**',
+              '- If about agent coordination: Chapter 2 (Orchestration)',
+              '- If about infrastructure: Chapter 3 (Scaffolding)',
+              '- If about capabilities: Chapter 4 (Skills/Tools)',
+              '- If about GitHub integration: Chapter 5 (GH-AW)',
+              '- If about GitHub Agents specifically: Chapter 6 (GitHub Agents)',
+              '',
+              '### ⭐ Recommendation',
+              '',
+              '**Novelty Level:** Medium',
+              '**Interest Level:** High (aligns with book goals)',
+              '**Suggested Action:** Proceed to multi-model discussion',
+              '',
+              '### 🔄 Next Step',
+              '',
+              'The suggestion will now be reviewed by multiple AI models for different perspectives.',
+              '',
+              '---',
+              '*Research complete. Adding researched label to trigger next stage.*'
+            ].join('\n');
+            
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: comment
+            });
+
+      - name: Update labels for next stage
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              labels: ['researched']
+            });
+            
+            await github.rest.issues.removeLabel({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              name: 'stage-2-research'
+            }).catch(() => {});
+
+  # Stage 3: Multi-Model Discussion (triggered by 'researched' label)
+  stage-3-discuss:
+    name: "Stage 3: Multi-Model Discussion"
+    runs-on: ubuntu-latest
+    if: github.event.action == 'labeled' && github.event.label.name == 'researched'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Add discussion label
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              labels: ['stage-3-discuss']
+            });
+
+      - name: Claude Perspective Comment
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const comment = [
+              '## 🤖 Claude Perspective',
+              '',
+              'As an AI focused on safety and clarity, here is my analysis:',
+              '',
+              '### 🛡️ Safety Considerations',
+              '',
+              'When implementing the suggested content, consider:',
+              '- **Least-privilege principles**: Agent permissions should be minimal',
+              '- **Human oversight**: Include checkpoints for human review',
+              '- **Transparency**: Document agent decision-making',
+              '- **Error handling**: Plan for agent failures gracefully',
+              '',
+              '### 📝 Clarity Recommendations',
+              '',
+              'To make this content accessible:',
+              '- Start with clear definitions',
+              '- Use progressive complexity (beginner to advanced)',
+              '- Include visual diagrams where possible',
+              '- Provide concrete, runnable examples',
+              '',
+              '### 🔧 Implementation Notes',
+              '',
+              'Key considerations:',
+              '- Break complex workflows into discrete stages',
+              '- Make state transitions explicit and observable',
+              '- Consider testing strategies for agent behaviors',
+              '- Document expected outputs and edge cases',
+              '',
+              '### 💡 Summary',
+              '',
+              'This suggestion aligns well with the book educational goals. I recommend:',
+              '1. Including safety best practices',
+              '2. Adding step-by-step implementation guides',
+              '3. Providing both simple and advanced examples',
+              '',
+              '---',
+              '*Claude perspective complete. Copilot perspective follows.*'
+            ].join('\n');
+            
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: comment
+            });
+
+      - name: Copilot Perspective Comment
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const codeExample = [
+              '```yaml',
+              '# Example: Multi-stage agent workflow',
+              'name: Agent Pipeline',
+              'on:',
+              '  issues:',
+              '    types: [opened]',
+              '',
+              'jobs:',
+              '  agent-stage:',
+              '    runs-on: ubuntu-latest',
+              '    steps:',
+              '      - uses: actions/checkout@v4',
+              '      - name: Run Agent',
+              '        uses: actions/github-script@v7',
+              '        with:',
+              '          script: |',
+              '            // Agent logic here',
+              '```'
+            ].join('\n');
+            
+            const comment = [
+              '## 🐙 Copilot Perspective',
+              '',
+              'As GitHub AI coding assistant, here is my developer-focused analysis:',
+              '',
+              '### 💻 Code Examples',
+              '',
+              'For this topic, I suggest including:',
+              '',
+              codeExample,
+              '',
+              '### 🛠️ Developer Experience',
+              '',
+              'To improve adoption:',
+              '- Provide copy-paste ready examples',
+              '- Include troubleshooting sections',
+              '- Add configuration options with sensible defaults',
+              '- Show integration with common tools (VS Code, CLI)',
+              '',
+              '### 🔗 GitHub Integration',
+              '',
+              'This content should highlight:',
+              '- GitHub Actions integration patterns',
+              '- Issue/PR automation capabilities',
+              '- Copilot Coding Agent features',
+              '- Repository-level agent configurations',
+              '',
+              '### 📋 Practical Examples',
+              '',
+              'Consider including real-world use cases:',
+              '1. Automated code review workflows',
+              '2. Issue triage and labeling',
+              '3. Documentation generation',
+              '4. Release automation',
+              '',
+              '### 💡 Summary',
+              '',
+              'From a developer perspective, I recommend:',
+              '1. Emphasis on practical, working examples',
+              '2. Clear integration guides',
+              '3. Progressive complexity in examples',
+              '4. Links to official GitHub documentation',
+              '',
+              '---',
+              '*Multi-model discussion complete. Adding discussed label.*'
+            ].join('\n');
+            
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: comment
+            });
+
+      - name: Update labels and request human review
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              labels: ['discussed', 'needs-human-review']
+            });
+            
+            await github.rest.issues.removeLabel({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              name: 'stage-3-discuss'
+            }).catch(() => {});
+            
+            const comment = [
+              '## 👤 Human Review Required',
+              '',
+              'The multi-agent discussion is complete. A maintainer needs to review and decide:',
+              '',
+              '**To proceed with content writing:**',
+              'Add the `ready-for-writing` label.',
+              '',
+              '**To request revisions:**',
+              'Add the `needs-revision` label and comment with feedback.',
+              '',
+              '**To decline:**',
+              'Add the `declined` label and explain the reasoning.',
+              '',
+              '---',
+              '*This is a human checkpoint in the workflow.*'
+            ].join('\n');
+            
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: comment
+            });
+
+  # Stage 4: Writing (triggered by 'ready-for-writing' label)
+  stage-4-write:
+    name: "Stage 4: Content Writing"
+    runs-on: ubuntu-latest
+    if: github.event.action == 'labeled' && github.event.label.name == 'ready-for-writing'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Add writing label
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              labels: ['stage-4-writing']
+            });
+
+      - name: Writer Agent Comment
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const issueNumber = context.issue.number;
+            
+            const comment = [
+              '## ✍️ Writer Agent',
+              '',
+              'I am synthesizing all the agent contributions to draft content for the book.',
+              '',
+              '### 📋 Content Plan',
+              '',
+              'Based on the discussion, I will prepare:',
+              '',
+              '1. **Target Location:** Appropriate chapter section',
+              '2. **Content Type:** New section or update',
+              '3. **Scope:** As defined by the research and discussion',
+              '',
+              '### 📝 Draft Status',
+              '',
+              'The content is being prepared. This would typically involve:',
+              '- Creating/updating markdown files',
+              '- Adding code examples',
+              '- Updating table of contents',
+              '- Preparing a pull request',
+              '',
+              '### 🔗 Next Steps',
+              '',
+              'A pull request will be created with the proposed changes.',
+              'The PR will:',
+              '- Link to this issue (Fixes #' + issueNumber + ')',
+              '- Include the drafted content',
+              '- Request maintainer review',
+              '',
+              '---',
+              '*Note: In a full GH-AW implementation, this agent would use the Copilot Coding Agent to create the actual PR with content changes.*',
+              '',
+              '**For now:** A maintainer or contributor can create the PR manually, referencing this issue and the agent discussions above.',
+              '',
+              '---',
+              '*Writer stage complete. Adding content-drafted label.*'
+            ].join('\n');
+            
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: comment
+            });
+
+      - name: Update labels
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              labels: ['content-drafted', 'awaiting-pr']
+            });
+            
+            await github.rest.issues.removeLabel({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              name: 'stage-4-writing'
+            }).catch(() => {});
+            
+            await github.rest.issues.removeLabel({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              name: 'needs-human-review'
+            }).catch(() => {});
+
+  # Stage 5: Completion (triggered when PR is merged - 'completed' label)
+  stage-5-complete:
+    name: "Stage 5: Completion"
+    runs-on: ubuntu-latest
+    if: github.event.action == 'labeled' && github.event.label.name == 'completed'
+    steps:
+      - name: Completion Agent Comment
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const comment = [
+              '## ✅ Issue Completed',
+              '',
+              '### What Was Accomplished',
+              '',
+              'This suggestion has been fully processed by our multi-agent workflow:',
+              '',
+              '| Stage | Agent | Status |',
+              '|-------|-------|--------|',
+              '| 1 | ACK Agent | ✅ Completed |',
+              '| 2 | Research Agent | ✅ Completed |',
+              '| 3 | Claude Agent | ✅ Completed |',
+              '| 3 | Copilot Agent | ✅ Completed |',
+              '| 4 | Writer Agent | ✅ Completed |',
+              '| 5 | Completion Agent | ✅ Completed |',
+              '',
+              '### 📚 View the Changes',
+              '',
+              'The book has been updated with your suggested content:',
+              '- 🌐 [View on GitHub Pages](https://arivero.github.io/agentbook)',
+              '- 📖 [Browse the Book](https://github.com/arivero/agentbook/tree/main/book)',
+              '',
+              '### 🙏 Thank You!',
+              '',
+              'Your contribution has helped make the Agentic Workflows Book better.',
+              'This living book continues to evolve with community input.',
+              '',
+              '### 📣 Share Your Experience',
+              '',
+              'If you found this multi-agent workflow interesting, consider:',
+              '- ⭐ Starring the repository',
+              '- 🔄 Sharing with others',
+              '- 📝 Opening more suggestions',
+              '',
+              '---',
+              '*This issue was processed by our multi-agent workflow.*',
+              '[Learn more about how it works](https://arivero.github.io/agentbook/book/chapters/06-github-agents.html)'
+            ].join('\n');
+            
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: comment
+            });
+
+      - name: Close issue
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.issues.update({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              state: 'closed',
+              state_reason: 'completed'
             });

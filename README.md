@@ -37,6 +37,9 @@ How to create, import, and compose agent capabilities for maximum effectiveness.
 ### [GitHub Agentic Workflows (GH-AW)](book/chapters/05-gh-agentic-workflows.md)
 How GH-AW turns markdown into secure, composable repository automation.
 
+### [GitHub Agents](book/chapters/06-github-agents.md)
+Deep dive into GitHub Copilot, Copilot Coding Agent, and multi-agent orchestration.
+
 ## 🚀 How It Works
 
 1. **Community Input**: Open an issue with a suggestion

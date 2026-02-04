@@ -20,6 +20,8 @@ body:
         - Agent Orchestration
         - Agentic Scaffolding
         - Skills and Tools
+        - GitHub Agentic Workflows (GH-AW)
+        - GitHub Agents (Copilot, Coding Agent)
         - Other
     validations:
       required: true
