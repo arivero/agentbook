@@ -17,8 +17,8 @@ The progression of coding agents follows a clear trajectory:
 
 1. **Code Completion (2020-2022)**: Basic pattern matching and next-token prediction
 2. **Context-Aware Assistance (2022-2024)**: Understanding project structure and intent
-3. **Task-Oriented Agents (2024-2025)**: Completing multi-step tasks independently
-4. **Autonomous Development (2025-2026)**: Full feature implementation, testing, and deployment
+3. **Task-Oriented Agents (2024-present)**: Completing multi-step tasks independently
+4. **Autonomous Development (emerging)**: Full feature implementation, testing, and deployment
 
 ### Current Capabilities
 

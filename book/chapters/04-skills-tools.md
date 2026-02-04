@@ -682,9 +682,9 @@ user_proxy.initiate_chat(assistant, message="Create a Python web scraper")
 | **Memory** | Persistent local | Configurable | Per-agent | Session-based | Conversation |
 | **Best For** | Personal automation | Prototyping | Complex workflows | Enterprise apps | Research/experimentation |
 
-## MCP in 2026: Modern Tooling and Adoption
+## MCP: Modern Tooling and Adoption
 
-The **Model Context Protocol (MCP)** has become a practical standard for connecting agents to tools and data sources. In 2026, it is less about novel capability and more about **reliable interoperability**: the same tool server can be used by multiple agent clients with consistent schemas, permissions, and response formats.
+The **Model Context Protocol (MCP)** has become a practical standard for connecting agents to tools and data sources. Today, MCP is less about novel capability and more about **reliable interoperability**: the same tool server can be used by multiple agent clients with consistent schemas, permissions, and response formats.
 
 ### What MCP Brings to Tools
 
@@ -692,7 +692,7 @@ The **Model Context Protocol (MCP)** has become a practical standard for connect
 - **Safer tool execution**: capability-scoped permissions, explicit parameters, and auditable tool calls.
 - **Composable context**: servers can enrich model context with structured resources (files, APIs, or databases) without bespoke glue code.
 
-### Modern Usage Patterns (2026)
+### Common Usage Patterns
 
 1. **Server-based tool catalogs**
    - Teams deploy MCP servers per domain (e.g., "repo-tools", "ops-tools", "research-tools").
@@ -874,6 +874,342 @@ Some frameworks experiment with "soul" or personality configuration. Note that "
 
 Currently, these are implemented in vendor-specific formats rather than open standards. The community continues to discuss whether formalization is needed.
 
+## How Agents Become Aware of Imports
+
+One of the most practical challenges in agentic development is helping agents understand a codebase's import structure and dependencies. When an agent modifies code, it must know what modules are available, where they come from, and how to properly reference them.
+
+### The Import Awareness Problem
+
+When agents generate or modify code, they face several import-related challenges:
+
+1. **Missing imports**: Adding code that uses undefined symbols
+2. **Incorrect import paths**: Using wrong relative or absolute paths
+3. **Circular dependencies**: Creating imports that cause circular reference errors
+4. **Unused imports**: Leaving orphan imports after code changes
+5. **Conflicting names**: Importing symbols that shadow existing names
+
+### Mechanisms for Import Discovery
+
+Modern coding agents use multiple strategies to understand imports:
+
+#### 1. Static Analysis Tools
+
+Agents leverage language servers and static analyzers to understand import structure:
+
+```python
+class ImportAnalyzer:
+    """Analyze imports using static analysis"""
+    
+    def __init__(self, workspace_root: str):
+        self.workspace = workspace_root
+        self.import_graph = {}
+    
+    def analyze_file(self, filepath: str) -> dict:
+        """Extract import information from a file"""
+        with open(filepath) as f:
+            content = f.read()
+        
+        # Parse AST to find imports
+        tree = ast.parse(content)
+        imports = []
+        
+        for node in ast.walk(tree):
+            if isinstance(node, ast.Import):
+                for alias in node.names:
+                    imports.append({
+                        'type': 'import',
+                        'module': alias.name,
+                        'alias': alias.asname
+                    })
+            elif isinstance(node, ast.ImportFrom):
+                imports.append({
+                    'type': 'from_import',
+                    'module': node.module,
+                    'names': [a.name for a in node.names],
+                    'level': node.level  # relative import level
+                })
+        
+        return {
+            'file': filepath,
+            'imports': imports,
+            'defined_symbols': self._extract_definitions(tree)
+        }
+    
+    def build_dependency_graph(self) -> dict:
+        """Build a graph of all file dependencies"""
+        for filepath in self._find_source_files():
+            analysis = self.analyze_file(filepath)
+            self.import_graph[filepath] = analysis
+        return self.import_graph
+```
+
+#### 2. Language Server Protocol (LSP)
+
+Language servers provide real-time import information that agents can query:
+
+```python
+class LSPImportProvider:
+    """Use LSP to discover available imports"""
+    
+    async def get_import_suggestions(self, symbol: str, context_file: str) -> list:
+        """Get import suggestions for an undefined symbol"""
+        
+        # Query language server for symbol locations
+        response = await self.lsp_client.request('textDocument/codeAction', {
+            'textDocument': {'uri': context_file},
+            'context': {
+                'diagnostics': [{
+                    'message': f"Cannot find name '{symbol}'"
+                }]
+            }
+        })
+        
+        # Extract import suggestions from code actions
+        suggestions = []
+        for action in response:
+            if 'import' in action.get('title', '').lower():
+                suggestions.append({
+                    'import_statement': action['edit']['changes'],
+                    'source': action.get('title')
+                })
+        
+        return suggestions
+    
+    async def get_exported_symbols(self, module_path: str) -> list:
+        """Get all exported symbols from a module"""
+        
+        # Use workspace/symbol to find exports
+        symbols = await self.lsp_client.request('workspace/symbol', {
+            'query': '',
+            'uri': module_path
+        })
+        
+        return [s['name'] for s in symbols if s.get('kind') in EXPORTABLE_KINDS]
+```
+
+#### 3. Project Configuration Files
+
+Agents read configuration files to understand module resolution:
+
+```python
+class ProjectConfigReader:
+    """Read project configs to understand import paths"""
+    
+    def get_import_config(self, project_root: str) -> dict:
+        """Extract import configuration from project files"""
+        
+        config = {
+            'base_paths': [],
+            'aliases': {},
+            'external_packages': []
+        }
+        
+        # TypeScript/JavaScript: tsconfig.json, jsconfig.json
+        tsconfig_path = os.path.join(project_root, 'tsconfig.json')
+        if os.path.exists(tsconfig_path):
+            with open(tsconfig_path) as f:
+                tsconfig = json.load(f)
+            
+            compiler_opts = tsconfig.get('compilerOptions', {})
+            config['base_paths'].append(compiler_opts.get('baseUrl', '.'))
+            config['aliases'] = compiler_opts.get('paths', {})
+        
+        # Python: pyproject.toml, setup.py
+        pyproject_path = os.path.join(project_root, 'pyproject.toml')
+        if os.path.exists(pyproject_path):
+            with open(pyproject_path) as f:
+                pyproject = toml.load(f)
+            
+            # Extract package paths from tool.setuptools or poetry config
+            if 'tool' in pyproject:
+                if 'setuptools' in pyproject['tool']:
+                    config['base_paths'].extend(
+                        pyproject['tool']['setuptools'].get('package-dir', {}).values()
+                    )
+        
+        return config
+```
+
+#### 4. Package Manifest Analysis
+
+Agents check package manifests to know what's available:
+
+```python
+class PackageManifestReader:
+    """Read package manifests to understand available dependencies"""
+    
+    def get_available_packages(self, project_root: str) -> dict:
+        """Get list of available packages from manifest"""
+        
+        packages = {'direct': [], 'transitive': []}
+        
+        # Node.js: package.json
+        package_json = os.path.join(project_root, 'package.json')
+        if os.path.exists(package_json):
+            with open(package_json) as f:
+                pkg = json.load(f)
+            packages['direct'].extend(pkg.get('dependencies', {}).keys())
+            packages['direct'].extend(pkg.get('devDependencies', {}).keys())
+        
+        # Python: requirements.txt, Pipfile, pyproject.toml
+        requirements = os.path.join(project_root, 'requirements.txt')
+        if os.path.exists(requirements):
+            with open(requirements) as f:
+                for line in f:
+                    line = line.strip()
+                    if line and not line.startswith('#'):
+                        # Extract package name (before version specifier)
+                        pkg_name = re.split(r'[<>=!]', line)[0].strip()
+                        packages['direct'].append(pkg_name)
+        
+        return packages
+```
+
+### Best Practices for Import-Aware Agents
+
+#### 1. Document Import Conventions in AGENTS.md
+
+Include import guidance in your project's AGENTS.md:
+
+```markdown
+## Import Conventions
+
+### Path Resolution
+- Use absolute imports from `src/` as the base
+- Prefer named exports over default exports
+- Group imports: stdlib, external packages, local modules
+
+### Example Import Order
+```python
+# Standard library
+import os
+import sys
+from typing import Dict, List
+
+# Third-party packages
+import requests
+from pydantic import BaseModel
+
+# Local modules
+from src.utils import helpers
+from src.models import User
+```
+
+### Alias Conventions
+- `@/` maps to `src/`
+- `@components/` maps to `src/components/`
+```
+
+#### 2. Use Import Auto-Fix Tools
+
+Configure agents to use automatic import fixers:
+
+```python
+class ImportAutoFixer:
+    """Automatically fix import issues in agent-generated code"""
+    
+    def __init__(self, tools: List[Tool]):
+        self.isort = tools.get('isort')  # Python import sorting
+        self.eslint = tools.get('eslint')  # JS/TS import fixing
+    
+    async def fix_imports(self, filepath: str) -> dict:
+        """Fix and organize imports in a file"""
+        
+        results = {'fixed': [], 'errors': []}
+        
+        if filepath.endswith('.py'):
+            # Run isort for Python
+            result = await self.isort.execute(filepath)
+            if result['success']:
+                results['fixed'].append('isort: organized imports')
+            
+            # Run autoflake to remove unused imports
+            result = await self.autoflake.execute(
+                filepath, 
+                remove_unused_imports=True
+            )
+            if result['success']:
+                results['fixed'].append('autoflake: removed unused')
+        
+        elif filepath.endswith(('.ts', '.tsx', '.js', '.jsx')):
+            # Run eslint with import rules
+            result = await self.eslint.execute(
+                filepath,
+                fix=True,
+                rules=['import/order', 'unused-imports/no-unused-imports']
+            )
+            if result['success']:
+                results['fixed'].append('eslint: fixed imports')
+        
+        return results
+```
+
+#### 3. Validate Imports Before Committing
+
+Add import validation to agent workflows:
+
+```yaml
+# .github/workflows/validate-imports.yml
+name: Validate Imports
+on: [pull_request]
+
+jobs:
+  check-imports:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Check Python imports
+        run: |
+          pip install isort autoflake
+          isort --check-only --diff .
+          autoflake --check --remove-all-unused-imports -r .
+      
+      - name: Check TypeScript imports
+        run: |
+          npm ci
+          npx eslint --rule 'import/no-unresolved: error' .
+```
+
+### Import Awareness in Multi-Agent Systems
+
+When multiple agents collaborate, maintaining consistent import awareness requires coordination:
+
+```python
+class SharedImportContext:
+    """Shared import context for multi-agent systems"""
+    
+    def __init__(self):
+        self.import_cache = {}
+        self.pending_additions = []
+    
+    def register_new_export(self, module: str, symbol: str, agent_id: str):
+        """Register a new export created by an agent"""
+        if module not in self.import_cache:
+            self.import_cache[module] = []
+        
+        self.import_cache[module].append({
+            'symbol': symbol,
+            'added_by': agent_id,
+            'timestamp': datetime.now()
+        })
+    
+    def query_available_imports(self, symbol: str) -> List[dict]:
+        """Query where a symbol can be imported from"""
+        results = []
+        for module, exports in self.import_cache.items():
+            for export in exports:
+                if export['symbol'] == symbol:
+                    results.append({
+                        'module': module,
+                        'symbol': symbol,
+                        'import_statement': f"from {module} import {symbol}"
+                    })
+        return results
+```
+
+Understanding how agents discover and manage imports is essential for building reliable agentic coding systems. The combination of static analysis, language servers, project configuration, and clear documentation ensures agents can write code that integrates correctly with existing codebases.
+
 ## Key Takeaways
 
 - Tools are atomic capabilities; skills are composed behaviors
@@ -884,4 +1220,5 @@ Currently, these are implemented in vendor-specific formats rather than open sta
 - Always document, test, and version your tools and skills
 - Monitor usage to identify issues and optimization opportunities
 - AGENTS.md is the emerging standard for project-level agent instructions
+- Import awareness requires combining static analysis, LSP, and project configuration
 - OpenClaw, LangChain, CrewAI, and similar frameworks share common patterns for tool and skill management
