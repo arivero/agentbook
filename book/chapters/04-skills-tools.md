@@ -510,11 +510,177 @@ In practice, a single integration might expose multiple tools and enable multipl
 
 OpenClaw is built on the **pi-mono** ecosystem. The pi-mono monorepo provides an agent runtime, tool calling infrastructure, and multi-provider LLM APIs that OpenClaw can leverage to keep the assistant portable across models and deployments.
 
+### OpenClaw Architecture in Detail
+
+OpenClaw's architecture consists of several interconnected components:
+
+```
+                                         +---------------------+
+       +------------+                    |      Control UI     |
+       | WhatsApp   |---(Gateway WS)---> |      (Dashboard)    |
+       | Telegram   |                    +---------+-----------+
+       | Discord    |---(API/WS/RPC)                  |
+       | iMessage   |                          +------v------+
+       +------------+                          |   Gateway   |
+                                                   |
+                                                   |
+                                         +----Agent Runtime---+
+                                         |   (pi-mono core)   |
+                                         +--------------------+
+                                           |     |     |    ...
+                                       [Skills/Tools] [Plugins/Other Agents]
+```
+
+**1. Gateway Control Plane**
+- Central hub orchestrating all user input/output and messaging channels
+- Exposes a WebSocket server (default: `ws://127.0.0.1:18789`)
+- Handles session state, permissions, and authentication
+- Supports local and mesh/LAN deployment via Tailscale or similar
+
+**2. Pi Agent Runtime (pi-mono)**
+- Core single-agent execution environment
+- Maintains long-lived agent state, memory, skills, and tool access
+- Handles multi-turn conversation, contextual memory, and tool/plugin invocation
+- Orchestrates external API/model calls (OpenAI, Anthropic, local models via Ollama)
+- Persistent storage (SQLite, Postgres, Redis) for memory and context
+
+**3. Multi-Agent Framework**
+- Support for swarms of specialized agents ("nodes") handling domain-specific automations
+- Agents coordinate via shared memory and routing protocols managed by the Gateway
+- Each agent can be sandboxed (Docker/isolation) for security
+- Developers build custom agents via TypeScript/YAML plugins
+
+**4. Extensible Skills/Plugin Ecosystem**
+- Skills expand the agent's abilities: file automation, web scraping, email, calendar
+- Plugins are hot-reloadable and built in TypeScript
+- Community skill marketplace for sharing and discovery
+
+### Key Design Principles
+
+1. **Privacy-First**: All state and memory default to local storage—data never leaves the device unless explicitly configured
+2. **BYOM (Bring Your Own Model)**: Seamlessly supports cloud LLMs and local inference
+3. **Proactive Behavior**: "Heartbeat" feature enables autonomous wake-up and environment monitoring
+4. **Persistent Memory**: Learns and adapts over long-term interactions
+
 Key takeaways for skills/tools architecture:
 
 - **Gateway + runtime separation** keeps tools and skills consistent while integrations change: the gateway handles channels and routing, while pi-mono-style runtimes handle tool execution.
 - **Integration catalogs** (like OpenClaw’s integrations list and skill registry) are a user-facing map of capability. They surface what tools can do and what skills are available without forcing users to understand low-level APIs.
 - **Skills become reusable assets** once tied to integrations: a “Slack triage” skill can target different workspaces without changing the underlying tools, as long as the integration provides the same tool contracts.
+
+## Related Architectures and Frameworks
+
+Several other frameworks share architectural patterns with OpenClaw:
+
+### LangChain and LangGraph
+
+LangChain provides composable building blocks for LLM applications:
+
+```python
+from langchain.agents import AgentExecutor, create_tool_calling_agent
+from langchain_core.tools import tool
+
+@tool
+def search_documentation(query: str) -> str:
+    """Search project documentation for relevant information."""
+    # Implementation
+    pass
+
+# Create agent with tools
+agent = create_tool_calling_agent(llm, tools=[search_documentation], prompt=prompt)
+executor = AgentExecutor(agent=agent, tools=tools, verbose=True)
+```
+
+**Shared patterns with OpenClaw**: Tool registration, agent composition, memory management.
+
+### CrewAI
+
+CrewAI focuses on multi-agent collaboration with role-based specialization:
+
+```python
+from crewai import Agent, Task, Crew
+
+researcher = Agent(
+    role='Senior Researcher',
+    goal='Discover new insights',
+    backstory='Expert in finding and analyzing information',
+    tools=[search_tool, analysis_tool]
+)
+
+writer = Agent(
+    role='Technical Writer',
+    goal='Create clear documentation',
+    backstory='Skilled at explaining complex topics',
+    tools=[writing_tool]
+)
+
+crew = Crew(
+    agents=[researcher, writer],
+    tasks=[research_task, writing_task],
+    process=Process.sequential
+)
+```
+
+**Shared patterns with OpenClaw**: Role-based agents, sequential and parallel execution, tool assignment per agent.
+
+### Microsoft Semantic Kernel
+
+Semantic Kernel emphasizes enterprise integration and plugin architecture:
+
+```csharp
+var kernel = Kernel.CreateBuilder()
+    .AddOpenAIChatCompletion("gpt-4", apiKey)
+    .Build();
+
+// Import plugins
+kernel.ImportPluginFromType<TimePlugin>();
+kernel.ImportPluginFromType<FileIOPlugin>();
+
+// Create agent with plugins
+var agent = new ChatCompletionAgent {
+    Kernel = kernel,
+    Name = "ProjectAssistant",
+    Instructions = "Help manage project tasks and documentation"
+};
+```
+
+**Shared patterns with OpenClaw**: Plugin system, kernel/runtime separation, enterprise-ready design.
+
+### AutoGen
+
+AutoGen specializes in conversational multi-agent systems:
+
+```python
+from autogen import AssistantAgent, UserProxyAgent
+
+assistant = AssistantAgent(
+    name="coding_assistant",
+    llm_config={"model": "gpt-4"},
+    system_message="You are a helpful coding assistant."
+)
+
+user_proxy = UserProxyAgent(
+    name="user",
+    human_input_mode="NEVER",
+    code_execution_config={"work_dir": "coding"}
+)
+
+# Agents collaborate through conversation
+user_proxy.initiate_chat(assistant, message="Create a Python web scraper")
+```
+
+**Shared patterns with OpenClaw**: Agent-to-agent communication, code execution environments, conversation-driven workflows.
+
+### Comparing Architecture Patterns
+
+| Feature | OpenClaw | LangChain | CrewAI | Semantic Kernel | AutoGen |
+|---------|----------|-----------|--------|-----------------|---------|
+| **Primary Focus** | Personal assistant | LLM app building | Team collaboration | Enterprise plugins | Multi-agent chat |
+| **Runtime** | Local-first | Flexible | Python process | .NET/Python | Python process |
+| **Multi-Agent** | Via swarms | Via LangGraph | Built-in | Via agents | Built-in |
+| **Tool System** | Plugin-based | Tool decorators | Tool assignment | Plugin imports | Tool decorators |
+| **Memory** | Persistent local | Configurable | Per-agent | Session-based | Conversation |
+| **Best For** | Personal automation | Prototyping | Complex workflows | Enterprise apps | Research/experimentation |
 
 ## MCP in 2026: Modern Tooling and Adoption
 
@@ -626,6 +792,88 @@ class MonitoredTool:
             raise
 ```
 
+## Emerging Standards: AGENTS.md
+
+### The AGENTS.md Pseudo-Standard
+
+**AGENTS.md** has emerged as an open pseudo-standard for providing AI coding agents with project-specific instructions. Think of it as a "README for agents"—offering structured, machine-readable guidance that helps agents understand how to work within a codebase.
+
+#### Purpose and Benefits
+
+- **Consistent Instructions**: All agents receive the same project-specific guidance
+- **Rapid Onboarding**: New agent sessions understand the project immediately
+- **Safety Boundaries**: Clear boundaries prevent accidental damage to protected files
+- **Maintainability**: Single source of truth for agent behavior in a project
+
+#### Structure and Placement
+
+AGENTS.md files can be placed hierarchically in a project:
+
+```
+project/
+├── AGENTS.md           # Root-level instructions (project-wide)
+├── src/
+│   └── AGENTS.md       # Module-specific instructions
+├── tests/
+│   └── AGENTS.md       # Testing conventions
+└── docs/
+    └── AGENTS.md       # Documentation guidelines
+```
+
+Agents use the nearest AGENTS.md file, enabling scoped configuration for monorepos or complex projects.
+
+#### Example AGENTS.md
+
+```markdown
+# AGENTS.md
+
+## Project Overview
+This is a TypeScript web application using Express.js and React.
+
+## Setup Instructions
+npm install
+npm run dev
+
+## Coding Conventions
+- Language: TypeScript 5.x
+- Style guide: Airbnb
+- Formatting: Prettier with provided config
+- Test framework: Jest
+
+## Build and Deploy
+- Build: `npm run build`
+- Test: `npm test`
+- Deploy: CI/CD via GitHub Actions
+
+## Agent-Specific Notes
+- Always run `npm run lint` before committing
+- Never modify files in `vendor/` or `.github/workflows/`
+- Secrets are in environment variables, never hardcoded
+- All API endpoints require authentication middleware
+```
+
+### Related Standards: Skills and Capabilities
+
+While AGENTS.md has achieved broad adoption as the standard for project-level agent instructions, the space continues to evolve. Several related concepts are under discussion in the community:
+
+**Skills Documentation**
+
+There is no formal `skills.md` standard, but skill documentation patterns are emerging:
+
+- **Skill catalogs** listing available agent capabilities
+- **Capability declarations** specifying what an agent can do
+- **Dependency manifests** defining tool and skill requirements
+
+**Personality and Values**
+
+Some frameworks experiment with "soul" or personality configuration:
+
+- **System prompts** defining agent persona and communication style
+- **Value alignment** specifying ethical guidelines and constraints
+- **Behavioral constraints** limiting what agents should and shouldn't do
+
+Currently, these are implemented in vendor-specific formats rather than open standards. The community continues to discuss whether formalization is needed.
+
 ## Key Takeaways
 
 - Tools are atomic capabilities; skills are composed behaviors
@@ -635,3 +883,5 @@ class MonitoredTool:
 - Skills can be composed to create more powerful capabilities
 - Always document, test, and version your tools and skills
 - Monitor usage to identify issues and optimization opportunities
+- AGENTS.md is the emerging standard for project-level agent instructions
+- OpenClaw, LangChain, CrewAI, and similar frameworks share common patterns for tool and skill management
