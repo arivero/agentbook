@@ -1,3 +1,8 @@
+---
+title: "Chapter 4: Skills and Tools Management"
+order: 4
+---
+
 # Chapter 4: Skills and Tools Management
 
 ## Understanding Skills vs. Tools

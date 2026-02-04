@@ -1,3 +1,8 @@
+---
+title: "Chapter 1: Introduction to Agentic Workflows"
+order: 1
+---
+
 # Chapter 1: Introduction to Agentic Workflows
 
 ## What are Agentic Workflows?

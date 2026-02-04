@@ -1,3 +1,8 @@
+---
+title: "Chapter 2: Agent Orchestration"
+order: 2
+---
+
 # Chapter 2: Agent Orchestration
 
 ## Understanding Agent Orchestration
