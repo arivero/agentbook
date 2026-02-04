@@ -1,3 +1,8 @@
+---
+title: "Chapter 3: Agentic Scaffolding"
+order: 3
+---
+
 # Chapter 3: Agentic Scaffolding
 
 ## What is Agentic Scaffolding?

@@ -1,3 +1,8 @@
+---
+title: "Chapter 5: GitHub Agentic Workflows (GH-AW)"
+order: 5
+---
+
 # Chapter 5: GitHub Agentic Workflows (GH-AW)
 
 ## Why GH-AW Matters

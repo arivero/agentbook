@@ -1,3 +1,8 @@
+---
+title: "Chapter 6: GitHub Agents"
+order: 6
+---
+
 # Chapter 6: GitHub Agents
 
 ## Understanding GitHub Agents
