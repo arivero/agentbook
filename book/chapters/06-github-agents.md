@@ -446,5 +446,3 @@ The workflow is defined in `.github/workflows/process-suggestions.yml` and uses 
 7. **This book** demonstrates these concepts through its own multi-agent maintenance workflow.
 
 ---
-
-*Continue to the next section or return to the [Table of Contents](00-toc.html).*
