@@ -1,0 +1,39 @@
+title: Agentic Workflows Book
+description: A living book about agentic workflows, agent orchestration, and agentic scaffolding
+theme: jekyll-theme-minimal
+markdown: kramdown
+
+# Build settings
+highlighter: rouge
+kramdown:
+  input: GFM
+  syntax_highlighter: rouge
+
+# Collections
+collections:
+  posts:
+    output: true
+    permalink: /blog/:year/:month/:day/:title/
+
+# Defaults
+defaults:
+  - scope:
+      path: ""
+      type: "posts"
+    values:
+      layout: "post"
+  - scope:
+      path: ""
+    values:
+      layout: "default"
+
+# Exclude from processing
+exclude:
+  - .git
+  - .github
+  - README.md
+
+# Include
+include:
+  - book
+  - blog
