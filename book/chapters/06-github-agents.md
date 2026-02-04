@@ -416,7 +416,12 @@ This very book uses GitHub Agents for self-maintenance:
 
 ### Configuration
 
-The workflow is defined in `.github/workflows/process-suggestions.yml` and uses agent definitions from `.github/agents/`.
+The workflow is defined using GitHub Agentic Workflows (GH-AW). The repository includes:
+- GH-AW workflows: `.github/workflows/issue-*.lock.yml`
+- Agent definitions: `.github/agents/*.md`
+- Legacy fallback: `.github/workflows/process-suggestions.yml`
+
+For a detailed explanation of the workflow architecture and why GH-AW is the canonical approach, see the repository's [WORKFLOWS.md](../../WORKFLOWS.md) documentation.
 
 ## Future of GitHub Agents
 
@@ -449,5 +454,24 @@ The workflow is defined in `.github/workflows/process-suggestions.yml` and uses 
 6. **Security** must be designed into agent workflows from the start.
 
 7. **This book** demonstrates these concepts through its own multi-agent maintenance workflow.
+
+## Learn More
+
+### Repository Documentation
+
+This book's repository includes comprehensive documentation that demonstrates OSS best practices:
+
+- **[README](../../README.md)** - Overview and quick start guide
+- **[CONTRIBUTING](../../CONTRIBUTING.md)** - How to contribute using the multi-agent workflow
+- **[WORKFLOWS](../../WORKFLOWS.md)** - Detailed workflow guide and GH-AW explanation
+- **[SETUP](../../SETUP.md)** - Installation and configuration instructions
+- **[WORKFLOW_PLAYBOOK](../../WORKFLOW_PLAYBOOK.md)** - Agentic workflow maintenance patterns
+- **[PROJECT_SUMMARY](../../PROJECT_SUMMARY.md)** - Complete project overview
+- **[SECURITY_SUMMARY](../../SECURITY_SUMMARY.md)** - Security practices and scan results
+- **[CHANGELOG](../../CHANGELOG.md)** - Version history and changes
+- **[CODE_OF_CONDUCT](../../CODE_OF_CONDUCT.md)** - Community guidelines
+- **[LICENSE](../../LICENSE)** - MIT License
+
+These documents serve as both useful references and examples of how to structure documentation for projects using agentic workflows.
 
 ---

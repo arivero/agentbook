@@ -1,7 +1,25 @@
-name: Multi-Agent Issue Processing
+name: Multi-Agent Issue Processing (Legacy Fallback)
 
-# This workflow implements a multi-stage agentic processing pipeline.
-# It orchestrates multiple AI agents to handle issue suggestions through:
+# IMPORTANT: This is a legacy GitHub Actions workflow that demonstrates multi-agent
+# processing concepts but does NOT use GitHub Agentic Workflows (GH-AW) specification.
+#
+# The canonical agentic approach for this repository uses GH-AW workflows:
+# - issue-triage-lite.lock.yml
+# - issue-synthesis.lock.yml  
+# - issue-fast-track.lock.yml
+#
+# This workflow is maintained as:
+# 1. A fallback if GH-AW is not available
+# 2. An example of implementing multi-agent patterns with pure GitHub Actions
+# 3. Documentation of the multi-stage processing approach
+#
+# For new implementations, prefer GH-AW workflows which provide:
+# - Better agent isolation and security
+# - Declarative agent definitions
+# - Tool composition and reuse
+# - Integration with GitHub Copilot engine
+#
+# This workflow implements a multi-stage processing pipeline:
 # 1. Acknowledgment - First response and validation
 # 2. Research - Documentation search and novelty assessment
 # 3. Multi-Model Discussion - Multiple AI perspectives

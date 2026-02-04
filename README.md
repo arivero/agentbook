@@ -53,11 +53,23 @@ Deep dive into GitHub Copilot, Copilot Coding Agent, and multi-agent orchestrati
 
 We welcome contributions! Here's how:
 
-1. **Suggest Content**: [Open an issue](https://github.com/arivero/agentbook/issues/new/choose) with your suggestion
-2. **Wait for Processing**: Our automated workflows will analyze your suggestion
-3. **Follow Updates**: Watch as the book updates itself!
+### Suggest Improvements via Issues
 
-All suggestions related to agentic workflows, orchestration, scaffolding, or skills/tools are welcome.
+The primary way to contribute is by **opening an issue** with your suggestion:
+
+1. **[Open an issue](https://github.com/arivero/agentbook/issues/new/choose)** using our Content Suggestion template
+2. **Automated Processing**: Our GitHub Agentic Workflows (GH-AW) will analyze your suggestion
+3. **Multi-Agent Review**: Multiple AI agents will discuss and develop your idea
+4. **Follow Updates**: Watch as agents comment and the book updates itself!
+
+**What happens to suggestions:**
+- ✅ **Accepted**: Processed through our multi-agent workflow and added to the book
+- 🔄 **Needs Revision**: Agents will request clarifications or additional details
+- ❌ **Rejected/Out of Scope**: Moved to [GitHub Discussions](https://github.com/arivero/agentbook/discussions) for community conversation
+
+All suggestions related to agentic workflows, orchestration, scaffolding, skills/tools, or GitHub agents are welcome.
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines.
 
 ## 🛠️ Local Development
 
@@ -96,13 +108,35 @@ agentbook/
 
 ## 🔧 Workflows
 
+Our repository uses **GitHub Agentic Workflows (GH-AW)** as the canonical approach to automate content processing.
+
+**Active Workflows:**
 - **`pages.yml`**: Deploys to GitHub Pages
 - **`build-pdf.yml`**: Generates PDF version
-- **`process-suggestions.yml`**: Handles issue suggestions
+- **GH-AW Workflows** (`.lock.yml` files): Agentic issue processing
+  - `issue-triage-lite.lock.yml`: Initial triage and acknowledgment
+  - `issue-synthesis.lock.yml`: Research synthesis and recommendations
+  - `issue-fast-track.lock.yml`: Fast-track small changes
+- **`process-suggestions.yml`**: Legacy multi-stage workflow (maintained as fallback/example)
+
+See [WORKFLOWS.md](WORKFLOWS.md) for detailed workflow documentation and the rationale for using GH-AW.
 
 ## 📜 License
 
-This work is open source and available for educational purposes.
+This work is licensed under the [MIT License](LICENSE) and available for educational purposes.
+
+## 📚 Documentation
+
+- **[README](README.md)** - Project overview and quick start
+- **[CONTRIBUTING](CONTRIBUTING.md)** - How to contribute content
+- **[WORKFLOWS](WORKFLOWS.md)** - Detailed workflow guide (GH-AW vs legacy)
+- **[SETUP](SETUP.md)** - Installation and configuration guide
+- **[WORKFLOW_PLAYBOOK](WORKFLOW_PLAYBOOK.md)** - GH-AW maintenance process
+- **[PROJECT_SUMMARY](PROJECT_SUMMARY.md)** - Comprehensive project overview
+- **[SECURITY_SUMMARY](SECURITY_SUMMARY.md)** - Security scan results and practices
+- **[CHANGELOG](CHANGELOG.md)** - Version history and changes
+- **[CODE_OF_CONDUCT](CODE_OF_CONDUCT.md)** - Community guidelines
+- **[LICENSE](LICENSE)** - MIT License
 
 ## 🌟 Acknowledgments
 
