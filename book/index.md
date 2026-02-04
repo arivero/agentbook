@@ -3,17 +3,37 @@ layout: book
 title: "Agentic Workflows: A Practical Guide"
 ---
 
-{% assign chapters = site.data.book.chapters | sort: "order" %}
-{% for chapter in chapters %}
-  {% capture chapter_content %}{% include_relative chapter.path %}{% endcapture %}
-  {% assign chapter_parts = chapter_content | split: '---' %}
-  {% if chapter_parts.size > 2 %}
-    {% assign chapter_body = chapter_parts | slice: 2, chapter_parts.size | join: '---' %}
-    {{ chapter_body | strip }}
-  {% else %}
-    {{ chapter_content | strip }}
-  {% endif %}
-  {% unless forloop.last %}
----
-  {% endunless %}
+# Agentic Workflows: A Practical Guide
+
+A living book about agentic workflows, agent orchestration, and agentic scaffolding.
+
+## Chapters
+
+{% assign chapter_pages = site.pages | where_exp: "page", "page.path contains 'book/chapters/'" | where_exp: "page", "page.order" | sort: "order" %}
+{% for chapter in chapter_pages %}
+{% if chapter.order > 0 %}
+- [{{ chapter.title }}]({{ chapter.url | relative_url }})
+{% endif %}
 {% endfor %}
+
+---
+
+## About This Book
+
+This book demonstrates modern AI-powered development practices by being self-maintaining - the book updates itself based on community suggestions and contributions through automated workflows.
+
+### What You'll Learn
+
+- **Agentic Workflows**: Understanding how AI agents can automate complex tasks
+- **Agent Orchestration**: Coordinating multiple agents to work together effectively
+- **Agentic Scaffolding**: Building the infrastructure for agent-driven development
+- **Skills and Tools**: How to use, import, and compose agent capabilities
+- **GitHub Agentic Workflows**: Practical implementation with GitHub Actions
+
+### Contributing
+
+This book welcomes contributions! Open an issue with suggestions, and our automated workflows will process and integrate valuable feedback.
+
+### License
+
+This work is open source and available for educational purposes.

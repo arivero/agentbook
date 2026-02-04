@@ -280,7 +280,7 @@ imports:
 - **Markdown directive**
 
 ```markdown
-{{#import shared/common-tools.md}}
+{% raw %}{{#import shared/common-tools.md}}{% endraw %}
 ```
 
 Imports let you create a library of reusable workflow fragments (shared tools, standard prompts, or organization-wide policies). Files without `on:` become *components* that can be imported without being compiled into Actions.

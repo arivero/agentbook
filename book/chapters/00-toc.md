@@ -12,14 +12,11 @@ order: 0
 
 ## Chapters
 
-{% assign chapters = site.data.book.chapters | sort: "order" | where: "toc", true %}
-{% for chapter in chapters %}
-{{ forloop.index }}. **[{{ chapter.title }}]({{ chapter.path | replace: 'chapters/', '' | replace: '.md', '.html' }})**
-   {% if chapter.sections %}
-     {% for section in chapter.sections %}
-   - {{ section.title }}
-     {% endfor %}
-   {% endif %}
+{% assign chapter_pages = site.pages | where_exp: "page", "page.path contains 'book/chapters/'" | where_exp: "page", "page.order" | sort: "order" %}
+{% for chapter in chapter_pages %}
+{% if chapter.order > 0 %}
+{{ forloop.index }}. **[{{ chapter.title }}]({{ chapter.url | relative_url }})**
+{% endif %}
 {% endfor %}
 
 ---
