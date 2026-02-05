@@ -7,7 +7,7 @@ This playbook translates GitHub Agentic Workflows (GH-AW) guidance into a practi
 - Discover new agentic workflow practices and tooling.
 - Debate changes in public issues before implementation.
 - Assign clear responsibilities to agents.
-- Keep book chapters, table of contents, and blog posts in sync.
+- Keep manuscript sources, table of contents, and blog posts in sync.
 
 ## The Research → Plan → Assign Loop
 
@@ -26,7 +26,7 @@ This playbook translates GitHub Agentic Workflows (GH-AW) guidance into a practi
 - **Title:** `[Proposal] <tool or pattern name>`
 - **Summary:** why the proposal matters
 - **Evidence:** links, benchmarks, examples
-- **Book impact:** which chapter(s) to update
+- **Book impact:** which manuscript sections to update
 - **Suggested next step:** accept, revise, or reject
 
 ### 2) Plan (Human-Gated)
@@ -45,14 +45,14 @@ This playbook translates GitHub Agentic Workflows (GH-AW) guidance into a practi
 
 **Agent tasks:**
 
-- Update the relevant chapter(s) and the table of contents.
+- Update the relevant manuscript sections and the table of contents.
 - Ensure the book homepage and index pages reflect new content.
 - Add a blog post announcing the update.
 - Let GitHub Actions rebuild the PDF and publish Pages.
 
 ## Required Artifacts per Update
 
-- ✅ Chapter update or new chapter markdown
+- ✅ Manuscript update or new section markdown
 - ✅ `book/chapters/00-toc.md` and `book/index.md` refreshed
 - ✅ Root `index.md` updated (homepage links)
 - ✅ New `_posts/<date>-<slug>.md` blog entry

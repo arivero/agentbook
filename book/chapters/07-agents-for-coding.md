@@ -1,9 +1,15 @@
 ---
-title: "Chapter 7: Agents for Coding"
+title: "Agents for Coding"
 order: 7
 ---
 
-# Chapter 7: Agents for Coding
+# Agents for Coding
+
+## Chapter Preview
+
+- Compare coding-agent architectures and team patterns.
+- Show the correct way to configure GitHub Copilot coding agent.
+- Provide buildable examples and clear labels for pseudocode.
 
 ## Introduction
 
@@ -36,6 +42,8 @@ Modern coding agents can:
 ### Single-Agent Architectures
 
 The simplest architecture involves one agent with access to all necessary tools.
+
+Example 7-2. Single-agent architecture (pseudocode)
 
 ```python
 class CodingAgent:
@@ -75,6 +83,8 @@ class CodingAgent:
 ### Multi-Agent Architectures
 
 Complex projects benefit from specialized agents working together.
+
+Example 7-3. Multi-agent architecture (pseudocode)
 
 ```python
 class CodingAgentTeam:
@@ -208,7 +218,7 @@ The **AGENTS.md** file has emerged as the de facto standard for providing AI cod
 
 #### Purpose and Placement
 
-```
+```text
 project/
 ├── AGENTS.md           # Root-level agent instructions
 ├── src/
@@ -365,29 +375,32 @@ GitHub Copilot has evolved from an IDE autocomplete tool to a full coding agent:
 - **Copilot Coding Agent**: Autonomous task completion and PR creation
 - **Copilot Workspace**: Full development environment with agent integration
 
+Copilot coding agent is not invoked via a custom `uses:` action. Instead, you assign work through GitHub Issues, Pull Requests, the agents panel, or by mentioning `@copilot`, and you customize its environment with a dedicated workflow file. See the official docs at <https://docs.github.com/en/copilot/how-tos/use-copilot-agents/coding-agent> and the environment setup guide at <https://docs.github.com/en/copilot/how-tos/use-copilot-agents/coding-agent/customize-the-agent-environment>.
+
+Example 7-1. `.github/workflows/copilot-setup-steps.yml`
+
 ```yaml
-# Example: Using Copilot Coding Agent via GitHub Actions
-name: Copilot Task
+name: Copilot setup steps
+
 on:
-  issues:
-    types: [labeled]
+  push:
+    paths:
+      - .github/workflows/copilot-setup-steps.yml
 
 jobs:
-  copilot-task:
-    if: contains(github.event.issue.labels.*.name, 'copilot')
+  # The job MUST be named copilot-setup-steps to be picked up by Copilot.
+  copilot-setup-steps:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - name: Assign to Copilot
-        uses: github/copilot-agent@v1
-        with:
-          issue: ${{ github.event.issue.number }}
-          permissions: read-write
+      - uses: actions/checkout@v6
+      - name: Install dependencies
+        run: |
+          npm ci
 ```
 
 ### Claude Code
 
-Claude Code provides multi-agent orchestration for complex development tasks:
+Claude Code (<https://code.claude.com/docs>) provides multi-agent orchestration for complex development tasks:
 
 - **Subagent Architecture**: Spawn specialized agents for different concerns
 - **Swarms Mode**: Parallel execution of independent tasks
@@ -395,7 +408,7 @@ Claude Code provides multi-agent orchestration for complex development tasks:
 
 ### Cursor AI
 
-Cursor is an AI-first code editor designed around agent workflows:
+Cursor (<https://www.cursor.com/>) is an AI-first code editor designed around agent workflows:
 
 - **Project-Wide Understanding**: Indexes entire codebase for context
 - **Multi-File Generation**: Creates and modifies multiple files in one operation
@@ -403,7 +416,7 @@ Cursor is an AI-first code editor designed around agent workflows:
 
 ### CodeGPT and Agent Marketplaces
 
-Marketplace-based approaches offer specialized agents:
+CodeGPT (<https://codegpt.co/>) and marketplace-based approaches offer specialized agents:
 
 - **Specialized Agents**: Over 200 pre-built agents for specific tasks
 - **Custom Agent Creation**: Build and share domain-specific agents
@@ -411,7 +424,7 @@ Marketplace-based approaches offer specialized agents:
 
 ## Best Practices
 
-### 1. Clear Task Boundaries
+### Clear Task Boundaries
 
 Define clear boundaries for what agents can and cannot do:
 
@@ -441,7 +454,7 @@ class TaskBoundary:
         return True
 ```
 
-### 2. Incremental Changes
+### Incremental Changes
 
 Prefer small, focused changes over large rewrites:
 
@@ -473,7 +486,7 @@ class IncrementalChangeStrategy:
         return results
 ```
 
-### 3. Test-Driven Development
+### Test-Driven Development
 
 Integrate testing into agent workflows:
 
@@ -505,9 +518,11 @@ class TDDAgent:
         return implementation
 ```
 
-### 4. Human Review Integration
+### Human Review Integration
 
 Always include human checkpoints for significant changes:
+
+Example 7-4. Human review workflow (pseudocode)
 
 ```yaml
 # Workflow with human review
@@ -521,14 +536,14 @@ jobs:
     if: contains(github.event.issue.labels.*.name, 'agent-task')
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6 # pin to a full SHA in production
       
       - name: Agent Implementation
         id: implement
         uses: ./actions/coding-agent
         
       - name: Create PR for Review
-        uses: peter-evans/create-pull-request@v5
+        uses: peter-evans/create-pull-request@v8 # pin to a full SHA in production
         with:
           title: "Agent: ${{ github.event.issue.title }}"
           body: |
@@ -540,6 +555,8 @@ jobs:
           labels: needs-human-review
           draft: true
 ```
+
+> **Note:** The `./actions/coding-agent` step is a placeholder for your organization’s internal agent runner. Replace it with your approved agent execution mechanism.
 
 ## Common Challenges
 

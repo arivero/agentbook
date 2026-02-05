@@ -1,9 +1,15 @@
 ---
-title: "Chapter 6: GitHub Agents"
+title: "GitHub Agents"
 order: 6
 ---
 
-# Chapter 6: GitHub Agents
+# GitHub Agents
+
+## Chapter Preview
+
+- Describe how agents operate inside GitHub issues, PRs, and Actions.
+- Show safe assignment, review, and approval flows.
+- Map GitHub agent capabilities to real repository workflows.
 
 ## Understanding GitHub Agents
 
@@ -15,7 +21,7 @@ This chapter explores the landscape of GitHub Agents, their capabilities, and ho
 
 ### GitHub Copilot
 
-GitHub Copilot is the foundation of GitHub's AI-powered development tools. It provides:
+GitHub Copilot (<https://docs.github.com/en/copilot>) is the foundation of GitHub's AI-powered development tools. It provides:
 
 - **Code Completion**: Real-time suggestions as you type
 - **Chat Interface**: Natural language conversations about code
@@ -33,7 +39,7 @@ def validate_email(email):
 
 ### GitHub Copilot Coding Agent
 
-The Coding Agent extends Copilot's capabilities to autonomous task completion:
+The Coding Agent extends Copilot's capabilities to autonomous task completion. See <https://docs.github.com/en/copilot/how-tos/use-copilot-agents/coding-agent> for the supported assignment and review flow:
 
 - **Assigned Tasks**: Receives issues or requests and works independently
 - **Multi-File Changes**: Can modify multiple files across a codebase
@@ -63,15 +69,19 @@ jobs:
   agent-task:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Process with Agent
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           script: |
             // Agent logic to analyze and respond
             const issue = context.payload.issue;
             // ... agent processing
 ```
+
+> **Tip:** In production workflows, pin third-party actions to a full commit SHA to reduce supply-chain risk.
+
+> **Warning:** Require human approval before any agent-created PR is merged, and log all agent actions for auditability.
 
 ## Agent Capabilities
 
@@ -119,7 +129,7 @@ Single agents have limitations. Multi-agent systems provide:
 
 Agents work in sequence, each building on the previous:
 
-```
+```text
 Issue → ACK Agent → Research Agent → Writer Agent → Review Agent → Complete
 ```
 
@@ -164,7 +174,7 @@ jobs:
 
 Agents work until human decision is needed:
 
-```
+```text
 Agents work → Human checkpoint → Agents continue
 ```
 
@@ -184,7 +194,7 @@ When agents need to pass context to each other:
 ```yaml
 # Example: Structured agent output
 - name: Agent Report
-  uses: actions/github-script@v7
+  uses: actions/github-script@v8
   with:
     script: |
       const report = {
@@ -257,7 +267,7 @@ Agents should handle failures gracefully:
 - name: Agent Task with Error Handling
   id: agent_task
   continue-on-error: true
-  uses: actions/github-script@v7
+  uses: actions/github-script@v8
   with:
     script: |
       try {
@@ -280,7 +290,7 @@ Agents should handle failures gracefully:
 
 ## Best Practices
 
-### 1. Clear Agent Personas
+### Clear Agent Personas
 
 Give each agent a clear identity and responsibility:
 
@@ -292,7 +302,7 @@ Give each agent a clear identity and responsibility:
 **Hand Off To:** Writer Agent after research is complete
 ```
 
-### 2. Structured Communication
+### Structured Communication
 
 Use consistent formats for agent-to-agent communication:
 
@@ -307,7 +317,7 @@ Use consistent formats for agent-to-agent communication:
 ### Next Stage: [stage-name]
 ```
 
-### 3. Human Checkpoints
+### Human Checkpoints
 
 Always include human review points:
 
@@ -315,7 +325,7 @@ Always include human review points:
 - After agent recommendations
 - Before closing issues
 
-### 4. Audit Trail
+### Audit Trail
 
 Maintain visibility into agent actions:
 
@@ -323,7 +333,7 @@ Maintain visibility into agent actions:
 - Use labels to track workflow state
 - Log important decisions and reasoning
 
-### 5. Graceful Degradation
+### Graceful Degradation
 
 Design for agent failures:
 
@@ -395,7 +405,7 @@ This very book uses GitHub Agents for self-maintenance:
 
 ### How It Works
 
-```
+```text
 ┌─────────────┐     ┌─────────────┐     ┌─────────────┐
 │    Issue    │ ──▶ │ ACK Agent   │ ──▶ │  Research   │
 │   Opened    │     │             │     │   Agent     │
@@ -419,13 +429,12 @@ This very book uses GitHub Agents for self-maintenance:
 The workflow is defined using GitHub Agentic Workflows (GH-AW). The repository includes:
 - GH-AW workflows: `.github/workflows/issue-*.lock.yml`
 - Agent definitions: `.github/agents/*.md`
-- Legacy fallback: `.github/workflows/process-suggestions.yml`
 
 For a detailed explanation of the workflow architecture and why GH-AW is the canonical approach, see the repository's [WORKFLOWS.md](../../WORKFLOWS.md) documentation.
 
 ## Multi-Agent Platform Compatibility
 
-Modern repositories need to support multiple AI agent platforms. Different coding assistants—GitHub Copilot, Claude, OpenAI Codex, and others—each have their own ways of receiving project-specific instructions. This section explains how to structure a repository for cross-platform agent compatibility.
+Modern repositories need to support multiple AI agent platforms. Different coding assistants—GitHub Copilot (<https://docs.github.com/en/copilot>), Claude (<https://code.claude.com/docs>), OpenAI Codex (<https://openai.com/index/introducing-codex/>), and others—each have their own ways of receiving project-specific instructions. This section explains how to structure a repository for cross-platform agent compatibility.
 
 ### The Challenge of Agent Diversity
 
@@ -433,7 +442,7 @@ When multiple AI agents work with your repository, you face a coordination chall
 
 - **GitHub Copilot** reads `.github/copilot-instructions.md` for project-specific guidance
 - **Claude** uses `CLAUDE.md` for dedicated configuration, or can read `AGENTS.md` files for project context
-- **Codex/ChatGPT** can be configured with custom instructions or system prompts
+- **OpenAI Codex (GPT-5.2-Codex)** can be configured with system instructions and skills packaged via `SKILL.md` (see <https://platform.openai.com/docs/guides/codex/skills>)
 - **Generic agents** look for `AGENTS.md` as the emerging standard
 
 Each platform has slightly different expectations, but the core information they need is similar.
@@ -496,7 +505,7 @@ For maximum compatibility across AI agent platforms, follow these practices:
 
 Example hierarchy:
 
-```
+```text
 project/
 ├── AGENTS.md                      # Canonical agent instructions
 ├── CLAUDE.md                      # Claude-specific (may reference AGENTS.md)
@@ -511,7 +520,7 @@ project/
 This book repository demonstrates multi-platform compatibility:
 
 - **`.github/copilot-instructions.md`** - Detailed Copilot configuration with project structure, coding guidelines, and constraints
-- **Chapters 4 and 7** discuss AGENTS.md as the emerging standard
+- **Skills and Tools Management** and **Agents for Coding** discuss AGENTS.md as the emerging standard
 - **Documentation files** (README, CONTRIBUTING, etc.) provide context any agent can use
 - **GH-AW workflows** use the `engine: copilot` setting but the pattern works with other engines
 
@@ -586,10 +595,10 @@ These files configure how AI agents work with this repository:
 
 These documents serve as both useful references and examples of how to structure documentation for projects using agentic workflows.
 
-### Related Chapters
+### Related Sections
 
-- **[Chapter 4: Skills and Tools](04-skills-tools.md)** - Covers AGENTS.md standard and MCP protocol for tool management
-- **[Chapter 5: GitHub Agentic Workflows](05-gh-agentic-workflows.md)** - GH-AW specification and engine configuration
-- **[Chapter 7: Agents for Coding](07-agents-for-coding.md)** - Detailed coverage of coding agent platforms
+- **[Skills and Tools Management](04-skills-tools.md)** - Covers AGENTS.md standard and MCP protocol for tool management
+- **[GitHub Agentic Workflows (GH-AW)](05-gh-agentic-workflows.md)** - GH-AW specification and engine configuration
+- **[Agents for Coding](07-agents-for-coding.md)** - Detailed coverage of coding agent platforms
 
 ---

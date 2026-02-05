@@ -13,11 +13,7 @@ This book is a living document that explores the fascinating world of agentic wo
 
 ## Structure
 
-1. [Introduction to Agentic Workflows](chapters/01-introduction.md)
-2. [Agent Orchestration](chapters/02-orchestration.md)
-3. [Agentic Scaffolding](chapters/03-scaffolding.md)
-4. [Skills and Tools Management](chapters/04-skills-tools.md)
-5. [GitHub Agentic Workflows (GH-AW)](chapters/05-gh-agentic-workflows.md)
+The manuscript lives in `book/chapters/` and is assembled into the HTML and PDF outputs during the build.
 
 ## Contributing
 

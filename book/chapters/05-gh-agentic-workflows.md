@@ -1,13 +1,19 @@
 ---
-title: "Chapter 5: GitHub Agentic Workflows (GH-AW)"
+title: "GitHub Agentic Workflows (GH-AW)"
 order: 5
 ---
 
-# Chapter 5: GitHub Agentic Workflows (GH-AW)
+# GitHub Agentic Workflows (GH-AW)
+
+## Chapter Preview
+
+- Explain how GH-AW compiles markdown into deterministic workflows.
+- Show how to set up GH-AW with the supported setup actions.
+- Highlight safety controls (permissions, safe outputs, approvals).
 
 ## Why GH-AW Matters
 
-GitHub Agentic Workflows (GH-AW) turns natural language into automated repository agents that run inside GitHub Actions. Instead of writing large YAML pipelines by hand, you write markdown instructions that an AI agent executes with guardrails. The result is a workflow you can read like documentation but run like automation.
+GitHub Agentic Workflows (GH-AW) (<https://github.github.io/gh-aw/>) turns natural language into automated repository agents that run inside GitHub Actions. Instead of writing large YAML pipelines by hand, you write markdown instructions that an AI agent executes with guardrails. The result is a workflow you can read like documentation but run like automation.
 
 At a glance, GH-AW provides:
 
@@ -58,7 +64,7 @@ GH-AW compiles markdown workflows into `.lock.yml` GitHub Actions workflows. The
 
 Both the source markdown files and the compiled `.lock.yml` files live in the `.github/workflows/` directory:
 
-```
+```text
 .github/workflows/
 ├── triage.md          # Source (human-editable)
 ├── triage.lock.yml    # Compiled (auto-generated, do not edit)
@@ -66,7 +72,16 @@ Both the source markdown files and the compiled `.lock.yml` files live in the `.
 └── docs-refresh.lock.yml
 ```
 
-Use `gh aw compile` in your repository root to generate `.lock.yml` files from your markdown sources. Only edit the `.md` files; the `.lock.yml` files are regenerated on compile.
+Use `gh aw compile` (from the GH-AW CLI at <https://github.com/github/gh-aw>) in your repository root to generate `.lock.yml` files from your markdown sources. Only edit the `.md` files; the `.lock.yml` files are regenerated on compile.
+
+If you do not vendor the GH-AW `actions/` directory in your repository, you can instead reference the upstream setup action directly (pin to a commit SHA for security):
+
+```yaml
+- name: Setup GH-AW scripts
+  uses: github/gh-aw/actions/setup@5a4d651e3bd33de46b932d898c20c5619162332e
+  with:
+    destination: /opt/gh-aw/actions
+```
 
 ### Key Behaviors
 
@@ -115,22 +130,30 @@ jobs:
   agent:
     runs-on: ubuntu-latest
     steps:
-      - name: Run GH-AW agent
-        uses: github/agentic-workflows@v1
+      - name: Checkout actions folder
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
         with:
-          engine: copilot
-          tools: github:issues
-          prompt: |
-            # Triage this issue
-            Read issue #${{ github.event.issue.number }} and summarize it.
-            Then add labels: needs-triage and needs-owner.
+          sparse-checkout: |
+            actions
+          persist-credentials: false
+      - name: Setup GH-AW scripts
+        uses: ./actions/setup
+        with:
+          destination: /opt/gh-aw/actions
+      - name: Run GH-AW agent (generated)
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
+        with:
+          script: |
+            const { setupGlobals } = require('/opt/gh-aw/actions/setup_globals.cjs');
+            setupGlobals(core, github, context, exec, io);
+            // Generated execution script omitted for brevity.
 ```
 
 **What changed during compilation**
 
 - Frontmatter was converted into workflow metadata (`on`, `permissions`, `jobs`).
-- `engine` and `tools` moved into the `with:` block for the GH-AW runner.
-- The markdown body became the `prompt` payload executed by the agent.
+- Generated steps reference the GH-AW scripts copied by the setup action.
+- The markdown body became the prompt payload executed by the agent runtime.
 
 ### Example 2: Reusable Component + Import
 
@@ -173,14 +196,23 @@ jobs:
   agent:
     runs-on: ubuntu-latest
     steps:
-      - name: Run GH-AW agent
-        uses: github/agentic-workflows@v1
+      - name: Checkout actions folder
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
         with:
-          engine: copilot
-          tools: bash,edit
-          prompt: |
-            # Refresh docs
-            Update the changelog with the latest release notes.
+          sparse-checkout: |
+            actions
+          persist-credentials: false
+      - name: Setup GH-AW scripts
+        uses: ./actions/setup
+        with:
+          destination: /opt/gh-aw/actions
+      - name: Run GH-AW agent (generated)
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
+        with:
+          script: |
+            const { setupGlobals } = require('/opt/gh-aw/actions/setup_globals.cjs');
+            setupGlobals(core, github, context, exec, io);
+            // Generated execution script omitted for brevity.
 ```
 
 **What changed during compilation**
@@ -225,27 +257,35 @@ jobs:
   agent:
     runs-on: ubuntu-latest
     steps:
-      - name: Run GH-AW agent
-        uses: github/agentic-workflows@v1
+      - name: Checkout actions folder
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
         with:
-          engine: copilot
-          tools: edit
-          safe-outputs:
-            pull_request_body:
-              format: markdown
-          prompt: |
-            # Draft release notes
-            Summarize commits since the last tag and open a PR with the notes.
+          sparse-checkout: |
+            actions
+          persist-credentials: false
+      - name: Setup GH-AW scripts
+        uses: ./actions/setup
+        with:
+          destination: /opt/gh-aw/actions
+      - name: Run GH-AW agent (generated)
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
+        with:
+          script: |
+            const { setupGlobals } = require('/opt/gh-aw/actions/setup_globals.cjs');
+            setupGlobals(core, github, context, exec, io);
+            // Generated execution script omitted for brevity.
 ```
 
 **What changed during compilation**
 
-- `safe_outputs` became `safe-outputs` input for the GH-AW runner.
+- `safe_outputs` was translated into the generated safe-output scripts invoked by the job.
 - The prompt stayed identical; guardrails are enforced by the compiled job.
 
 ## Tools, Safe Inputs, and Safe Outputs
 
 GH-AW workflows are designed for safety by default. Agents run with minimal access and must declare tools explicitly.
+
+> **Warning:** Treat CI secrets and tokens as production credentials. Use least-privilege permissions, require human approval for write actions, and keep all agent actions auditable.
 
 ### Tools
 

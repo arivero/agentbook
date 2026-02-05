@@ -31,11 +31,11 @@ jobs:
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
     
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Combine markdown files
         run: |
-          cat book/README.md > combined.md
+          cat book/chapters/00-front-matter.md > combined.md
           echo -e "\n\n" >> combined.md
           cat book/chapters/01-introduction.md >> combined.md
           echo -e "\n\n" >> combined.md
@@ -52,6 +52,8 @@ jobs:
           cat book/chapters/07-agents-for-coding.md >> combined.md
           echo -e "\n\n" >> combined.md
           cat book/chapters/08-agents-for-math-physics.md >> combined.md
+          echo -e "\n\n" >> combined.md
+          cat book/chapters/99-bibliography.md >> combined.md
 
       - name: Convert to PDF
         run: |

@@ -6,61 +6,9 @@ This repository implements a **living, self-maintaining book** about agentic wor
 
 ## What Was Created
 
-### 📚 Book Content (2500+ lines)
+### 📚 Book Content
 
-**8 Comprehensive Chapters:**
-
-1. **Introduction to Agentic Workflows** (2,982 characters)
-   - Defines agentic workflows and key concepts
-   - Explains advantages over traditional automation
-   - Covers real-world applications
-   - Describes the agent development lifecycle
-
-2. **Agent Orchestration** (4,744 characters)
-   - Orchestration patterns (Sequential, Parallel, Hierarchical, Event-Driven)
-   - Coordination mechanisms
-   - Best practices and frameworks
-   - Real-world example: This self-updating book
-
-3. **Agentic Scaffolding** (9,582 characters)
-   - Core components (Tool Access, Context, Environment, Communication)
-   - Scaffolding patterns and templates
-   - Step-by-step building guide
-   - Common pitfalls to avoid
-
-4. **Skills and Tools Management** (15,864 characters)
-   - Tools vs. Skills distinction
-   - Tool design principles
-   - Creating custom tools with examples
-   - Skill development and composition
-   - Import and registry patterns
-
-5. **GitHub Agentic Workflows (GH-AW)**
-   - GH-AW workflow structure and compilation model
-   - Imports, tools, and safe outputs
-   - ResearchPlanAssign for continuous book updates
-
-6. **GitHub Agents** (11,700+ characters)
-   - GitHub Copilot and Copilot Coding Agent
-   - Agent capabilities and limitations
-   - Multi-agent orchestration patterns
-   - Implementing GitHub Agents
-   - Security considerations
-   - Real-world example: This book's multi-agent workflow
-
-7. **Agents for Coding**
-   - Evolution from autocomplete to autonomous coding agents
-   - Single-agent vs multi-agent architectures
-   - The AGENTS.md standard for project configuration
-   - Leading platforms (GitHub Copilot, Claude Code, Cursor AI)
-   - Best practices for coding agent deployment
-
-8. **Agents for Mathematics and Physics**
-   - Theorem proving agents and proof assistants
-   - Symbolic computation with CAS integration
-   - Physics simulation agents
-   - Educational scaffolding for STEM
-   - Verification pipelines and reproducibility
+The manuscript lives in `book/chapters/` and is assembled into HTML and PDF outputs during the build. Content focuses on agentic workflows, orchestration, scaffolding, skills/tools, and operational safety practices.
 
 ### 🌐 GitHub Pages Setup
 
@@ -69,14 +17,13 @@ This repository implements a **living, self-maintaining book** about agentic wor
 - `_layouts/default.html`: Main page layout with navigation
 - `_layouts/post.html`: Blog post layout
 - `index.md`: Homepage introducing the book
-- `book/index.md`: Book table of contents
-- `book/chapters/00-toc.md`: Chapter navigation
+- `book/index.md`: Book landing page
 - `blog/index.md`: Blog listing page
 - `_posts/2026-02-04-welcome.md`: Welcome blog post
 
 ### 🤖 GitHub Actions Workflows
 
-**3 Automated Workflows:**
+**Automated Workflows:**
 
 1. **`pages.yml`**: Deploy to GitHub Pages
    - Triggers on push to main branch
@@ -87,19 +34,9 @@ This repository implements a **living, self-maintaining book** about agentic wor
 2. **`build-pdf.yml`**: Generate PDF Version
    - Triggers on changes to book content
    - Uses optimized Docker container (pandoc/latex)
-   - Combines all chapters (including Chapter 6)
+   - Combines the manuscript into a single PDF
    - Creates downloadable PDF artifact
    - Secure permissions configuration
-
-3. **`process-suggestions.yml`**: Multi-Agent Issue Processing
-   - Triggers on new issues and label changes
-   - **Stage 1**: ACK Agent acknowledges and validates
-   - **Stage 2**: Research Agent analyzes novelty
-   - **Stage 3**: Multi-model discussion (Claude & Copilot perspectives)
-   - **Stage 4**: Writer Agent drafts content
-   - **Stage 5**: Completion Agent finalizes and closes
-   - Human checkpoints for quality control
-   - Label-based workflow state management
 
 ### 📋 Documentation
 
@@ -192,18 +129,9 @@ agentbook/
 │   └── workflows/
 │       ├── pages.yml                 # Deploy to GitHub Pages
 │       ├── build-pdf.yml             # Generate PDF
-│       └── process-suggestions.yml   # Multi-agent issue processing
+│       └── issue-*.lock.yml           # GH-AW compiled workflows
 ├── book/
-│   ├── chapters/
-│   │   ├── 00-toc.md                 # Table of contents
-│   │   ├── 01-introduction.md        # Chapter 1
-│   │   ├── 02-orchestration.md       # Chapter 2
-│   │   ├── 03-scaffolding.md         # Chapter 3
-│   │   ├── 04-skills-tools.md        # Chapter 4
-│   │   ├── 05-gh-agentic-workflows.md # Chapter 5
-│   │   ├── 06-github-agents.md       # Chapter 6
-│   │   ├── 07-agents-for-coding.md   # Chapter 7
-│   │   └── 08-agents-for-math-physics.md # Chapter 8
+│   ├── chapters/                     # Manuscript sources
 │   ├── README.md                     # Book introduction
 │   └── index.md                      # Book homepage
 ├── blog/
@@ -228,10 +156,9 @@ agentbook/
 - **Total Files Created**: 30+
 - **Lines of Book Content**: 3,000+
 - **Total Documentation**: ~20,000 words
-- **Chapters**: 8 comprehensive chapters
 - **Agent Definitions**: 7 GH-AW agent files
-- **Workflows**: 6 automated workflows (3 GH-AW + 3 standard)
-- **Code Examples**: 60+ throughout chapters
+- **Workflows**: GH-AW issue workflows + standard Pages/PDF workflows
+- **Code Examples**: 60+ throughout the manuscript
 
 ## Next Steps for Users
 
@@ -244,10 +171,9 @@ agentbook/
 
 ### To Extend:
 
-1. **Add More Chapters**: Follow the existing pattern
-2. **Enhance Workflows**: Add AI-powered content generation
-3. **Improve Processing**: Add more sophisticated issue analysis
-4. **Community Building**: Encourage contributions
+1. **Enhance Workflows**: Add AI-powered content generation
+2. **Improve Processing**: Add more sophisticated issue analysis
+3. **Community Building**: Encourage contributions
 
 ## Achievement Summary
 

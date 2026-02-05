@@ -39,14 +39,14 @@ For the `main` branch:
 - **Output**: Artifact available in Actions tab
 - **Note**: On tagged releases, PDF is attached to the release
 
-### 3. Process Issue Suggestions (`process-suggestions.yml`)
+### 3. Process Issue Suggestions (GH-AW workflows)
 - **Trigger**: New issues opened or labeled
-- **Purpose**: Auto-labels and processes suggestions
+- **Purpose**: Agentic issue processing using GH-AW compiled workflows
 - **Features**:
-  - Automatically labels new issues
-  - Checks relevance to book topics
-  - Comments with next steps
-  - Prepares issues for agent processing
+  - Automated triage and acknowledgment
+  - Research synthesis and recommendations
+  - Fast-track path for small changes
+  - Human review checkpoints before merge
 
 ## Labels
 
@@ -147,11 +147,11 @@ pandoc combined.md -o book.pdf --pdf-engine=xelatex --toc --number-sections
 
 ## Further Customization
 
-### Adding New Chapters
+### Adding New Sections
 
-1. Create markdown file in `book/chapters/`
+1. Create a markdown file in `book/chapters/`
 2. Update `book/index.md` table of contents
-3. Update PDF build workflow to include the new chapter
+3. Update the PDF build workflow to include the new section
 
 ### Modifying Issue Templates
 

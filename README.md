@@ -22,29 +22,7 @@ This book doesn't just teach about agentic workflows—it **uses them**! The boo
 
 ## 🎯 What You'll Learn
 
-### [Agentic Workflows](book/chapters/01-introduction.md)
-Understanding how AI agents can automate complex tasks and adapt to changing requirements.
-
-### [Agent Orchestration](book/chapters/02-orchestration.md)
-Coordinating multiple agents to work together effectively toward common goals.
-
-### [Agentic Scaffolding](book/chapters/03-scaffolding.md)
-Building the infrastructure and frameworks that enable agents to operate effectively.
-
-### [Skills and Tools Management](book/chapters/04-skills-tools.md)
-How to create, import, and compose agent capabilities for maximum effectiveness.
-
-### [GitHub Agentic Workflows (GH-AW)](book/chapters/05-gh-agentic-workflows.md)
-How GH-AW turns markdown into secure, composable repository automation.
-
-### [GitHub Agents](book/chapters/06-github-agents.md)
-Deep dive into GitHub Copilot, Copilot Coding Agent, and multi-agent orchestration.
-
-### [Agents for Coding](book/chapters/07-agents-for-coding.md)
-Specialized architectures and scaffolding patterns for coding agents, including the AGENTS.md standard.
-
-### [Agents for Mathematics and Physics](book/chapters/08-agents-for-math-physics.md)
-Scientific agents for theorem proving, symbolic computation, and physics simulations.
+The book covers practical patterns for agentic workflows, safe orchestration, skills and tooling, and real-world automation in GitHub and beyond. Browse the source in the `book/` directory or read it online for the full flow.
 
 ## 🚀 How It Works
 
@@ -101,7 +79,7 @@ github-pages serve
 agentbook/
 ├── book/                    # Book content
 │   ├── README.md           # Book introduction
-│   └── chapters/           # Book chapters
+│   └── chapters/           # Manuscript sources
 ├── blog/                   # Blog posts
 ├── _layouts/               # Jekyll layouts
 ├── _posts/                 # Blog post files
@@ -123,7 +101,6 @@ Our repository uses **GitHub Agentic Workflows (GH-AW)** as the canonical approa
   - `issue-triage-lite.lock.yml`: Initial triage and acknowledgment
   - `issue-synthesis.lock.yml`: Research synthesis and recommendations
   - `issue-fast-track.lock.yml`: Fast-track small changes
-- **`process-suggestions.yml`**: Legacy multi-stage workflow (maintained as fallback/example)
 
 See [WORKFLOWS.md](WORKFLOWS.md) for detailed workflow documentation and the rationale for using GH-AW.
 
@@ -135,7 +112,7 @@ This work is licensed under the [MIT License](LICENSE) and available for educati
 
 - **[README](README.md)** - Project overview and quick start
 - **[CONTRIBUTING](CONTRIBUTING.md)** - How to contribute content
-- **[WORKFLOWS](WORKFLOWS.md)** - Detailed workflow guide (GH-AW vs legacy)
+- **[WORKFLOWS](WORKFLOWS.md)** - Detailed workflow guide for GH-AW automation
 - **[SETUP](SETUP.md)** - Installation and configuration guide
 - **[WORKFLOW_PLAYBOOK](WORKFLOW_PLAYBOOK.md)** - GH-AW maintenance process
 - **[PROJECT_SUMMARY](PROJECT_SUMMARY.md)** - Comprehensive project overview
