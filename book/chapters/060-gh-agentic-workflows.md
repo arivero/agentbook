@@ -74,6 +74,14 @@ If you do not vendor the GH-AW `actions/` directory in your repository, you can 
 
 There are three key behaviours to understand about the compilation model. First, **frontmatter edits require recompile**—any changes to triggers, permissions, tools, or engine settings must be followed by running `gh aw compile` to regenerate the lock file. Second, **markdown instruction updates can often be edited directly** because the runtime loads the markdown body at execution time; however, structural changes may still require recompilation. Third, **shared components** can be stored as markdown files without an `on:` trigger; these are imported rather than compiled, allowing reuse without duplication.
 
+### Compilation Pitfalls
+
+GH-AW compilation is predictable, but a few pitfalls are common in real repositories.
+
+**Only compile workflow markdown.** The compiler expects frontmatter with an `on:` trigger. Non-workflow files like `AGENTS.md` or general docs should not be passed to `gh aw compile`. Use `gh aw compile <workflow-id>` to target specific workflows when the directory includes other markdown files.
+
+**Strict mode rejects direct write permissions.** GH-AW runs in strict mode by default; you can opt out by adding `strict: false` to the workflow frontmatter, but the recommended path is to keep strict mode on. Workflows that request `issues: write`, `pull-requests: write`, or `contents: write` will fail validation in strict mode. Use read-only permissions plus `safe-outputs` for labels, comments, and PR creation instead.
+
 ## Compilation Model Examples
 
 GH-AW compilation is mostly a structural translation: frontmatter becomes the workflow header, the markdown body is packaged as a script or prompt payload, and imports are inlined or referenced. The compiled `.lock.yml` is the contract GitHub Actions executes. The examples below show how a markdown workflow turns into a compiled job.
@@ -89,16 +97,22 @@ on:
     types: [opened]
 permissions:
   contents: read
-  issues: write
+  issues: read
 tools:
   github:
     toolsets: [issues]
+safe-outputs:
+  add-comment:
+    max: 1
+  add-labels:
+    allowed: [needs-triage, needs-owner]
+    max: 2
 engine: copilot
 ---
 
 # Triage this issue
 Read issue #${{ github.event.issue.number }} and summarize it.
-Then add labels: needs-triage and needs-owner.
+Then suggest labels: needs-triage and needs-owner.
 ```
 
 **Compiled workflow (`.github/workflows/triage.lock.yml`)**
@@ -110,7 +124,7 @@ on:
     types: [opened]
 permissions:
   contents: read
-  issues: write
+  issues: read
 jobs:
   agent:
     runs-on: ubuntu-latest
@@ -139,6 +153,7 @@ jobs:
 - Frontmatter was converted into workflow metadata (`on`, `permissions`, `jobs`).
 - Generated steps reference the GH-AW scripts copied by the setup action.
 - The markdown body became the prompt payload executed by the agent runtime.
+- `safe-outputs` declarations were compiled into guarded output steps.
 
 ### Example 2: Reusable Component + Import
 
@@ -160,9 +175,12 @@ engine: copilot
 on:
   workflow_dispatch:
 permissions:
-  contents: write
+  contents: read
 imports:
   - shared/common-tools.md
+safe-outputs:
+  create-pull-request:
+    max: 1
 ---
 
 # Refresh docs
@@ -176,7 +194,7 @@ name: GH-AW docs refresh
 on:
   workflow_dispatch:
 permissions:
-  contents: write
+  contents: read
 jobs:
   agent:
     runs-on: ubuntu-latest
@@ -205,6 +223,7 @@ jobs:
 - `imports` were resolved and merged with the workflow frontmatter.
 - The component’s `tools` and `engine` were applied to the final workflow.
 - Only workflows with `on:` are compiled; components remain markdown-only.
+- Read-only permissions pair with `safe-outputs` to stage changes safely.
 
 ### Example 3: Safe Outputs in the Compiled Job
 
@@ -216,17 +235,16 @@ on:
   workflow_dispatch:
 permissions:
   contents: read
-  pull-requests: write
 tools:
   edit:
-safe_outputs:
-  pull_request_body:
-    format: markdown
+safe-outputs:
+  create-pull-request:
+    max: 1
 engine: copilot
 ---
 
 # Draft release notes
-Summarize commits since the last tag and open a PR with the notes.
+Summarize commits since the last tag and propose a PR with the notes.
 ```
 
 **Compiled workflow (`.github/workflows/release-notes.lock.yml`)**
@@ -237,7 +255,6 @@ on:
   workflow_dispatch:
 permissions:
   contents: read
-  pull-requests: write
 jobs:
   agent:
     runs-on: ubuntu-latest
@@ -263,7 +280,7 @@ jobs:
 
 **What changed during compilation**
 
-- `safe_outputs` was translated into the generated safe-output scripts invoked by the job.
+- `safe-outputs` was translated into the generated safe-output scripts invoked by the job.
 - The prompt stayed identical; guardrails are enforced by the compiled job.
 
 ## Tools, Safe Inputs, and Safe Outputs
@@ -279,6 +296,25 @@ Tools are capabilities the agent can use. The **edit** tool allows the agent to 
 ### Safe Outputs
 
 Write actions (creating issues, comments, commits) can be routed through safe outputs to sanitize what the agent writes. This keeps the core job read-only and limits accidental changes.
+
+In strict mode, safe outputs are required for write operations. Declare them in frontmatter to specify what the agent can produce:
+
+```yaml
+safe-outputs:
+  add-comment:
+    max: 1
+  add-labels:
+    allowed: [needs-triage, needs-owner]
+    max: 2
+  create-pull-request:
+    max: 1
+```
+
+The agent generates structured output that downstream steps apply, keeping repository writes explicit and auditable.
+
+`max` caps how many outputs of a given type are accepted; extra outputs are rejected by the safe-output validator.
+
+When using `add-labels`, keep the `allowed` list in sync with labels that already exist in the repository; missing labels cause runtime output failures when the safe-output job applies them.
 
 ### Safe Inputs
 
