@@ -23,9 +23,9 @@ A living book about agentic workflows, agent orchestration, and agentic scaffold
 
 {% for chapter in chapter_pages %}
 {% if chapter.order > 0 %}
-<section id="chapter-{{ chapter.order }}" class="book-chapter">
+<article id="chapter-{{ chapter.order }}" class="book-chapter">
 {{ chapter.content }}
 <hr />
-</section>
+</article>
 {% endif %}
 {% endfor %}
