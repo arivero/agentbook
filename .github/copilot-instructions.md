@@ -257,6 +257,13 @@ Pull requests and changes should:
 - ✅ Include practical, working code examples
 - ✅ Enhance the educational value of the book
 
+## AGENTS.md Convention
+
+Before working in any directory, always read the `AGENTS.md` file located in that directory (if one exists) for directory-specific conventions and constraints. Key locations:
+
+- `/AGENTS.md` – top-level contributor notes.
+- `.github/workflows/AGENTS.md` – workflow authoring rules and label lifecycle.
+
 ---
 
 **Remember**: This book teaches by example. The quality of the implementation reflects the quality of the concepts being taught. Write code and content as if you're demonstrating best practices to learners.

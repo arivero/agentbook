@@ -1,6 +1,7 @@
 # Workflow authoring notes
 
 - Every agentic workflow source file (`*.md`) in this directory must be compiled into its executable lock workflow (`*.lock.yml`) using `gh aw` commands before merging.
+- **DO NOT** edit `*.lock.yml` files by hand. They are generated artifacts produced by `gh aw` from the corresponding `*.md` source. Always edit the `.md` source and recompile.
 - Keep source and compiled files in sync in the same PR.
 - Issue status labels must follow this lifecycle unless explicitly rejected/closed early:
   - `acknowledged`
