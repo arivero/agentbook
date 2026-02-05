@@ -1,5 +1,5 @@
 ---
-layout: book
+layout: default
 title: "Agentic Workflows: A Practical Guide"
 book_continuous: true
 ---
