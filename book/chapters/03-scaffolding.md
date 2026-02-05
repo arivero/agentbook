@@ -325,11 +325,11 @@ This book's scaffolding includes:
 
 ## Common Pitfalls
 
-❌ **Over-engineering**: Don't build scaffolding for hypothetical needs
-❌ **Tight Coupling**: Keep agents loosely coupled to scaffolding
-❌ **Poor Error Handling**: Always plan for failure scenarios
-❌ **No Monitoring**: You can't improve what you can't measure
-❌ **Ignoring Security**: Security must be built in, not bolted on
+X **Over-engineering**: Don't build scaffolding for hypothetical needs
+X **Tight Coupling**: Keep agents loosely coupled to scaffolding
+X **Poor Error Handling**: Always plan for failure scenarios
+X **No Monitoring**: You can't improve what you can't measure
+X **Ignoring Security**: Security must be built in, not bolted on
 
 ## Key Takeaways
 

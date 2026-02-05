@@ -130,7 +130,7 @@ Single agents have limitations. Multi-agent systems provide:
 Agents work in sequence, each building on the previous:
 
 ```text
-Issue → ACK Agent → Research Agent → Writer Agent → Review Agent → Complete
+Issue -> ACK Agent -> Research Agent -> Writer Agent -> Review Agent -> Complete
 ```
 
 **Example workflow stages:**
@@ -175,7 +175,7 @@ jobs:
 Agents work until human decision is needed:
 
 ```text
-Agents work → Human checkpoint → Agents continue
+Agents work -> Human checkpoint -> Agents continue
 ```
 
 This pattern is essential for:
@@ -283,7 +283,7 @@ Agents should handle failures gracefully:
           owner: context.repo.owner,
           repo: context.repo.repo,
           issue_number: context.issue.number,
-          body: `⚠️ Agent encountered an error: ${error.message}`
+          body: `WARNING: Agent encountered an error: ${error.message}`
         });
       }
 ```
@@ -406,22 +406,22 @@ This very book uses GitHub Agents for self-maintenance:
 ### How It Works
 
 ```text
-┌─────────────┐     ┌─────────────┐     ┌─────────────┐
-│    Issue    │ ──▶ │ ACK Agent   │ ──▶ │  Research   │
-│   Opened    │     │             │     │   Agent     │
-└─────────────┘     └─────────────┘     └─────────────┘
-                                               │
-                                               ▼
-┌─────────────┐     ┌─────────────┐     ┌─────────────┐
-│  Complete   │ ◀── │   Writer    │ ◀── │  Multi-Model│
-│   Agent     │     │   Agent     │     │  Discussion │
-└─────────────┘     └─────────────┘     └─────────────┘
-                          │
-                          ▼
-                    ┌─────────────┐
-                    │  Human      │
-                    │  Review     │
-                    └─────────────┘
++-------------+     +-------------+     +-------------+
+| Issue       | --> | ACK Agent   | --> | Research    |
+| Opened      |     |             |     | Agent       |
++-------------+     +-------------+     +-------------+
+                                               |
+                                               v
++-------------+     +-------------+     +-------------+
+| Complete    | <-- | Writer      | <-- | Multi-Model |
+| Agent       |     | Agent       |     | Discussion  |
++-------------+     +-------------+     +-------------+
+                          |
+                          v
+                    +-------------+
+                    | Human       |
+                    | Review      |
+                    +-------------+
 ```
 
 ### Configuration
@@ -507,12 +507,12 @@ Example hierarchy:
 
 ```text
 project/
-├── AGENTS.md                      # Canonical agent instructions
-├── CLAUDE.md                      # Claude-specific (may reference AGENTS.md)
-├── .github/
-│   └── copilot-instructions.md    # Copilot-specific (may reference AGENTS.md)
-└── src/
-    └── AGENTS.md                  # Module-specific instructions
+|-- AGENTS.md                      # Canonical agent instructions
+|-- CLAUDE.md                      # Claude-specific (may reference AGENTS.md)
+|-- .github/
+|   `-- copilot-instructions.md    # Copilot-specific (may reference AGENTS.md)
+`-- src/
+    `-- AGENTS.md                  # Module-specific instructions
 ```
 
 ### This Repository's Approach

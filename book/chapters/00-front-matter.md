@@ -25,6 +25,9 @@ order: 0
 \end{center}
 \newpage
 
+\tableofcontents
+\newpage
+
 # Copyright {-}
 
 Copyright © 2026 Agentbook Contributors. All rights reserved.

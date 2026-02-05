@@ -66,10 +66,10 @@ Both the source markdown files and the compiled `.lock.yml` files live in the `.
 
 ```text
 .github/workflows/
-├── triage.md          # Source (human-editable)
-├── triage.lock.yml    # Compiled (auto-generated, do not edit)
-├── docs-refresh.md
-└── docs-refresh.lock.yml
+|-- triage.md          # Source (human-editable)
+|-- triage.lock.yml    # Compiled (auto-generated, do not edit)
+|-- docs-refresh.md
+`-- docs-refresh.lock.yml
 ```
 
 Use `gh aw compile` (from the GH-AW CLI at <https://github.com/github/gh-aw>) in your repository root to generate `.lock.yml` files from your markdown sources. Only edit the `.md` files; the `.lock.yml` files are regenerated on compile.

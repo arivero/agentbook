@@ -35,34 +35,18 @@ jobs:
 
       - name: Combine markdown files
         run: |
-          cat book/chapters/00-front-matter.md > combined.md
-          echo -e "\n\n" >> combined.md
-          cat book/chapters/01-introduction.md >> combined.md
-          echo -e "\n\n" >> combined.md
-          cat book/chapters/02-orchestration.md >> combined.md
-          echo -e "\n\n" >> combined.md
-          cat book/chapters/03-scaffolding.md >> combined.md
-          echo -e "\n\n" >> combined.md
-          cat book/chapters/04-skills-tools.md >> combined.md
-          echo -e "\n\n" >> combined.md
-          cat book/chapters/05-gh-agentic-workflows.md >> combined.md
-          echo -e "\n\n" >> combined.md
-          cat book/chapters/06-github-agents.md >> combined.md
-          echo -e "\n\n" >> combined.md
-          cat book/chapters/07-agents-for-coding.md >> combined.md
-          echo -e "\n\n" >> combined.md
-          cat book/chapters/08-agents-for-math-physics.md >> combined.md
-          echo -e "\n\n" >> combined.md
-          cat book/chapters/99-bibliography.md >> combined.md
+          chmod +x scripts/build-combined-md.sh
+          scripts/build-combined-md.sh combined.md
 
       - name: Convert to PDF
         run: |
           pandoc combined.md -o agentic-workflows-book.pdf \
             --pdf-engine=xelatex \
-            --toc \
             --number-sections \
             -V geometry:margin=1in \
-            -V documentclass=report
+            -V documentclass=report \
+            --listings \
+            --include-in-header=book/pandoc/latex-header.tex
 
       - name: Move PDF into repo
         run: |

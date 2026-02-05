@@ -220,13 +220,13 @@ The **AGENTS.md** file has emerged as the de facto standard for providing AI cod
 
 ```text
 project/
-├── AGENTS.md           # Root-level agent instructions
-├── src/
-│   └── AGENTS.md       # Module-specific instructions
-├── tests/
-│   └── AGENTS.md       # Testing conventions
-└── docs/
-    └── AGENTS.md       # Documentation guidelines
+|-- AGENTS.md           # Root-level agent instructions
+|-- src/
+|   `-- AGENTS.md       # Module-specific instructions
+|-- tests/
+|   `-- AGENTS.md       # Testing conventions
+`-- docs/
+    `-- AGENTS.md       # Documentation guidelines
 ```
 
 Agents use the nearest AGENTS.md file, enabling scoped configuration for monorepos or complex projects.
