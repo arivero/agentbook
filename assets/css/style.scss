@@ -2,3 +2,32 @@
 ---
 
 @import "jekyll-theme-minimal";
+
+/* Rebalance the two-column desktop layout */
+@media screen and (min-width: 961px) {
+  .wrapper {
+    /* keep it centred, but let it grow beyond 860px */
+    width: min(1280px, calc(100% - 80px));
+  }
+
+  header,
+  footer {
+    /* make the “decorative/misc” column narrower */
+    width: 220px;
+  }
+
+  section {
+    /* give the content column the rest (leave a gutter) */
+    width: calc(100% - 260px); /* 220 sidebar + ~40px gutter */
+  }
+}
+
+/* Make code blocks wrap instead of forcing horizontal scroll */
+pre,
+pre code,
+div.highlight pre,
+div.highlight code {
+  white-space: pre-wrap;       /* preserve indentation, allow wrapping */
+  overflow-wrap: anywhere;     /* break long tokens/URLs when needed */
+  word-break: break-word;      /* fallback for older engines */
+}
