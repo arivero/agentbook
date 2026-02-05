@@ -6,35 +6,43 @@
 // Custom overrides to fix layout issues
 // The jekyll-theme-minimal uses a fixed sidebar layout that causes overlays
 // with long content. We convert to a responsive single-column layout.
+// Note: !important is required to override the theme's styles since we 
+// import the theme first and need to ensure our overrides take precedence.
+
+// Ensure proper box-sizing for wrapper and its children
+.wrapper,
+.wrapper * {
+  box-sizing: border-box;
+}
 
 // Fix the fixed positioning that causes overlays
 // Change header and footer from fixed to static on all screen sizes
-header {
+.wrapper > header {
   position: static !important;
   float: none !important;
   width: 100% !important;
   margin-bottom: 30px;
-  z-index: auto !important;
+  z-index: auto;
 }
 
-footer {
+.wrapper > footer {
   position: static !important;
   float: none !important;
   width: 100% !important;
   margin-top: 30px;
   padding-top: 20px;
   border-top: 1px solid #e5e5e5;
-  z-index: auto !important;
+  z-index: auto;
   clear: both;
 }
 
 // Make section full width and remove float
-section {
+.wrapper > section {
   float: none !important;
   width: 100% !important;
   max-width: 800px;
   position: relative;
-  z-index: auto !important;
+  z-index: auto;
 }
 
 // Ensure wrapper is full width and centered
@@ -42,16 +50,15 @@ section {
   max-width: 900px;
   width: 100%;
   padding: 0 20px;
-  box-sizing: border-box;
 }
 
 // Override media query styles that might conflict
 @media print, screen and (max-width: 960px) {
-  header {
+  .wrapper > header {
     padding-right: 0 !important;
   }
   
-  section {
+  .wrapper > section {
     border: none !important;
     border-width: 0 !important;
     padding: 0 !important;
@@ -70,13 +77,8 @@ section {
   margin-top: 0;
 }
 
-// Ensure proper stacking and no overlays
-* {
-  box-sizing: border-box;
-}
-
 // Clear floats after main content sections
-section::after {
+.wrapper > section::after {
   content: "";
   display: table;
   clear: both;
