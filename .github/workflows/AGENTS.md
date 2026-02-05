@@ -4,13 +4,15 @@
 - **DO NOT** edit `*.lock.yml` files by hand. They are generated artifacts produced by `gh aw` from the corresponding `*.md` source. Always edit the `.md` source and recompile.
 - Keep source and compiled files in sync in the same PR.
 - If `gh extension install github/gh-aw` fails without `GH_TOKEN`, install via the script instead:
-  - `curl -sL https://raw.githubusercontent.com/github/gh-aw/main/install-gh-aw.sh | bash`
+  - `curl -sLO https://raw.githubusercontent.com/github/gh-aw/main/install-gh-aw.sh`
+  - Review the script (for example, `sed -n '1,160p' install-gh-aw.sh`)
+  - `bash install-gh-aw.sh`
   - Verify with `gh aw version`
 - Debug compilation errors with focused commands:
   - `gh aw compile <workflow-id> --json` for specific error messages
   - `gh aw compile --verbose` to see which files are being compiled
   - `gh aw compile <workflow-id>` for one workflow at a time (avoid compiling `AGENTS.md`, which has no frontmatter)
-  - If you see errors about write permissions, switch permissions to read-only and configure `safe-outputs` for labels/comments/PRs.
+  - If you see errors about write permissions, switch permissions to read-only and configure `safe-outputs` for labels/comments/PRs (see https://github.github.com/gh-aw/reference/safe-outputs/).
 - Issue status labels must follow this lifecycle unless explicitly rejected/closed early:
   - `acknowledged`
   - `triaged-fast-track` **or** `triaged-for-research`
