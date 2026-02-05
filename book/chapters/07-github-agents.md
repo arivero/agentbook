@@ -1,6 +1,6 @@
 ---
 title: "GitHub Agents"
-order: 6
+order: 7
 ---
 
 # GitHub Agents
@@ -598,7 +598,7 @@ These documents serve as both useful references and examples of how to structure
 ### Related Sections
 
 - **[Skills and Tools Management](04-skills-tools.md)** - Covers AGENTS.md standard and MCP protocol for tool management
-- **[GitHub Agentic Workflows (GH-AW)](05-gh-agentic-workflows.md)** - GH-AW specification and engine configuration
-- **[Agents for Coding](07-agents-for-coding.md)** - Detailed coverage of coding agent platforms
+- **[GitHub Agentic Workflows (GH-AW)](06-gh-agentic-workflows.md)** - GH-AW specification and engine configuration
+- **[Agents for Coding](08-agents-for-coding.md)** - Detailed coverage of coding agent platforms
 
 ---

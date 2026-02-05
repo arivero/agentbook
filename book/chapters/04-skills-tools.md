@@ -1151,6 +1151,8 @@ class PackageManifestReader:
 
 #### Document Import Conventions in AGENTS.md
 
+For standardized terminology (artefact, discovery, import, install, activate) and trust boundaries, see [Discovery and Imports](05-discovery-imports.md). In this section we apply those concepts to codebase-level import resolution.
+
 Include import guidance in your project's AGENTS.md:
 
 ```markdown
