@@ -2,7 +2,6 @@
 title: "Agentic Workflows"
 subtitle: "A Practical Guide"
 author: "Agentbook Contributors"
-date: "2026-02"
 lang: "en-US"
 order: 0
 ---
