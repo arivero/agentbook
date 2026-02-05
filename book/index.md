@@ -1,5 +1,5 @@
 ---
-layout: book
+layout: default
 title: "Agentic Workflows: A Practical Guide"
 book_continuous: true
 ---
@@ -7,6 +7,8 @@ book_continuous: true
 # Agentic Workflows: A Practical Guide
 
 A living book about agentic workflows, agent orchestration, and agentic scaffolding.
+
+[Download PDF](https://github.com/arivero/agentbook/raw/main/book/agentic-workflows-book.pdf)
 
 ## Chapters
 
