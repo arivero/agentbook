@@ -21,20 +21,20 @@ Agent orchestration is the art and science of coordinating multiple agents to wo
 Agents work one after another, each building on previous results.
 
 ```text
-Agent A → Agent B → Agent C → Result
+Agent A -> Agent B -> Agent C -> Result
 ```
 
 **Use cases**:
-- Code generation → Testing → Deployment
-- Data collection → Analysis → Reporting
+- Code generation -> Testing -> Deployment
+- Data collection -> Analysis -> Reporting
 
 ### Parallel Execution
 Multiple agents work simultaneously on independent tasks.
 
 ```text
-Agent A ↘
-Agent B → Aggregator → Result
-Agent C ↗
+Agent A \
+Agent B -> Aggregator -> Result
+Agent C /
 ```
 
 **Use cases**:
@@ -46,9 +46,9 @@ A supervisor agent delegates tasks to specialized worker agents.
 
 ```text
 Supervisor Agent
-    ├─> Worker A
-    ├─> Worker B
-    └─> Worker C
+    |--> Worker A
+    |--> Worker B
+    `--> Worker C
 ```
 
 **Use cases**:
@@ -59,7 +59,7 @@ Supervisor Agent
 Agents respond to events and trigger other agents.
 
 ```text
-Event → Agent A → Event → Agent B → Event → Agent C
+Event -> Agent A -> Event -> Agent B -> Event -> Agent C
 ```
 
 **Use cases**:

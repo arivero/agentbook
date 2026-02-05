@@ -917,13 +917,13 @@ AGENTS.md files can be placed hierarchically in a project:
 
 ```text
 project/
-├── AGENTS.md           # Root-level instructions (project-wide)
-├── src/
-│   └── AGENTS.md       # Module-specific instructions
-├── tests/
-│   └── AGENTS.md       # Testing conventions
-└── docs/
-    └── AGENTS.md       # Documentation guidelines
+|-- AGENTS.md           # Root-level instructions (project-wide)
+|-- src/
+|   `-- AGENTS.md       # Module-specific instructions
+|-- tests/
+|   `-- AGENTS.md       # Testing conventions
+`-- docs/
+    `-- AGENTS.md       # Documentation guidelines
 ```
 
 Agents use the nearest AGENTS.md file, enabling scoped configuration for monorepos or complex projects.

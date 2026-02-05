@@ -21,4 +21,4 @@ order: 0
 
 ---
 
-[← Back to Book Home](../index.html)
+[<- Back to Book Home](../index.html)
