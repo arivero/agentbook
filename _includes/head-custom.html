@@ -1,0 +1,32 @@
+{% include head-custom-google-analytics.html %}
+
+{% if page.book_continuous %}
+  {% capture toc_html %}{% include book-toc.html %}{% endcapture %}
+
+  <style>
+    .book-toc { margin-top: 1rem; }
+    .book-toc h2 { font-size: 1rem; margin: 0 0 .5rem 0; }
+    .book-toc ul { list-style: none; padding-left: 0; margin: 0; }
+    .book-toc li { margin: .25rem 0; }
+    .book-toc { max-height: calc(100vh - 260px); overflow-y: auto; }
+  </style>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const header = document.querySelector('.wrapper > header');
+      if (!header) return;
+
+      // Avoid duplicates if you add this later via a layout, etc.
+      if (header.querySelector('.book-toc')) return;
+
+      const nav = document.createElement('nav');
+      nav.className = 'book-toc';
+      nav.setAttribute('aria-label', 'Book contents');
+
+      // toc_html is rendered by Jekyll; jsonify makes it safe as a JS string literal
+      nav.innerHTML = '<h2>Contents</h2>' + {{ toc_html | jsonify }};
+
+      header.appendChild(nav);
+    });
+  </script>
+{% endif %}
