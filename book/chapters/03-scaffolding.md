@@ -7,9 +7,7 @@ order: 3
 
 ## Chapter Preview
 
-- Identify the scaffolding layers that make agentic workflows reliable.
-- Learn how to balance flexibility with safety controls.
-- Map scaffolding decisions to operational risks.
+This chapter identifies the scaffolding layers that make agentic workflows reliable, covering tool access, context management, execution environments, and communication protocols. It explains how to balance flexibility with safety controls, ensuring agents can accomplish their tasks without causing unintended harm. Finally, it maps scaffolding decisions to operational risks, helping you understand which architectural choices matter most for your use case.
 
 ## What Is Agentic Scaffolding?
 
@@ -305,36 +303,42 @@ class ResilientAgent:
 
 ## Scaffolding for This Book
 
-This book's scaffolding includes:
+This book's scaffolding includes several interconnected components.
 
-1. **GitHub Actions**: Workflow orchestration
-2. **Issue Templates**: Structured input for suggestions
-3. **Agent Scripts**: Python scripts for content management
-4. **Tool Access**: Git, markdown processors, PDF generators
-5. **State Management**: Git repository as persistent state
-6. **Communication**: GitHub API for coordination
+**GitHub Actions** provides workflow orchestration, triggering agents in response to issues, pull requests, and schedules. **Issue Templates** provide structured input for suggestions, ensuring agents receive information in a consistent format they can parse reliably. **Agent Scripts** are Python scripts for content management that handle tasks like generating tables of contents and updating cross-references. **Tool Access** includes Git for version control, markdown processors for content transformation, and PDF generators for final output. **State Management** uses the Git repository itself as persistent state, with commits recording the history of changes. **Communication** flows through the GitHub API, which provides the coordination layer for all agent interactions.
 
 ## Best Practices
 
-1. **Start Simple**: Build minimal scaffolding first, expand as needed
-2. **Security First**: Implement permissions and isolation from the start
-3. **Observability**: Log everything, you'll need it for debugging
-4. **Version Control**: Version your scaffolding alongside your agents
-5. **Documentation**: Document tools, APIs, and patterns clearly
-6. **Testing**: Test your scaffolding independently of agents
+**Start Simple.** Build minimal scaffolding first and expand only as needed. Over-engineering early creates maintenance burden without corresponding benefit; let actual requirements drive complexity.
+
+**Security First.** Implement permissions and isolation from the start, not as an afterthought. Retrofitting security into an existing architecture is far more difficult than designing it in from the beginning.
+
+**Observability.** Log everything—you will need it for debugging. When agents behave unexpectedly, logs are often the only way to reconstruct what happened and why.
+
+**Version Control.** Version your scaffolding alongside your agents. The two must evolve together, and tracking their relationship helps diagnose regressions.
+
+**Documentation.** Document tools, APIs, and patterns clearly. Agents rely on this documentation to use scaffolding correctly, and humans need it to maintain the system.
+
+**Testing.** Test your scaffolding independently of agents. This allows you to verify that infrastructure works correctly before introducing the additional variability of agent behaviour.
 
 ## Common Pitfalls
 
-X **Over-engineering**: Don't build scaffolding for hypothetical needs
-X **Tight Coupling**: Keep agents loosely coupled to scaffolding
-X **Poor Error Handling**: Always plan for failure scenarios
-X **No Monitoring**: You can't improve what you can't measure
-X **Ignoring Security**: Security must be built in, not bolted on
+**Over-engineering.** Building scaffolding for hypothetical needs wastes time and creates complexity that obscures the actual architecture. Wait until a requirement is real before addressing it.
+
+**Tight Coupling.** When agents depend heavily on specific scaffolding details, changes become risky and testing becomes difficult. Keep agents loosely coupled to scaffolding through well-defined interfaces.
+
+**Poor Error Handling.** Agents encounter failures—network timeouts, API errors, unexpected input. Scaffolding that does not plan for these scenarios will leave agents stuck or produce corrupt output.
+
+**No Monitoring.** You cannot improve what you cannot measure. Without visibility into how agents use scaffolding, you cannot identify bottlenecks or verify that changes help.
+
+**Ignoring Security.** Security must be built in, not bolted on. Scaffolding that allows unrestricted tool access or does not validate inputs creates vulnerabilities that grow harder to fix over time.
 
 ## Key Takeaways
 
-- Scaffolding provides the foundation for effective agent operation
-- Core components include tools, context, environment, and communication
-- Patterns like composition and resource management improve scalability
-- Build incrementally, focusing on security and observability
-- Good scaffolding makes agents more capable and easier to manage
+Scaffolding provides the foundation for effective agent operation, enabling capabilities that agents could not achieve in isolation. Core components include tools for interacting with the environment, context for maintaining state across invocations, execution environments for safe isolated operation, and communication protocols for agent coordination. Patterns like tool composition and resource management improve scalability by letting you combine simple pieces into complex capabilities. Build incrementally, focusing on security and observability as primary concerns rather than afterthoughts. Good scaffolding makes agents more capable and easier to manage by providing reliable infrastructure they can depend on.
+
+<!-- Edit notes:
+Sections expanded: Chapter Preview, Scaffolding for This Book, Best Practices (all six items), Common Pitfalls (all five items), Key Takeaways
+Lists preserved: None (all original lists were shorthand that read better as prose)
+Ambiguous phrases left ambiguous: None identified
+-->
