@@ -29,8 +29,8 @@ The book covers practical patterns for agentic workflows, safe orchestration, sk
 1. **Community Input**: Open an issue with a suggestion
 2. **Automated Analysis**: Workflows triage and classify the suggestion
 3. **Agent Processing**:
-   - **Fast-track path** for small low-risk fixes
-   - **Playbook path** for larger consensus-driven updates
+   - **`triaged-fast-track`** for small low-risk fixes
+   - **`triaged-for-research`** then **`researched-waiting-opinions`** for larger/ambiguous updates
 4. **Automatic Build**: PDF build and site deployment workflows run
 5. **Publishing**: Changes deploy to GitHub Pages
 
@@ -44,12 +44,12 @@ The primary way to contribute is by **opening an issue** with your suggestion:
 
 1. **[Open an issue](https://github.com/arivero/agentbook/issues/new/choose)** using our Content Suggestion template
 2. **Automated Processing**: Our GitHub Agentic Workflows (GH-AW) will analyze your suggestion
-3. **Follow Updates**: The issue is triaged into fast-track or full playbook processing
+3. **Follow Updates**: The issue moves through labels: `acknowledged` → `triaged-fast-track` or `triaged-for-research` → `researched-waiting-opinions` → (`opinion-copilot-strategy-posted` + `opinion-copilot-delivery-posted`) → `assigned`
 
 **What happens to suggestions:**
-- ✅ **Accepted**: Routed to fast-track or full playbook and added to the book
-- 🔄 **Needs Revision**: Agents will request clarifications or additional details
-- ❌ **Rejected/Out of Scope**: Moved to [GitHub Discussions](https://github.com/arivero/agentbook/discussions) for community conversation
+- ✅ **Accepted (fast-track)**: Routed with `triaged-fast-track`, implemented by Copilot, PR opened, and issue closed
+- ✅ **Accepted (research lane)**: Routed with `triaged-for-research`, researched, receives two suggestions, marked `assigned`, then closed
+- ❌ **Rejected/Out of Scope**: Any agent can reject with rationale and close at any stage
 
 All suggestions related to agentic workflows, orchestration, scaffolding, skills/tools, or GitHub agents are welcome.
 
@@ -104,16 +104,14 @@ These are code/content validation checks in practice:
 `check-external-links.yml` can open issues for broken links and is always considered **fast-track scope** when those issues are handled.
 
 ### GH-AW issue processing workflows (`.lock.yml` files)
-- `issue-triage-lite.lock.yml`: Initial triage and routing
-- `issue-synthesis.lock.yml`: Synthesis for larger/ambiguous proposals
-- `issue-fast-track.lock.yml`: Fast-track delivery (Copilot assesses, creates/pushes PR, closes issue)
+- `issue-intake-triage.lock.yml`: Acknowledges new issues and routes to fast-track or research
+- `issue-fast-track-close.lock.yml`: Fast-track implementation + PR + issue closure
+- `issue-research-pass.lock.yml`: Researches `triaged-for-research` issues and applies `researched-waiting-opinions`
+- `issue-opinion-copilot-strategy.lock.yml`: Posts the Copilot strategy-model slow-track opinion and applies `opinion-copilot-strategy-posted`
+- `issue-opinion-copilot-delivery.lock.yml`: Posts the Copilot delivery-model slow-track opinion and applies `opinion-copilot-delivery-posted`
+- `issue-assignment-close.lock.yml`: Adds `assigned` and closes when both opinion labels are present
 
-### Research workflow status
-A dedicated research workflow is **still to be implemented**. It is planned as a **manual trigger** workflow that searches the internet for:
-- new relevant content to add
-- obsolete content to refresh/remove
-
-See [WORKFLOW_PLAYBOOK.md](WORKFLOW_PLAYBOOK.md) for operating rules and the fast-track vs full-playbook split.
+See [WORKFLOW_PLAYBOOK.md](WORKFLOW_PLAYBOOK.md) for the canonical lifecycle and label matrix.
 
 ## 📜 License
 
