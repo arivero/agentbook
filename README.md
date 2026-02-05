@@ -10,9 +10,9 @@ A **living, self-maintaining book** about agentic workflows, agent orchestration
 This book doesn't just teach about agentic workflows—it **uses them**! The book automatically:
 - 📝 Processes community suggestions from GitHub issues
 - ✍️ Updates content using AI agents
-- 📚 Generates markdown and PDF versions
+- 📚 Maintains markdown sources and generates a PDF build
 - 🌐 Publishes to GitHub Pages
-- 📰 Creates blog posts about updates
+- 📰 Creates blog posts for larger curated updates
 
 ## 📖 Read the Book
 
@@ -27,11 +27,12 @@ The book covers practical patterns for agentic workflows, safe orchestration, sk
 ## 🚀 How It Works
 
 1. **Community Input**: Open an issue with a suggestion
-2. **Automated Analysis**: Workflows determine if the suggestion is relevant
-3. **Agent Processing**: AI agents update the content
-4. **Automatic Build**: Markdown and PDF versions are generated
+2. **Automated Analysis**: Workflows triage and classify the suggestion
+3. **Agent Processing**:
+   - **Fast-track path** for small low-risk fixes
+   - **Playbook path** for larger consensus-driven updates
+4. **Automatic Build**: PDF build and site deployment workflows run
 5. **Publishing**: Changes deploy to GitHub Pages
-6. **Blog Update**: A blog post announces the change
 
 ## 🤝 Contributing
 
@@ -43,11 +44,10 @@ The primary way to contribute is by **opening an issue** with your suggestion:
 
 1. **[Open an issue](https://github.com/arivero/agentbook/issues/new/choose)** using our Content Suggestion template
 2. **Automated Processing**: Our GitHub Agentic Workflows (GH-AW) will analyze your suggestion
-3. **Multi-Agent Review**: Multiple AI agents will discuss and develop your idea
-4. **Follow Updates**: Watch as agents comment and the book updates itself!
+3. **Follow Updates**: The issue is triaged into fast-track or full playbook processing
 
 **What happens to suggestions:**
-- ✅ **Accepted**: Processed through our multi-agent workflow and added to the book
+- ✅ **Accepted**: Routed to fast-track or full playbook and added to the book
 - 🔄 **Needs Revision**: Agents will request clarifications or additional details
 - ❌ **Rejected/Out of Scope**: Moved to [GitHub Discussions](https://github.com/arivero/agentbook/discussions) for community conversation
 
@@ -92,15 +92,28 @@ agentbook/
 
 Our repository uses **GitHub Agentic Workflows (GH-AW)** as the canonical approach to automate content processing.
 
-**Active Workflows:**
+### Core publishing workflows
 - **`pages.yml`**: Deploys to GitHub Pages
 - **`build-pdf.yml`**: Generates PDF version
-- **GH-AW Workflows** (`.lock.yml` files): Agentic issue processing
-  - `issue-triage-lite.lock.yml`: Initial triage and acknowledgment
-  - `issue-synthesis.lock.yml`: Research synthesis and recommendations
-  - `issue-fast-track.lock.yml`: Fast-track small changes
 
-See [WORKFLOWS.md](WORKFLOWS.md) for detailed workflow documentation and the rationale for using GH-AW.
+### Validation workflows (quality gates)
+These are code/content validation checks in practice:
+- **`check-links.yml`**: Offline-safe internal link validation
+- **`check-external-links.yml`**: Internet-enabled external link validation
+
+`check-external-links.yml` can open issues for broken links and is always considered **fast-track scope** when those issues are handled.
+
+### GH-AW issue processing workflows (`.lock.yml` files)
+- `issue-triage-lite.lock.yml`: Initial triage and routing
+- `issue-synthesis.lock.yml`: Synthesis for larger/ambiguous proposals
+- `issue-fast-track.lock.yml`: Fast-track delivery (Copilot assesses, creates/pushes PR, closes issue)
+
+### Research workflow status
+A dedicated research workflow is **still to be implemented**. It is planned as a **manual trigger** workflow that searches the internet for:
+- new relevant content to add
+- obsolete content to refresh/remove
+
+See [WORKFLOW_PLAYBOOK.md](WORKFLOW_PLAYBOOK.md) for operating rules and the fast-track vs full-playbook split.
 
 ## 📜 License
 
@@ -108,10 +121,9 @@ This work is licensed under the [MIT License](LICENSE) and available for educati
 
 ## 📚 Documentation
 
-- **[README](README.md)** - Project overview and quick start
-- **[WORKFLOWS](WORKFLOWS.md)** - Detailed workflow guide for GH-AW automation
+- **[README](README.md)** - Project overview and workflow summary
 - **[SETUP](SETUP.md)** - Installation and configuration guide
-- **[WORKFLOW_PLAYBOOK](WORKFLOW_PLAYBOOK.md)** - GH-AW maintenance process
+- **[WORKFLOW_PLAYBOOK](WORKFLOW_PLAYBOOK.md)** - Fast-track and full-playbook maintenance process
 - **[LICENSE](LICENSE)** - MIT License
 
 ## 🌟 Acknowledgments
