@@ -5,7 +5,7 @@ output="${1:-combined.md}"
 
 chapter_glob="book/chapters/*-*.md"
 exclude_files=(
-  "book/chapters/00-toc.md"
+  "book/chapters/000-toc.md"
 )
 
 strip_yaml_front_matter() {
