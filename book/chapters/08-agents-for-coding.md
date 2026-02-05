@@ -7,9 +7,7 @@ order: 8
 
 ## Chapter Preview
 
-- Compare coding-agent architectures and team patterns.
-- Show the correct way to configure GitHub Copilot coding agent.
-- Provide buildable examples and clear labels for pseudocode.
+This chapter compares coding-agent architectures and team patterns, helping you choose the right approach for your project's complexity and scale. It shows the correct way to configure GitHub Copilot coding agent, with working examples you can adapt. Finally, it provides buildable examples with clear labels distinguishing runnable code from pseudocode.
 
 ## Introduction
 
@@ -19,23 +17,31 @@ Coding agents represent the most mature category of AI agents in software develo
 
 ### From Autocomplete to Autonomy
 
-The progression of coding agents follows a clear trajectory:
+The progression of coding agents follows a clear trajectory through four phases.
 
-1. **Code Completion (2020-2022)**: Basic pattern matching and next-token prediction
-2. **Context-Aware Assistance (2022-2024)**: Understanding project structure and intent
-3. **Task-Oriented Agents (2024-present)**: Completing multi-step tasks independently
-4. **Autonomous Development (emerging)**: Full feature implementation, testing, and deployment
+**Code Completion (2020–2022)** introduced basic pattern matching and next-token prediction, offering suggestions for the next few tokens based on immediate context.
+
+**Context-Aware Assistance (2022–2024)** added understanding of project structure and intent, allowing agents to make suggestions that fit the broader codebase.
+
+**Task-Oriented Agents (2024–present)** can complete multi-step tasks independently, taking a high-level instruction and executing a series of operations to fulfil it.
+
+**Autonomous Development (emerging)** represents the frontier, with agents capable of full feature implementation, testing, and deployment with minimal human intervention.
 
 ### Current Capabilities
 
-Modern coding agents can:
+Modern coding agents can perform a range of sophisticated tasks.
 
-- **Understand Requirements**: Parse natural language specifications and translate them to code
-- **Plan Solutions**: Break down complex features into implementable steps
-- **Generate Code**: Write production-quality code across multiple files
-- **Test and Debug**: Create tests, identify bugs, and fix issues
-- **Scaffold Projects**: Initialize projects with appropriate structure and configuration
-- **Review and Refactor**: Analyze code quality and suggest improvements
+**Understand requirements.** Agents can parse natural language specifications and translate them to code, bridging the gap between human intent and machine-executable instructions.
+
+**Plan solutions.** Agents can break down complex features into implementable steps, creating a roadmap for development.
+
+**Generate code.** Agents can write production-quality code across multiple files, handling everything from utility functions to full modules.
+
+**Test and debug.** Agents can create tests, identify bugs, and fix issues, shortening the feedback loop between writing code and validating it.
+
+**Scaffold projects.** Agents can initialise projects with appropriate structure and configuration, setting up the foundation for further development.
+
+**Review and refactor.** Agents can analyse code quality and suggest improvements, helping maintain code health over time.
 
 ## Specialized Architectures
 
@@ -369,13 +375,9 @@ class CodingToolRegistry:
 
 ### GitHub Copilot and Coding Agent
 
-GitHub Copilot has evolved from an IDE autocomplete tool to a full coding agent:
+GitHub Copilot has evolved from an IDE autocomplete tool to a full coding agent. **Copilot Chat** provides natural language interaction about code, allowing developers to ask questions and request explanations. **Copilot Coding Agent** handles autonomous task completion and PR creation, working independently on assigned tasks. **Copilot Workspace** offers a full development environment with agent integration, bringing together editing, testing, and deployment.
 
-- **Copilot Chat**: Natural language interaction about code
-- **Copilot Coding Agent**: Autonomous task completion and PR creation
-- **Copilot Workspace**: Full development environment with agent integration
-
-Copilot coding agent is not invoked via a custom `uses:` action. Instead, you assign work through GitHub Issues, Pull Requests, the agents panel, or by mentioning `@copilot`, and you customize its environment with a dedicated workflow file. See the official docs at <https://docs.github.com/en/copilot/how-tos/use-copilot-agents/coding-agent> and the environment setup guide at <https://docs.github.com/en/copilot/how-tos/use-copilot-agents/coding-agent/customize-the-agent-environment>.
+Copilot coding agent is not invoked via a custom `uses:` action. Instead, you assign work through GitHub Issues, Pull Requests, the agents panel, or by mentioning `@copilot`, and you customise its environment with a dedicated workflow file. See the official docs at <https://docs.github.com/en/copilot/how-tos/use-copilot-agents/coding-agent> and the environment setup guide at <https://docs.github.com/en/copilot/how-tos/use-copilot-agents/coding-agent/customize-the-agent-environment>.
 
 Example 7-1. `.github/workflows/copilot-setup-steps.yml`
 
@@ -400,27 +402,15 @@ jobs:
 
 ### Claude Code
 
-Claude Code (<https://code.claude.com/docs>) provides multi-agent orchestration for complex development tasks:
-
-- **Subagent Architecture**: Spawn specialized agents for different concerns
-- **Swarms Mode**: Parallel execution of independent tasks
-- **Extended Context**: Handle large codebases through intelligent context management
+Claude Code (<https://code.claude.com/docs>) provides multi-agent orchestration for complex development tasks. Its **subagent architecture** allows you to spawn specialised agents for different concerns, each focused on a particular aspect of the problem. **Swarms mode** enables parallel execution of independent tasks, reducing total time to completion. **Extended context** handles large codebases through intelligent context management, summarising and prioritising information to fit within token limits.
 
 ### Cursor AI
 
-Cursor (<https://www.cursor.com/>) is an AI-first code editor designed around agent workflows:
-
-- **Project-Wide Understanding**: Indexes entire codebase for context
-- **Multi-File Generation**: Creates and modifies multiple files in one operation
-- **Framework Integration**: Deep understanding of popular frameworks
+Cursor (<https://www.cursor.com/>) is an AI-first code editor designed around agent workflows. It provides **project-wide understanding** by indexing the entire codebase for context, ensuring suggestions fit the project's patterns. **Multi-file generation** creates and modifies multiple files in one operation, handling cross-cutting changes that span components. **Framework integration** gives the editor deep understanding of popular frameworks, improving suggestion quality for framework-specific code.
 
 ### CodeGPT and Agent Marketplaces
 
-CodeGPT (<https://codegpt.co/>) and marketplace-based approaches offer specialized agents:
-
-- **Specialized Agents**: Over 200 pre-built agents for specific tasks
-- **Custom Agent Creation**: Build and share domain-specific agents
-- **Multi-Model Support**: Combine different LLMs for different tasks
+CodeGPT (<https://codegpt.co/>) and marketplace-based approaches offer specialised agents. **Specialised agents** provide over 200 pre-built agents for specific tasks, from code review to documentation generation. **Custom agent creation** lets you build and share domain-specific agents tailored to your organisation's needs. **Multi-model support** combines different LLMs for different tasks, using each model's strengths where they apply best.
 
 ## Best Practices
 
@@ -638,18 +628,24 @@ class SecureCodingEnvironment:
 
 ## Key Takeaways
 
-1. **Coding agents** have evolved from autocomplete to autonomous development assistants.
+**Coding agents** have evolved from autocomplete to autonomous development assistants, progressing through phases of increasing capability and independence.
 
-2. **Multi-agent architectures** mirror development teams, with specialized agents for architecture, implementation, testing, and review.
+**Multi-agent architectures** mirror development teams, with specialised agents for architecture, implementation, testing, and review, each contributing expertise to the overall workflow.
 
-3. **AGENTS.md** is the emerging standard for providing agents with project-specific instructions.
+**AGENTS.md** is the emerging standard for providing agents with project-specific instructions, serving as a "README for agents" that helps them understand how to work within a codebase.
 
-4. **Scaffolding** for coding agents includes context management, tool registries, and security boundaries.
+**Scaffolding** for coding agents includes context management to handle large codebases, tool registries to organise capabilities, and security boundaries to limit what agents can access.
 
-5. **Human review** remains essential—agents create PRs for review, not direct commits.
+**Human review** remains essential—agents create PRs for review, not direct commits. This ensures humans maintain oversight over changes that affect production systems.
 
-6. **Incremental changes** with continuous validation are safer than large rewrites.
+**Incremental changes** with continuous validation are safer than large rewrites. Small, focused modifications are easier to review and less likely to introduce subtle bugs.
 
-7. **Security** must be designed in from the start: sandboxing, permissions, and audit logging.
+**Security** must be designed in from the start: sandboxing isolates agent execution, permissions scope what agents can access, and audit logging tracks what they do.
 
 ---
+
+<!-- Edit notes:
+Sections expanded: Chapter Preview, From Autocomplete to Autonomy (timeline), Current Capabilities, GitHub Copilot and Coding Agent, Claude Code, Cursor AI, CodeGPT and Agent Marketplaces, Key Takeaways
+Lists preserved: Code blocks (must remain as-is), architecture tables (must remain tabular for comparison)
+Ambiguous phrases left ambiguous: None identified
+-->

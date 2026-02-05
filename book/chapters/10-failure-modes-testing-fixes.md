@@ -7,21 +7,19 @@ order: 10
 
 ## Chapter Goals
 
-By the end of this chapter, you should be able to:
-
-- Recognize the most common ways agentic workflows fail in production.
-- Design a test strategy that catches failures before deployment.
-- Apply practical mitigation and recovery patterns.
-- Turn incidents into durable process and architecture improvements.
+By the end of this chapter, you should be able to recognise the most common ways agentic workflows fail in production, understanding the symptoms and root causes of each failure mode. You should be able to design a test strategy that catches failures before deployment, combining static checks, deterministic tests, and adversarial evaluations. You should be able to apply practical mitigation and recovery patterns that reduce mean time to recovery when failures occur. And you should be able to turn incidents into durable process and architecture improvements that prevent recurrence.
 
 ## Why Failures Are Different in Agentic Systems
 
-Traditional software failures are often deterministic and reproducible. Agent failures can also include:
+Traditional software failures are often deterministic and reproducible. Agent failures can also include additional dimensions of complexity.
 
-- **Nondeterminism** from model sampling and external context.
-- **Tool and API variance** across environments and versions.
-- **Instruction ambiguity** when prompts, policy files, or skills conflict.
-- **Long-horizon drift** where behavior degrades over many steps.
+**Nondeterminism** arises from model sampling and external context, meaning the same input may produce different outputs across runs.
+
+**Tool and API variance** occurs across environments and versions, where a tool that works in testing may behave differently in production.
+
+**Instruction ambiguity** emerges when prompts, policy files, or skills conflict, leading agents to interpret guidance inconsistently.
+
+**Long-horizon drift** describes behaviour that degrades over many steps, where small errors compound into significant deviations from intended outcomes.
 
 This means reliability work must combine classic software testing with scenario-based evaluation and operational controls.
 
@@ -31,103 +29,43 @@ Use this taxonomy to classify incidents quickly and choose the right fix path.
 
 ### 1) Planning and Reasoning Failures
 
-Symptoms:
+**Symptoms.** The agent picks the wrong sub-goal, pursuing an objective that does not advance the overall task. It repeats work or loops without convergence, wasting resources on redundant operations. It produces plausible but invalid conclusions, generating output that sounds correct but fails validation.
 
-- Agent picks the wrong sub-goal.
-- Repeats work or loops without convergence.
-- Produces plausible but invalid conclusions.
+**Typical causes.** Missing constraints in system instructions leave the agent without guidance on what to avoid. Overly broad tasks with no decomposition guardrails allow the agent to wander. No termination criteria means the agent does not know when to stop.
 
-Typical causes:
-
-- Missing constraints in system instructions.
-- Overly broad tasks with no decomposition guardrails.
-- No termination criteria.
-
-Fast fixes:
-
-- Add explicit success criteria and stop conditions.
-- Break tasks into bounded steps.
-- Require intermediate checks before irreversible actions.
+**Fast fixes.** Add explicit success criteria and stop conditions so the agent knows when it has succeeded. Break tasks into bounded steps that can be validated individually. Require intermediate checks before irreversible actions to catch errors early.
 
 ### 2) Tooling and Integration Failures
 
-Symptoms:
+**Symptoms.** Tool calls fail intermittently, succeeding sometimes and failing others without obvious cause. Wrong parameters are passed to tools, causing unexpected behaviour. Tool output is parsed incorrectly, leading to downstream errors.
 
-- Tool calls fail intermittently.
-- Wrong parameters passed to tools.
-- Tool output parsed incorrectly.
+**Typical causes.** Schema drift or undocumented API changes mean the agent's assumptions no longer match reality. Weak input validation allows malformed requests to reach tools. Inconsistent retry and backoff handling causes cascading failures under load.
 
-Typical causes:
-
-- Schema drift or undocumented API changes.
-- Weak input validation.
-- Inconsistent retry/backoff handling.
-
-Fast fixes:
-
-- Validate tool contracts at runtime.
-- Add strict argument schemas.
-- Standardize retries with idempotency keys.
+**Fast fixes.** Validate tool contracts at runtime to catch mismatches early. Add strict argument schemas that reject invalid inputs. Standardise retries with idempotency keys so repeated attempts are safe.
 
 ### 3) Context and Memory Failures
 
-Symptoms:
+**Symptoms.** The agent forgets prior constraints, violating rules it was given earlier in the conversation. Important instructions are dropped when context grows, as the agent summarises away critical guidance. Stale memories override fresh data, causing the agent to act on outdated information.
 
-- Agent forgets prior constraints.
-- Important instructions are dropped when context grows.
-- Stale memories override fresh data.
+**Typical causes.** Context window pressure forces the agent to discard information. Poor memory ranking and retrieval surfaces irrelevant content while burying important details. Missing recency and source-quality weighting treats all information as equally valid.
 
-Typical causes:
-
-- Context window pressure.
-- Poor memory ranking/retrieval.
-- Missing recency and source-quality weighting.
-
-Fast fixes:
-
-- Introduce context budgets and summarization checkpoints.
-- Add citation requirements for retrieved facts.
-- Expire or down-rank stale memory entries.
+**Fast fixes.** Introduce context budgets and summarisation checkpoints that preserve critical information. Add citation requirements for retrieved facts so sources are traceable. Expire or down-rank stale memory entries so fresh information takes precedence.
 
 ### 4) Safety and Policy Failures
 
-Symptoms:
+**Symptoms.** Sensitive files are modified unexpectedly, violating protected path policies. Security constraints are bypassed through tool chains, where combining multiple tools achieves an outcome that individual tools would block. Unsafe suggestions appear in generated code, introducing vulnerabilities.
 
-- Sensitive files modified unexpectedly.
-- Security constraints bypassed through tool chains.
-- Unsafe suggestions in generated code.
+**Typical causes.** Weak policy enforcement boundaries do not cover all attack surfaces. No pre-merge policy gates allow unsafe changes to reach the main branch. Implicit trust in generated output assumes agent output is safe without verification.
 
-Typical causes:
-
-- Weak policy enforcement boundaries.
-- No pre-merge policy gates.
-- Implicit trust in generated output.
-
-Fast fixes:
-
-- Enforce allow/deny lists at tool gateway level.
-- Require policy checks in CI.
-- Route high-risk actions through human approval.
+**Fast fixes.** Enforce allow and deny lists at the tool gateway level to prevent prohibited operations. Require policy checks in CI so violations are caught before merge. Route high-risk actions through human approval to ensure oversight.
 
 ### 5) Collaboration and Workflow Failures
 
-Symptoms:
+**Symptoms.** Multiple agents make conflicting changes, overwriting each other's work. PRs churn with contradictory edits as agents undo each other's modifications. Work stalls due to unclear ownership, with no agent taking responsibility.
 
-- Multiple agents make conflicting changes.
-- PRs churn with contradictory edits.
-- Work stalls due to unclear ownership.
+**Typical causes.** Missing orchestration contracts leave agents without coordination rules. No lock or lease model for shared resources allows concurrent modification. Role overlap without clear handoff rules creates ambiguity about who should act.
 
-Typical causes:
-
-- Missing orchestration contracts.
-- No lock/lease model for shared resources.
-- Role overlap without clear handoff rules.
-
-Fast fixes:
-
-- Add ownership rules per path/component.
-- Use optimistic locking with conflict resolution policy.
-- Define role-specific done criteria.
+**Fast fixes.** Add ownership rules per path or component so responsibilities are clear. Use optimistic locking with conflict resolution policy to handle concurrent access. Define role-specific done criteria so agents know when to stop.
 
 ## Testing Strategy for Agentic Workflows
 
@@ -135,21 +73,11 @@ A robust strategy uses multiple test layers. No single test type is sufficient.
 
 ## 1. Static and Structural Checks
 
-Use these to fail fast before expensive model execution:
-
-- Markdown/schema validation for instruction files.
-- Prompt template linting.
-- Tool interface compatibility checks.
-- Dependency and version constraint checks.
+Use static and structural checks to fail fast before expensive model execution. These include markdown and schema validation for instruction files, ensuring they are well-formed before agents try to parse them. Prompt template linting catches common errors in prompt construction. Tool interface compatibility checks verify that agents can call the tools they expect. Dependency and version constraint checks ensure the environment matches expectations.
 
 ## 2. Deterministic Unit Tests (Without LLM Calls)
 
-Test orchestration logic, parsers, and guards deterministically:
-
-- State transitions.
-- Retry and timeout behavior.
-- Permission checks.
-- Conflict resolution rules.
+Test orchestration logic, parsers, and guards deterministically without involving language models. Cover state transitions to ensure the workflow moves through stages correctly. Test retry and timeout behaviour to verify failure handling works as expected. Verify permission checks to ensure access controls are enforced. Test conflict resolution rules to confirm agents handle concurrent access correctly.
 
 > **Snippet status:** Runnable shape (simplified for clarity).
 
@@ -174,38 +102,19 @@ def test_retry_policy():
 
 ## 3. Recorded Integration Tests (Golden Traces)
 
-Capture representative interactions and replay them against newer builds:
+Capture representative interactions and replay them against newer builds. Record tool inputs and outputs to create a reproducible baseline. Freeze external dependencies where possible to eliminate variance. Compare final artefacts and decision traces to detect changes in behaviour.
 
-- Record tool inputs/outputs.
-- Freeze external dependencies where possible.
-- Compare final artifacts and decision traces.
-
-Use these to detect drift in behavior after prompt/tool/model changes.
+Use these to detect drift in behaviour after prompt, tool, or model changes.
 
 ## 4. Scenario and Adversarial Evaluations
 
-Design "challenge suites" for known weak spots:
+Design "challenge suites" for known weak spots. These should include ambiguous requirements that could be interpreted multiple ways, contradictory documentation that forces the agent to choose, missing dependencies that test error handling, and partial outages and degraded APIs that test resilience. Include prompt-injection attempts in retrieved content to test security boundaries.
 
-- Ambiguous requirements.
-- Contradictory documentation.
-- Missing dependencies.
-- Partial outages and degraded APIs.
-- Prompt-injection attempts in retrieved content.
-
-Pass criteria should include not just correctness, but also:
-
-- Policy compliance.
-- Cost/latency ceilings.
-- Evidence quality (citations, rationale quality).
+Pass criteria should include not just correctness, but also policy compliance, cost and latency ceilings, and evidence quality including citations and rationale.
 
 ## 5. Production Guardrail Tests
 
-Before enabling autonomous writes/merges in production, validate:
-
-- Protected-path enforcement.
-- Secret scanning and license checks.
-- Human approval routing for high-impact actions.
-- Rollback path on failed deployments.
+Before enabling autonomous writes and merges in production, validate that guardrails work correctly. Protected-path enforcement should block modifications to sensitive files. Secret scanning and licence checks should catch policy violations. Human approval routing should engage for high-impact actions. Rollback paths should work on failed deployments.
 
 ## Practical Fix Patterns
 
@@ -213,90 +122,78 @@ When incidents happen, reusable fix patterns reduce MTTR (mean time to recovery)
 
 ### Pattern A: Contract Hardening
 
-- Add strict schemas between planner and tool runner.
-- Reject malformed or out-of-policy requests early.
-- Version contracts (`v1`, `v2`) and support migrations.
+Add strict schemas between planner and tool runner to ensure they communicate correctly. Reject malformed or out-of-policy requests early, before they can cause harm. Version contracts (`v1`, `v2`) and support migrations so changes can be rolled out incrementally.
 
 ### Pattern B: Progressive Autonomy
 
-- Start in "suggest-only" mode.
-- Move to "execute with review" mode.
-- Graduate to autonomous mode only after SLO compliance.
+Start in "suggest-only" mode where agents propose changes but do not execute them. Move to "execute with review" mode once confidence builds. Graduate to autonomous mode only after SLO compliance demonstrates the agent is reliable.
 
 ### Pattern C: Two-Phase Execution
 
-1. **Plan phase**: generate proposed actions and expected effects.
-2. **Apply phase**: execute only after policy and validation checks pass.
-
-This reduces irreversible mistakes and improves auditability.
+In the **plan phase**, generate proposed actions and expected effects without executing anything. In the **apply phase**, execute only after policy and validation checks pass. This reduces irreversible mistakes and improves auditability.
 
 ### Pattern D: Fallback and Circuit Breakers
 
-- If tool failure rate spikes, disable affected paths automatically.
-- Fall back to a safer baseline workflow.
-- Alert operators with incident context.
+If tool failure rate spikes, disable affected paths automatically to prevent cascading failures. Fall back to a safer baseline workflow that may be less capable but more reliable. Alert operators with incident context so they can investigate and resolve the underlying issue.
 
 ### Pattern E: Human-in-the-Loop Escalation
 
-Define explicit escalation triggers:
-
-- Repeated retries without progress.
-- Any request touching protected paths.
-- Low-confidence output in high-risk domains.
+Define explicit escalation triggers that route work to humans. Repeated retries without progress indicate the agent is stuck. Any request touching protected paths should require approval. Low-confidence output in high-risk domains warrants human review.
 
 ## Incident Response Runbook (Template)
 
-Use a lightweight runbook so teams respond consistently:
+Use a lightweight runbook so teams respond consistently. The sequence proceeds through eight steps.
 
-1. **Detect**: Alert from CI, runtime monitor, or user report.
-2. **Classify**: Map to taxonomy category.
-3. **Contain**: Stop autonomous actions if blast radius is unclear.
-4. **Diagnose**: Reproduce with trace + config snapshot.
-5. **Mitigate**: Apply short-term guardrails/fallback.
-6. **Fix**: Implement structural correction.
-7. **Verify**: Re-run affected test suites + adversarial cases.
-8. **Learn**: Add regression test and update docs.
+**Detect.** Receive an alert from CI, runtime monitor, or user report indicating something has gone wrong.
+
+**Classify.** Map the incident to a taxonomy category so you can apply the appropriate response playbook.
+
+**Contain.** Stop autonomous actions if the blast radius is unclear, preventing further damage while you investigate.
+
+**Diagnose.** Reproduce the issue with a trace and configuration snapshot to understand what happened.
+
+**Mitigate.** Apply short-term guardrails or fallbacks to restore service while you work on a permanent fix.
+
+**Fix.** Implement a structural correction that addresses the root cause.
+
+**Verify.** Re-run affected test suites and adversarial cases to confirm the fix works.
+
+**Learn.** Add a regression test and update documentation to prevent recurrence.
 
 ## Metrics That Actually Matter
 
-Track these to evaluate reliability improvements over time:
+Track these metrics to evaluate reliability improvements over time.
 
-- **Task success rate** (with policy compliance as part of success).
-- **Intervention rate** (how often humans must correct the agent).
-- **Escaped defect rate** (failures discovered after merge/deploy).
-- **Mean time to detect (MTTD)** and **mean time to recover (MTTR)**.
-- **Cost per successful task** and **latency percentiles**.
+**Task success rate** measures how often agents complete tasks correctly, with policy compliance as part of success. **Intervention rate** measures how often humans must correct the agent, indicating where automation falls short. **Escaped defect rate** measures failures discovered after merge or deploy, indicating gaps in pre-production testing. **Mean time to detect (MTTD)** and **mean time to recover (MTTR)** measure incident response effectiveness. **Cost per successful task** and **latency percentiles** measure efficiency.
 
 Avoid vanity metrics (for example, "number of agent runs") without quality and safety context.
 
 ## Anti-Patterns to Avoid
 
-- Treating prompt edits as sufficient reliability work.
-- Allowing autonomous writes without protected-path policies.
-- Skipping regression suites after model/version upgrades.
-- Relying on a single benchmark instead of diverse scenarios.
-- Ignoring ambiguous ownership in multi-agent flows.
+Several anti-patterns undermine agentic system reliability.
+
+**Treating prompt edits as sufficient reliability work** ignores the structural issues that cause failures. Prompts can only do so much; robust systems need architectural controls.
+
+**Allowing autonomous writes without protected-path policies** exposes critical files to unintended modification. Every system needs explicit boundaries.
+
+**Skipping regression suites after model or version upgrades** assumes backward compatibility that may not exist. Changes require validation.
+
+**Relying on a single benchmark instead of diverse scenarios** creates blind spots. Real-world failures often occur in edge cases the benchmark does not cover.
+
+**Ignoring ambiguous ownership in multi-agent flows** leads to gaps and conflicts. Every path and component should have a clear owner.
 
 ## A Minimal Reliability Checklist
 
-Before enabling broad production use, confirm:
-
-- [ ] Snippets and examples are clearly labeled (runnable/pseudocode/simplified).
-- [ ] Tool contracts are versioned and validated.
-- [ ] CI includes policy, security, and regression checks.
-- [ ] Failure injection scenarios are part of routine testing.
-- [ ] Rollback and escalation paths are documented and exercised.
+Before enabling broad production use, confirm the following items are complete. Snippets and examples should be clearly labelled as runnable, pseudocode, or simplified. Tool contracts should be versioned and validated. CI should include policy, security, and regression checks. Failure injection scenarios should be part of routine testing. Rollback and escalation paths should be documented and exercised.
 
 ## Chapter Summary
 
-Reliable agentic systems are built, not assumed. Teams that combine:
-
-- clear contracts,
-- layered testing,
-- progressive autonomy,
-- strong policy gates, and
-- incident-driven learning
-
-consistently outperform teams relying on prompt-only tuning.
+Reliable agentic systems are built, not assumed. Teams that combine clear contracts, layered testing, progressive autonomy, strong policy gates, and incident-driven learning consistently outperform teams relying on prompt-only tuning.
 
 In practice, your competitive advantage comes from how quickly you detect, contain, and permanently fix failures—not from avoiding them entirely.
+
+<!-- Edit notes:
+Sections expanded: Chapter Goals, Why Failures Are Different in Agentic Systems, all five failure taxonomy sections (Planning and Reasoning, Tooling and Integration, Context and Memory, Safety and Policy, Collaboration and Workflow), Static and Structural Checks, Deterministic Unit Tests, Recorded Integration Tests, Scenario and Adversarial Evaluations, Production Guardrail Tests, all five Pattern sections (Contract Hardening, Progressive Autonomy, Two-Phase Execution, Fallback and Circuit Breakers, Human-in-the-Loop Escalation), Incident Response Runbook, Metrics That Actually Matter, Anti-Patterns to Avoid, A Minimal Reliability Checklist, Chapter Summary
+Lists preserved: Code block (must remain as-is for runnable example), checklist format for Minimal Reliability Checklist (intentionally kept as checklist for usability)
+Ambiguous phrases left ambiguous: None identified
+-->

@@ -7,9 +7,7 @@ order: 9
 
 ## Chapter Preview
 
-- Identify where formal methods and CAS tools fit in agent workflows.
-- Separate runnable tooling from conceptual pseudocode.
-- Highlight verification pitfalls and how to avoid them.
+This chapter identifies where formal methods and computer algebra system (CAS) tools fit in agent workflows, explaining how they complement neural approaches. It separates runnable tooling from conceptual pseudocode, providing clear labels so readers know what can be executed directly. Finally, it highlights verification pitfalls and how to avoid them, addressing the unique challenges of mathematical and scientific correctness.
 
 > **Note:** Many examples in this chapter are illustrative pseudocode unless explicitly labeled as runnable, because formal tooling and CAS systems require environment-specific setup.
 
@@ -33,11 +31,17 @@ Scientific agents differ from coding agents in several key ways:
 
 ### Categories of Scientific Agents
 
-1. **Theorem Proving Agents**: Construct formal proofs in systems like Lean (<https://lean-lang.org/learn/>), Coq (<https://coq.inria.fr/>), or Isabelle (<https://isabelle.in.tum.de/>)
-2. **Symbolic Computation Agents**: Work with computer algebra systems (CAS)
-3. **Numerical Simulation Agents**: Set up and run physics simulations
-4. **Research Assistants**: Search literature, summarize findings, identify gaps
-5. **Educational Scaffolding Agents**: Help students learn mathematical and physical concepts
+Scientific agents fall into five main categories.
+
+**Theorem Proving Agents** construct formal proofs in systems like Lean (<https://lean-lang.org/learn/>), Coq (<https://coq.inria.fr/>), or Isabelle (<https://isabelle.in.tum.de/>), producing machine-verifiable derivations.
+
+**Symbolic Computation Agents** work with computer algebra systems (CAS), manipulating mathematical expressions symbolically rather than numerically.
+
+**Numerical Simulation Agents** set up and run physics simulations, handling the computational infrastructure for modelling physical systems.
+
+**Research Assistants** search literature, summarise findings, and identify gaps, helping researchers navigate the vast body of published work.
+
+**Educational Scaffolding Agents** help students learn mathematical and physical concepts, adapting explanations to the learner's level and addressing misconceptions.
 
 ## Theorem Proving Agents
 
@@ -142,10 +146,15 @@ class LeanProofAssistant:
 
 ### Challenges in Theorem Proving
 
-1. **Search Space Explosion**: Proofs can have many possible paths
-2. **Creativity Required**: Non-obvious proof strategies
-3. **Formalization Gap**: Translating informal to formal
-4. **Domain Knowledge**: Deep mathematical understanding needed
+Theorem proving presents four main challenges.
+
+**Search space explosion** means proofs can have many possible paths, and exploring all of them quickly becomes computationally infeasible.
+
+**Creativity required** reflects that non-obvious proof strategies often lead to success, requiring agents to generate novel approaches rather than following templates.
+
+**Formalisation gap** is the challenge of translating informal mathematical statements into the precise syntax required by proof assistants.
+
+**Domain knowledge** recognises that deep mathematical understanding is needed to guide proof search effectively and choose appropriate lemmas.
 
 ## Symbolic Computation Agents
 
@@ -776,20 +785,26 @@ class CollaborativeAgent:
 
 ## Key Takeaways
 
-1. **Scientific agents** require formal verification and rigorous validation beyond what coding agents need.
+**Scientific agents** require formal verification and rigorous validation beyond what coding agents need, because mathematical and physical correctness cannot be verified through tests alone.
 
-2. **Theorem proving agents** combine LLM creativity with proof assistant verification for mathematical rigor.
+**Theorem proving agents** combine LLM creativity with proof assistant verification for mathematical rigour, using neural networks to suggest approaches and formal systems to verify them.
 
-3. **Symbolic computation** and neural approaches are complementary—use both for best results.
+**Symbolic computation** and neural approaches are complementary—use both for best results. Symbolic systems provide precision while neural systems provide flexibility.
 
-4. **Physics agents** must respect conservation laws, dimensional consistency, and physical constraints.
+**Physics agents** must respect conservation laws, dimensional consistency, and physical constraints. Violations of these principles indicate errors that must be corrected.
 
-5. **Educational scaffolding** agents adapt explanations to student level and address misconceptions.
+**Educational scaffolding agents** adapt explanations to student level and address misconceptions, providing personalised instruction that meets learners where they are.
 
-6. **Verification pipelines** should check proofs, dimensions, and compare with known results.
+**Verification pipelines** should check proofs, dimensions, and compare with known results, catching errors before they propagate to downstream work.
 
-7. **Reproducibility** is essential—record seeds, versions, and all parameters.
+**Reproducibility** is essential—record seeds, versions, and all parameters. Without this information, results cannot be validated or built upon.
 
-8. **Collaboration** with domain experts improves agent reliability and trustworthiness.
+**Collaboration** with domain experts improves agent reliability and trustworthiness. Agents work best when they can query experts for guidance on difficult decisions.
 
 ---
+
+<!-- Edit notes:
+Sections expanded: Chapter Preview, Categories of Scientific Agents, Challenges in Theorem Proving, Key Takeaways
+Lists preserved: Table comparing coding vs scientific agents (must remain tabular), code blocks (must remain as-is)
+Ambiguous phrases left ambiguous: None identified
+-->
