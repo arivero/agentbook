@@ -5,10 +5,18 @@ on:
     types: [labeled]
 permissions:
   contents: read
-  issues: write
+  issues: read
 tools:
   github:
     toolsets: [issues]
+safe-outputs:
+  add-comment:
+    max: 1
+  add-labels:
+    allowed: [assigned, rejected]
+    max: 2
+  close-issue:
+    max: 1
 engine: copilot
 ---
 
@@ -30,3 +38,8 @@ You are the assignment agent.
   - explain why,
   - add `rejected`,
   - close the issue.
+
+## Safe outputs
+
+- Use safe outputs for comments, labels, and issue closure.
+- Do not call GitHub write tools directly.

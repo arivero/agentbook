@@ -5,10 +5,18 @@ on:
     types: [opened]
 permissions:
   contents: read
-  issues: write
+  issues: read
 tools:
   github:
     toolsets: [issues]
+safe-outputs:
+  add-comment:
+    max: 1
+  add-labels:
+    allowed: [acknowledged, triaged-fast-track, triaged-for-research, rejected]
+    max: 4
+  close-issue:
+    max: 1
 engine: copilot
 ---
 
@@ -34,6 +42,11 @@ You are the intake triage agent for the Agentic Workflows Book repository.
   - Explain why,
   - add `rejected`,
   - close the issue.
+
+## Safe outputs
+
+- Use safe outputs for comments, labels, and issue closure.
+- Do not call GitHub write tools directly.
 
 ## Response format
 

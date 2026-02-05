@@ -25,7 +25,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
 
       - name: Compile agentic workflows
-        run: gh aw compile
+        run: gh aw compile issue-assignment-close issue-fast-track-close issue-intake-triage issue-opinion-copilot-delivery issue-opinion-copilot-strategy issue-research-pass
         env:
           GH_TOKEN: ${{ github.token }}
 

@@ -4,13 +4,22 @@ on:
   issues:
     types: [labeled]
 permissions:
-  contents: write
-  issues: write
-  pull-requests: write
+  contents: read
+  issues: read
+  pull-requests: read
 tools:
   github:
     toolsets: [issues, pull_requests]
   edit:
+safe-outputs:
+  add-comment:
+    max: 1
+  add-labels:
+    allowed: [rejected]
+    max: 1
+  close-issue:
+    max: 1
+  create-pull-request:
 engine: copilot
 ---
 
@@ -30,6 +39,11 @@ You are the fast-track delivery agent.
   - explain why,
   - add `rejected`,
   - close the issue.
+
+## Safe outputs
+
+- Use safe outputs for PR creation, comments, labels, and issue closure.
+- Do not call GitHub write tools directly.
 
 ## Response format
 
