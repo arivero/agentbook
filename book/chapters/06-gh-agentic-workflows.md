@@ -1,6 +1,6 @@
 ---
 title: "GitHub Agentic Workflows (GH-AW)"
-order: 5
+order: 6
 ---
 
 # GitHub Agentic Workflows (GH-AW)
@@ -307,6 +307,8 @@ You can define safe inputs to structure what the agent receives. This is a good 
 
 ## Imports and Reusable Components
 
+For terminology and trust-model definitions, see [Discovery and Imports](05-discovery-imports.md). This section focuses only on GH-AW-specific syntax and composition patterns.
+
 GH-AW supports imports in two ways:
 
 - **Frontmatter imports**
@@ -323,7 +325,7 @@ imports:
 {% raw %}{{#import shared/common-tools.md}}{% endraw %}
 ```
 
-Imports let you create a library of reusable workflow fragments (shared tools, standard prompts, or organization-wide policies). Files without `on:` become *components* that can be imported without being compiled into Actions.
+In GH-AW, these imports are typically workflow-fragment artefacts: shared prompts, tool declarations, and policy snippets. Keep reusable fragments in files without `on:` so they can be imported as components rather than compiled as standalone workflows.
 
 ## ResearchPlanAssign: A Pattern for Self-Maintaining Books
 
