@@ -50,15 +50,20 @@ agentbook/
 │   └── copilot-instructions.md       # This file
 ├── book/
 │   ├── chapters/                     # Book chapters (numbered)
-│   │   ├── 00-toc.md                 # Table of contents
-│   │   ├── 01-introduction.md        # Introduction to Agentic Workflows
-│   │   ├── 02-orchestration.md       # Agent Orchestration
-│   │   ├── 03-scaffolding.md         # Agentic Scaffolding
-│   │   ├── 04-skills-tools.md        # Skills and Tools Management
-│   │   ├── 05-gh-agentic-workflows.md # GitHub Agentic Workflows
-│   │   ├── 06-github-agents.md       # GitHub Agents
-│   │   ├── 07-agents-for-coding.md   # Agents for Coding
-│   │   └── 08-agents-for-math-physics.md # Agents for Mathematics and Physics
+│   │   ├── 000-toc.md                # Table of contents
+│   │   ├── 000-front-matter.md       # Front matter
+│   │   ├── 010-introduction.md       # Introduction to Agentic Workflows
+│   │   ├── 015-language-models.md    # Language Models
+│   │   ├── 020-orchestration.md      # Agent Orchestration
+│   │   ├── 030-scaffolding.md        # Agentic Scaffolding
+│   │   ├── 040-skills-tools.md       # Skills and Tools Management
+│   │   ├── 050-discovery-imports.md  # Discovery and Imports
+│   │   ├── 060-gh-agentic-workflows.md # GitHub Agentic Workflows
+│   │   ├── 070-github-agents.md      # GitHub Agents
+│   │   ├── 080-agents-for-coding.md  # Agents for Coding
+│   │   ├── 090-agents-for-math-physics.md # Agents for Mathematics and Physics
+│   │   ├── 100-failure-modes-testing-fixes.md # Failure Modes, Testing and Fixes
+│   │   └── 990-bibliography.md       # Bibliography
 │   ├── README.md                     # Book introduction
 │   └── index.md                      # Book homepage
 ├── blog/
@@ -110,7 +115,7 @@ class Agent:
 - Set appropriate permissions (principle of least privilege)
 
 ### File Naming
-- Book chapters: `NN-descriptive-name.md` (00-toc.md, 01-introduction.md, etc.)
+- Book chapters: `NNN-descriptive-name.md` (000-toc.md, 010-introduction.md, 015-language-models.md, etc.)
 - Blog posts: `YYYY-MM-DD-title.md` (2026-02-04-welcome.md)
 - Agent files: `issue-{purpose}.md` (issue-ack.md, issue-research.md, etc.)
 - Workflows: `descriptive-name.yml` (pages.yml, build-pdf.yml, etc.)
@@ -132,7 +137,7 @@ class Agent:
 - Include proper YAML frontmatter for blog posts
 - Maintain the existing writing style and tone
 - Keep changes focused and atomic
-- Update table of contents (00-toc.md) when adding/modifying chapters
+- Update table of contents (000-toc.md) when adding/modifying chapters
 - Follow the established multi-agent workflow for content suggestions
 
 ## Special Context

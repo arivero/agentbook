@@ -53,7 +53,7 @@ This playbook translates GitHub Agentic Workflows (GH-AW) guidance into a practi
 ## Required Artifacts per Update
 
 - ✅ Manuscript update or new section markdown
-- ✅ `book/chapters/00-toc.md` and `book/index.md` refreshed
+- ✅ `book/chapters/000-toc.md` and `book/index.md` refreshed
 - ✅ Root `index.md` updated (homepage links)
 - ✅ New `_posts/<date>-<slug>.md` blog entry
 
