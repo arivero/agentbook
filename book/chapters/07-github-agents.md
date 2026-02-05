@@ -441,7 +441,7 @@ Modern repositories need to support multiple AI agent platforms. Different codin
 When multiple AI agents work with your repository, you face a coordination challenge:
 
 - **GitHub Copilot** reads `.github/copilot-instructions.md` for project-specific guidance
-- **Claude** uses `CLAUDE.md` for dedicated configuration, or can read `AGENTS.md` files for project context
+- **Claude** automatically incorporates `CLAUDE.md`; `AGENTS.md` may still be useful as shared project documentation, but should be explicitly referenced for reliable Claude workflows
 - **OpenAI Codex (GPT-5.2-Codex)** can be configured with system instructions and skills packaged via `SKILL.md` (see <https://platform.openai.com/docs/guides/codex/skills>)
 - **Generic agents** look for `AGENTS.md` as the emerging standard
 
@@ -498,9 +498,9 @@ Describe important directories and their purposes.
 
 For maximum compatibility across AI agent platforms, follow these practices:
 
-1. **Use AGENTS.md as the canonical source** for project instructions
-2. **Create platform-specific files** that import or reference AGENTS.md content
-3. **Keep instructions DRY** by avoiding duplication across files
+1. **Pick a canonical source per platform** (`AGENTS.md` for many coding agents, `CLAUDE.md` for Claude)
+2. **Cross-reference shared guidance** between platform files to reduce drift
+3. **Keep instructions DRY** by avoiding unnecessary duplication
 4. **Test with multiple agents** to ensure instructions work correctly
 
 Example hierarchy:

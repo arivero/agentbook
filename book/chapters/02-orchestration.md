@@ -150,19 +150,22 @@ jobs:
 
 ### LangChain
 LangChain (<https://python.langchain.com/>) is a Python framework for LLM applications:
+
+> **Snippet status:** Runnable example pattern (validated against LangChain v1 docs, Feb 2026; verify exact signature in your installed version).
+
 ```python
-from langchain.agents import AgentExecutor
 from langchain.agents import create_agent
 
 agent = create_agent(
-    llm=llm,
+    model="gpt-4o-mini",
     tools=tools,
-    prompt=prompt
+    system_prompt="You are a helpful workflow orchestrator.",
 )
 
-executor = AgentExecutor(agent=agent, tools=tools)
-result = executor.run("Your task here")
+result = agent.invoke({"messages": [{"role": "user", "content": "Your task here"}]})
 ```
+
+> **Note:** LangChain's agents API has evolved quickly. Prefer the current docs for exact signatures, and treat older snippets that pass `llm=` directly as version-specific patterns.
 
 ### Custom Orchestration
 Build your own orchestrator:

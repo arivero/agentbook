@@ -273,24 +273,28 @@ For practical interoperability, treat **Agent Skills** as the primary standard t
 
 The current ecosystem signal is strongest around this filesystem-first model: a `SKILL.md` contract with progressive disclosure, plus optional `scripts/`, `references/`, and `assets/` directories.
 
+> **Placement note:** For OpenAI Codex auto-discovery, store repository skills under `.agents/skills/` (or user-level `~/.codex/skills/`). A plain top-level `skills/` folder is a useful wrapper convention but is not auto-discovered by default without additional wiring.
+
+
 ### Canonical Layout
 
-Example 4-1. `skills/code-review/`
+Example 4-1. `.agents/skills/code-review/`
 
 ```text
-skills/
-  code-review/
-    SKILL.md
-    manifest.json
-    scripts/
-      review.py
-    references/
-      rubric.md
-    assets/
-      example-diff.txt
+.agents/
+  skills/
+    code-review/
+      SKILL.md
+      manifest.json
+      scripts/
+        review.py
+      references/
+        rubric.md
+      assets/
+        example-diff.txt
 ```
 
-Example 4-2. `skills/code-review/SKILL.md`
+Example 4-2. `.agents/skills/code-review/SKILL.md`
 
 ```markdown
 ---
@@ -654,21 +658,26 @@ Several other frameworks share architectural patterns with OpenClaw:
 
 ### LangChain and LangGraph
 
-LangChain (<https://python.langchain.com/>) provides composable building blocks for LLM applications:
+LangChain (<https://python.langchain.com/>) provides composable building blocks for LLM applications.
+
+> **Snippet status:** Illustrative pseudocode (API names vary across LangChain versions).
 
 ```python
-from langchain.agents import AgentExecutor, create_tool_calling_agent
+from langchain.agents import create_agent
 from langchain_core.tools import tool
 
 @tool
 def search_documentation(query: str) -> str:
     """Search project documentation for relevant information."""
     # Implementation
-    pass
+    return "..."
 
-# Create agent with tools
-agent = create_tool_calling_agent(llm, tools=[search_documentation], prompt=prompt)
-executor = AgentExecutor(agent=agent, tools=tools, verbose=True)
+agent = create_agent(
+    model="gpt-4o-mini",
+    tools=[search_documentation],
+    system_prompt="Use tools when needed, then summarize clearly.",
+)
+result = agent.invoke({"messages": [{"role": "user", "content": "Find testing docs"}]})
 ```
 
 **Shared patterns with OpenClaw**: Tool registration, agent composition, memory management.

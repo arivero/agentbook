@@ -8,8 +8,8 @@ order: 99
 - GitHub Agentic Workflows documentation. <https://github.github.io/gh-aw/>. Accessed: 2026-02-05.
 - GitHub Agentic Workflows repository. <https://github.com/github/gh-aw>. Accessed: 2026-02-05.
 - GitHub Copilot documentation. <https://docs.github.com/en/copilot>. Accessed: 2026-02-05.
-- GitHub Copilot coding agent. <https://docs.github.com/en/copilot/how-tos/use-copilot-agents/coding-agent>. Accessed: 2026-02-05.
-- Copilot coding agent environment customization. <https://docs.github.com/en/copilot/how-tos/use-copilot-agents/coding-agent/customize-the-agent-environment>. Accessed: 2026-02-05.
+- GitHub Copilot coding agent. [GitHub Docs](https://docs.github.com/en/copilot/how-tos/use-copilot-agents/coding-agent). Accessed: 2026-02-05.
+- Copilot coding agent environment customization. [GitHub Docs](https://docs.github.com/en/copilot/how-tos/use-copilot-agents/coding-agent/customize-the-agent-environment). Accessed: 2026-02-05.
 - Model Context Protocol (MCP). <https://modelcontextprotocol.io/>. Accessed: 2026-02-05.
 - Skills Protocol documentation. <https://skillsprotocol.com/>. Accessed: 2026-02-05.
 - Skills Protocol Implementation Guide. <https://skillsprotocol.com/implementation-guide>. Accessed: 2026-02-05.
