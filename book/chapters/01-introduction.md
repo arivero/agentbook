@@ -1,11 +1,17 @@
 ---
-title: "Chapter 1: Introduction to Agentic Workflows"
+title: "Introduction to Agentic Workflows"
 order: 1
 ---
 
-# Chapter 1: Introduction to Agentic Workflows
+# Introduction to Agentic Workflows
 
-## What are Agentic Workflows?
+## Chapter Preview
+
+- Define agentic workflows and the roles they coordinate.
+- Establish the terminology used throughout the book.
+- Show where agentic workflows create leverage in practice.
+
+## What Are Agentic Workflows?
 
 Agentic workflows represent a paradigm shift in how we approach software development and automation. Instead of writing explicit instructions for every task, we define goals and let AI agents determine the best path to achieve them.
 
@@ -21,6 +27,20 @@ Agentic workflows represent a paradigm shift in how we approach software develop
 - **Adaptive**: Agents can modify their approach based on feedback
 - **Goal-oriented**: Focus on outcomes rather than rigid procedures
 - **Context-aware**: Understanding the broader context of their actions
+
+### Terminology and Roles
+
+To keep the manuscript consistent, we use the following terms throughout:
+
+- **Agentic workflow** (primary term): A goal-directed, tool-using workflow executed by one or more agents.
+- **Tool**: A capability exposed through a protocol (for example, an API, CLI, or MCP server).
+- **Skill**: A packaged, reusable unit of instructions and/or code (see [Skills and Tools Management](04-skills-tools.md)).
+- **Orchestrator**: The component that sequences work across agents.
+- **Planner**: The component that decomposes goals into steps.
+- **Executor**: The component that performs actions and records results.
+- **Reviewer**: The component (often a human) that approves, rejects, or requests changes.
+
+> **Warning:** Prompt injection is a primary risk for agentic workflows. Treat external content as untrusted input and require explicit tool allowlists and human review for risky actions.
 
 ### Why Agentic Workflows?
 
@@ -72,7 +92,7 @@ In the following chapters, we'll explore how to orchestrate agents, build scaffo
 
 ## Key Takeaways
 
-- Agentic workflows enable flexible, intelligent automation
-- Agents are autonomous, goal-oriented entities
-- This approach scales better than traditional automation
-- Understanding the fundamentals is crucial for effective implementation
+- Agentic workflows enable flexible, intelligent automation.
+- Consistent terminology prevents confusion as systems scale.
+- Security and human review guardrails are non-negotiable for production use.
+- The rest of the book builds on these core concepts.

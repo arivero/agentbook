@@ -4,7 +4,7 @@ title: "MCP: Interoperable Tools for Agents"
 date: 2026-02-06
 ---
 
-We just expanded **Chapter 4: Skills and Tools Management** with a new section on the **Model Context Protocol (MCP)** and how it shapes modern agent tooling.
+We just expanded **Skills and Tools Management** with a new section on the **Model Context Protocol (MCP)** and how it shapes modern agent tooling.
 
 ## Why This Matters
 
@@ -19,7 +19,7 @@ MCP has shifted from an emerging idea to a **shared tool interoperability layer*
 
 ## Read the Update
 
-Head to **Chapter 4** to read the new MCP section and see how it fits into tool design, discovery, and best practices.
+Head to **Skills and Tools Management** to read the new MCP section and see how it fits into tool design, discovery, and best practices.
 
 ---
 

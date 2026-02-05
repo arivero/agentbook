@@ -1,9 +1,17 @@
 ---
-title: "Chapter 8: Agents for Mathematics and Physics"
+title: "Agents for Mathematics and Physics"
 order: 8
 ---
 
-# Chapter 8: Agents for Mathematics and Physics
+# Agents for Mathematics and Physics
+
+## Chapter Preview
+
+- Identify where formal methods and CAS tools fit in agent workflows.
+- Separate runnable tooling from conceptual pseudocode.
+- Highlight verification pitfalls and how to avoid them.
+
+> **Note:** Many examples in this chapter are illustrative pseudocode unless explicitly labeled as runnable, because formal tooling and CAS systems require environment-specific setup.
 
 ## Introduction
 
@@ -25,7 +33,7 @@ Scientific agents differ from coding agents in several key ways:
 
 ### Categories of Scientific Agents
 
-1. **Theorem Proving Agents**: Construct formal proofs in systems like Lean, Coq, or Isabelle
+1. **Theorem Proving Agents**: Construct formal proofs in systems like Lean (<https://lean-lang.org/learn/>), Coq (<https://coq.inria.fr/>), or Isabelle (<https://isabelle.in.tum.de/>)
 2. **Symbolic Computation Agents**: Work with computer algebra systems (CAS)
 3. **Numerical Simulation Agents**: Set up and run physics simulations
 4. **Research Assistants**: Search literature, summarize findings, identify gaps
@@ -39,7 +47,7 @@ Formal theorem proving ensures mathematical correctness through rigorous logical
 
 ### Ax-Prover Architecture
 
-**Ax-Prover** is a notable deep reasoning framework for theorem proving in mathematics and quantum physics. It demonstrates how multi-agent orchestration can tackle formal proofs:
+> **Note:** Ax-Prover is a hypothetical composite example used to illustrate multi-agent theorem proving patterns.
 
 ```python
 class AxProverAgent:
@@ -660,7 +668,7 @@ class LiteratureReviewAgent:
 
 ## Best Practices
 
-### 1. Rigorous Verification
+### Rigorous Verification
 
 Always verify scientific outputs:
 
@@ -679,7 +687,7 @@ async def execute_with_verification(self, task):
     return result
 ```
 
-### 2. Uncertainty Quantification
+### Uncertainty Quantification
 
 Scientific agents should express uncertainty:
 
@@ -700,7 +708,7 @@ class UncertaintyAwareAgent:
         }
 ```
 
-### 3. Reproducibility
+### Reproducibility
 
 Ensure all computations are reproducible:
 
@@ -734,7 +742,7 @@ class ReproducibleComputation:
         }
 ```
 
-### 4. Domain Expert Collaboration
+### Domain Expert Collaboration
 
 Design agents to work with domain experts:
 

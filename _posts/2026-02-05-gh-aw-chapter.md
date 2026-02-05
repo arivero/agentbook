@@ -1,14 +1,14 @@
 ---
 layout: post
-title: "New Chapter: GitHub Agentic Workflows"
+title: "New Section: GitHub Agentic Workflows"
 date: 2026-02-05
 ---
 
-We just added a new chapter on **GitHub Agentic Workflows (GH-AW)**, the emerging approach that turns markdown instructions into secure, composable GitHub Actions powered by AI agents.
+We just added a new section on **GitHub Agentic Workflows (GH-AW)**, the emerging approach that turns markdown instructions into secure, composable GitHub Actions powered by AI agents.
 
 ## What’s New in the Book
 
-The new chapter explains:
+The new section explains:
 
 - How GH-AW workflows are structured (frontmatter + markdown)
 - Why compilation to `.lock.yml` matters for reproducibility
@@ -25,9 +25,9 @@ Alongside the chapter, we added an **Agentic Workflow Playbook** for this repo t
 3. Assign agents to implement accepted updates
 4. Keep the book and blog synchronized
 
-## Read the Chapter
+## Read the Section
 
-Start with **Chapter 5: GitHub Agentic Workflows (GH-AW)** and follow the playbook to see how the book maintains itself in practice.
+Start with **GitHub Agentic Workflows (GH-AW)** and follow the playbook to see how the book maintains itself in practice.
 
 ---
 

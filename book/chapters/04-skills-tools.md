@@ -1,9 +1,15 @@
 ---
-title: "Chapter 4: Skills and Tools Management"
+title: "Skills and Tools Management"
 order: 4
 ---
 
-# Chapter 4: Skills and Tools Management
+# Skills and Tools Management
+
+## Chapter Preview
+
+- Define tools, skills, and how they map to operational workflows.
+- Compare packaging formats and protocols for distributing skills.
+- Walk through safe patterns for skill development and lifecycle management.
 
 ## Understanding Skills vs. Tools
 
@@ -26,7 +32,7 @@ Examples:
 
 ## Tool Design Principles
 
-### 1. Single Responsibility
+### Single Responsibility
 Each tool should do one thing well.
 
 ```python
@@ -49,7 +55,7 @@ class FileManager:
     def backup(self, filepath): ...
 ```
 
-### 2. Clear Interfaces
+### Clear Interfaces
 Tools should have well-defined inputs and outputs.
 
 ```python
@@ -70,7 +76,7 @@ class Tool(Protocol):
         ...
 ```
 
-### 3. Error Handling
+### Error Handling
 Tools must handle errors gracefully and provide useful feedback.
 
 ```python
@@ -100,7 +106,7 @@ class WebScraperTool:
             }
 ```
 
-### 4. Documentation
+### Documentation
 Every tool needs clear documentation.
 
 ```python
@@ -255,6 +261,102 @@ class MarkdownValidatorTool:
         
         return issues
 ```
+
+## Skills Protocol and Agent Skills
+
+The ecosystem now distinguishes between **runtime protocols** (how tools are exposed to agents) and **packaging formats** (how skills are stored and documented). Three complementary standards matter most:
+
+- **Skills Protocol**: A runtime protocol for connecting agents to Skills and Blobs through a Skills Runtime, with sandboxed code execution and a consistent tool surface. Official docs live at <https://skillsprotocol.com/> and the implementation guide at <https://skillsprotocol.com/implementation-guide>.  
+- **Agent Skills format**: A filesystem packaging spec centered on a `SKILL.md` file plus optional scripts, references, and assets. The canonical format is described at <https://skillsprotocol.com/skill-structure> and <https://skillsprotocol.com/skill-manifest>.
+- **MCP (Model Context Protocol)**: A protocol for connecting models to external tools and data sources. See <https://modelcontextprotocol.io/>.
+
+### Relationship to MCP
+
+Use **Skills Protocol** when you need a runtime that can mount skills, execute code in a sandbox, and handle large artifacts (blobs). Use **MCP** when you need a standardized tool gateway across many models or environments. Use **Agent Skills** when you want a portable, repo-friendly way to package skills—regardless of whether you serve them via Skills Protocol or MCP.
+
+### Skills Protocol: Minimal Tool Surface (Protocol Sketch)
+
+The Skills Protocol specification defines a small, stable set of tool methods. A runtime exposes these tools to an agent via JSON-RPC over HTTP. The method names below match the official specification (see the docs cited above):
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": "request-1",
+  "method": "list_skills",
+  "params": {}
+}
+```
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": "request-2",
+  "method": "describe_skill",
+  "params": {
+    "skill_id": "skill://code-review"
+  }
+}
+```
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": "request-3",
+  "method": "execute_skill",
+  "params": {
+    "skill_id": "skill://code-review",
+    "inputs": {
+      "pull_request": 128
+    }
+  }
+}
+```
+
+> **Note:** These are protocol-level sketches for clarity. Refer to the Skills Protocol Implementation Guide for the full schema and error model.
+
+### Agent Skills Format: Canonical Layout
+
+Example 4-1. `skills/code-review/`
+
+```text
+skills/
+  code-review/
+    SKILL.md
+    manifest.json
+    scripts/
+      review.py
+    references/
+      rubric.md
+    assets/
+      example-diff.txt
+```
+
+Example 4-2. `skills/code-review/SKILL.md`
+
+```markdown
+---
+name: code-review
+description: Review pull requests for security, correctness, and clarity.
+inputs:
+  pull_request:
+    type: integer
+    description: Pull request number to review.
+runtime:
+  entrypoint: scripts/review.py
+  language: python
+permissions:
+  network: false
+  filesystem:
+    read:
+      - repo/*
+---
+
+# Code Review Skill
+
+This skill reviews a pull request and produces a structured report.
+```
+
+> **Tip:** Keep `SKILL.md` concise and front-load the information the agent needs to act. Progressive disclosure means heavier details move to `references/` or `scripts/` so the agent loads them only when needed (see the Codex skills guide at <https://platform.openai.com/docs/guides/codex/skills>).
 
 ## Skill Development
 
@@ -506,6 +608,8 @@ In practice, a single integration might expose multiple tools and enable multipl
 
 ## Case Study: OpenClaw and pi-mono
 
+> **Note:** OpenClaw and pi-mono are hypothetical composite examples used to illustrate architecture patterns. They are not official products as of 2026-02.
+
 **OpenClaw** is a personal, local-first AI assistant that runs a gateway control plane and connects to many chat providers and device surfaces. It emphasizes multi-channel inboxes, tool access, and skill management inside a user-owned runtime.
 
 OpenClaw is built on the **pi-mono** ecosystem. The pi-mono monorepo provides an agent runtime, tool calling infrastructure, and multi-provider LLM APIs that OpenClaw can leverage to keep the assistant portable across models and deployments.
@@ -514,7 +618,7 @@ OpenClaw is built on the **pi-mono** ecosystem. The pi-mono monorepo provides an
 
 OpenClaw's architecture consists of several interconnected components:
 
-```
+```text
                                          +---------------------+
        +------------+                    |      Control UI     |
        | WhatsApp   |---(Gateway WS)---> |      (Dashboard)    |
@@ -535,13 +639,13 @@ OpenClaw's architecture consists of several interconnected components:
 - Central hub orchestrating all user input/output and messaging channels
 - Exposes a WebSocket server (default: `ws://127.0.0.1:18789`)
 - Handles session state, permissions, and authentication
-- Supports local and mesh/LAN deployment via Tailscale or similar
+- Supports local and mesh/LAN deployment via Tailscale (<https://tailscale.com/>) or similar
 
 **2. Pi Agent Runtime (pi-mono)**
 - Core single-agent execution environment
 - Maintains long-lived agent state, memory, skills, and tool access
 - Handles multi-turn conversation, contextual memory, and tool/plugin invocation
-- Orchestrates external API/model calls (OpenAI, Anthropic, local models via Ollama)
+- Orchestrates external API/model calls (OpenAI, Anthropic, local models via Ollama <https://ollama.com/>)
 - Persistent storage (SQLite, Postgres, Redis) for memory and context
 
 **3. Multi-Agent Framework**
@@ -574,7 +678,7 @@ Several other frameworks share architectural patterns with OpenClaw:
 
 ### LangChain and LangGraph
 
-LangChain provides composable building blocks for LLM applications:
+LangChain (<https://python.langchain.com/>) provides composable building blocks for LLM applications:
 
 ```python
 from langchain.agents import AgentExecutor, create_tool_calling_agent
@@ -593,9 +697,11 @@ executor = AgentExecutor(agent=agent, tools=tools, verbose=True)
 
 **Shared patterns with OpenClaw**: Tool registration, agent composition, memory management.
 
+LangGraph (<https://langchain-ai.github.io/langgraph/>) extends LangChain with graph-based agent orchestration.
+
 ### CrewAI
 
-CrewAI focuses on multi-agent collaboration with role-based specialization:
+CrewAI (<https://docs.crewai.com/>) focuses on multi-agent collaboration with role-based specialization:
 
 ```python
 from crewai import Agent, Task, Crew
@@ -625,7 +731,7 @@ crew = Crew(
 
 ### Microsoft Semantic Kernel
 
-Semantic Kernel emphasizes enterprise integration and plugin architecture:
+Semantic Kernel (<https://learn.microsoft.com/semantic-kernel/>) emphasizes enterprise integration and plugin architecture:
 
 ```csharp
 var kernel = Kernel.CreateBuilder()
@@ -648,7 +754,7 @@ var agent = new ChatCompletionAgent {
 
 ### AutoGen
 
-AutoGen specializes in conversational multi-agent systems:
+AutoGen (<https://microsoft.github.io/autogen/>) specializes in conversational multi-agent systems:
 
 ```python
 from autogen import AssistantAgent, UserProxyAgent
@@ -684,7 +790,7 @@ user_proxy.initiate_chat(assistant, message="Create a Python web scraper")
 
 ## MCP: Modern Tooling and Adoption
 
-The **Model Context Protocol (MCP)** has become a practical standard for connecting agents to tools and data sources. Today, MCP is less about novel capability and more about **reliable interoperability**: the same tool server can be used by multiple agent clients with consistent schemas, permissions, and response formats.
+The **Model Context Protocol (MCP)** (<https://modelcontextprotocol.io/>) has become a practical standard for connecting agents to tools and data sources. Today, MCP is less about novel capability and more about **reliable interoperability**: the same tool server can be used by multiple agent clients with consistent schemas, permissions, and response formats.
 
 ### What MCP Brings to Tools
 
@@ -713,13 +819,13 @@ The **Model Context Protocol (MCP)** has become a practical standard for connect
 
 MCP is broadly accepted as a **tooling interoperability layer**. The specifics vary by vendor, but the pattern is consistent: MCP servers expose the tools and resources, while clients orchestrate tool calls and manage safety policies.
 
-- **Codex**  
-  Codex clients commonly use MCP servers to standardize tool access (repo browsing, test execution, task automation). MCP reduces per-project wiring by centralizing tool definitions and auth. The main adoption pattern is organization-level MCP servers that provide consistent tools across multiple repos.
+- **Codex (GPT-5.2-Codex)** (<https://openai.com/index/introducing-codex/>)  
+  Codex clients commonly use MCP servers to standardize tool access (repo browsing, test execution, task automation). Codex also supports skills packaged with `SKILL.md` and progressive disclosure (see <https://platform.openai.com/docs/guides/codex/skills>). The main adoption pattern is organization-level MCP servers that provide consistent tools across multiple repos.
 
-- **GitHub Copilot**  
+- **GitHub Copilot** (<https://docs.github.com/en/copilot>)  
   Copilot deployments increasingly treat MCP as a bridge between editor experiences and organization tooling. This typically means MCP servers that expose repo-aware tools (search, CI status, documentation retrieval) so the assistant can operate with consistent, policy-driven access.
 
-- **Claude**  
+- **Claude** (<https://code.claude.com/docs>)  
   Claude integrations often use MCP to provide structured context sources (knowledge bases, issue trackers, dashboards). The MCP server becomes the policy boundary, while the client focuses on prompt composition and response quality.
 
 ### Practical Guidance for Authors and Teams
@@ -731,7 +837,7 @@ MCP is broadly accepted as a **tooling interoperability layer**. The specifics v
 
 ## Best Practices
 
-### 1. Version Tools and Skills
+### Version Tools and Skills
 ```python
 class VersionedTool:
     def __init__(self, version: str):
@@ -739,7 +845,7 @@ class VersionedTool:
         self.name = f"{self.__class__.__name__}_v{version}"
 ```
 
-### 2. Test Independently
+### Test Independently
 ```python
 # test_tools.py
 import pytest
@@ -759,7 +865,7 @@ def test_markdown_validator():
     assert any(i['type'] == 'unclosed_code_block' for i in result['issues'])
 ```
 
-### 3. Provide Fallbacks
+### Provide Fallbacks
 ```python
 class ResilientTool:
     def __init__(self, primary_impl, fallback_impl):
@@ -774,7 +880,7 @@ class ResilientTool:
             return self.fallback.execute(**kwargs)
 ```
 
-### 4. Monitor Usage
+### Monitor Usage
 ```python
 class MonitoredTool:
     def __init__(self, tool, metrics_collector):
@@ -809,7 +915,7 @@ class MonitoredTool:
 
 AGENTS.md files can be placed hierarchically in a project:
 
-```
+```text
 project/
 ├── AGENTS.md           # Root-level instructions (project-wide)
 ├── src/
@@ -892,7 +998,7 @@ When agents generate or modify code, they face several import-related challenges
 
 Modern coding agents use multiple strategies to understand imports:
 
-#### 1. Static Analysis Tools
+#### Static Analysis Tools
 
 Agents leverage language servers and static analyzers to understand import structure:
 
@@ -943,7 +1049,7 @@ class ImportAnalyzer:
         return self.import_graph
 ```
 
-#### 2. Language Server Protocol (LSP)
+#### Language Server Protocol (LSP)
 
 Language servers provide real-time import information that agents can query:
 
@@ -987,7 +1093,7 @@ class LSPImportProvider:
         return [s['name'] for s in symbols if s.get('kind') in EXPORTABLE_KINDS]
 ```
 
-#### 3. Project Configuration Files
+#### Project Configuration Files
 
 Agents read configuration files to understand module resolution:
 
@@ -1030,7 +1136,7 @@ class ProjectConfigReader:
         return config
 ```
 
-#### 4. Package Manifest Analysis
+#### Package Manifest Analysis
 
 Agents check package manifests to know what's available:
 
@@ -1067,7 +1173,7 @@ class PackageManifestReader:
 
 ### Best Practices for Import-Aware Agents
 
-#### 1. Document Import Conventions in AGENTS.md
+#### Document Import Conventions in AGENTS.md
 
 Include import guidance in your project's AGENTS.md:
 
@@ -1098,9 +1204,9 @@ from src.models import User
 ### Alias Conventions
 - `@/` maps to `src/`
 - `@components/` maps to `src/components/`
-```
+```text
 
-#### 2. Use Import Auto-Fix Tools
+#### Use Import Auto-Fix Tools
 
 Configure agents to use automatic import fixers:
 
@@ -1144,7 +1250,7 @@ class ImportAutoFixer:
         return results
 ```
 
-#### 3. Validate Imports Before Committing
+#### Validate Imports Before Committing
 
 Add import validation to agent workflows:
 
@@ -1157,7 +1263,7 @@ jobs:
   check-imports:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       
       - name: Check Python imports
         run: |
@@ -1220,5 +1326,7 @@ Understanding how agents discover and manage imports is essential for building r
 - Always document, test, and version your tools and skills
 - Monitor usage to identify issues and optimization opportunities
 - AGENTS.md is the emerging standard for project-level agent instructions
+- Skills Protocol defines how runtimes execute skills; Agent Skills defines how they are packaged
+- MCP standardizes tool interoperability across clients and hosts
 - Import awareness requires combining static analysis, LSP, and project configuration
 - OpenClaw, LangChain, CrewAI, and similar frameworks share common patterns for tool and skill management

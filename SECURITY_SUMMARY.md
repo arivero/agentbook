@@ -30,10 +30,9 @@ All workflows now use the principle of least privilege:
   - `contents: read` - Read repository content only
   - No write permissions needed
 
-- **`process-suggestions.yml`**:
-  - `issues: write` - Manage issue labels and comments
-  - `contents: write` - Create commits (for future automation)
-  - `pull-requests: write` - Create PRs (for future automation)
+- **GH-AW workflows (`issue-*.lock.yml`)**:
+  - Permissions scoped per workflow frontmatter
+  - Safe outputs and tool allowlists enforced by GH-AW runtime
 
 #### 2. Build Security
 - PDF generation uses official Docker image (`pandoc/latex:latest`)

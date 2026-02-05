@@ -8,34 +8,41 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Front matter section with title page, copyright, preface, and conventions
+- Bibliography section with access dates for external references
+- Link checker script and CI workflow for Markdown URLs
 - LICENSE file (MIT License)
 - CODE_OF_CONDUCT.md (Contributor Covenant 2.0)
 - CHANGELOG.md to track changes
 - WORKFLOWS.md - Comprehensive workflow documentation explaining GH-AW vs legacy approaches
 - Documentation references in README for issue submission process
 - Policy for rejected issues to move to GitHub Discussions
-- Documentation links in book Chapter 6
-- Multi-Agent Platform Compatibility section in Chapter 6 covering copilot-instructions.md, AGENTS.md, and CLAUDE.md
-- References to Chapters 7 and 8 in README and documentation
+- Multi-agent platform compatibility coverage and agent configuration guidance
 
 ### Changed
+- Reordered PDF build inputs and metadata to ensure correct title page and chapter order
+- Removed duplicated “Chapter N” labels from headings and front matter titles
+- Updated GH-AW examples to match compiled workflow structure and setup actions
+- Updated GitHub Actions versions to current major releases (checkout v6, github-script v8, create-pull-request v8)
+- Added chapter previews, clarified terminology, and inserted security callouts
 - Standardized documentation structure following OSS best practices
-- Clarified workflow approach: GH-AW workflows (.lock.yml) are canonical, process-suggestions.yml is legacy fallback
-- Updated README with comprehensive documentation section and chapters 7-8
+- Clarified workflow approach: GH-AW workflows (.lock.yml) are canonical
 - Updated CONTRIBUTING with workflow details and rejected issue policy
-- Marked process-suggestions.yml as legacy fallback with explanation
-- Enhanced Chapter 6 with repository documentation references and agent configuration files section
-- Updated copilot-instructions.md to include chapters 7-8 in structure
-- Updated PROJECT_SUMMARY.md to reflect 8 chapters and updated statistics
+- Enhanced GitHub agents content with repository documentation references and agent configuration files section
+- Updated copilot-instructions.md to include expanded structure guidance
+- Updated PROJECT_SUMMARY.md to reflect the current manuscript structure
 
 ### Fixed
-- build-pdf.yml now includes chapters 07 (Agents for Coding) and 08 (Agents for Mathematics and Physics)
+- Replaced fictional GitHub Actions references for Copilot and GH-AW with documented workflows
+- build-pdf.yml includes the latest manuscript sources
+
+### Known Issues
+- Link checker skips <https://platform.openai.com/docs/guides/codex/skills> because the site returns HTTP 403 to unauthenticated requests; verify with authenticated access before release.
 
 ## [0.1.0] - 2026-02-04
 
 ### Added
 - Initial release of the Agentic Workflows Book
-- 6 comprehensive chapters on agentic workflows, orchestration, and scaffolding
 - GitHub Pages deployment with Jekyll
 - PDF generation workflow
 - Multi-agent issue processing system

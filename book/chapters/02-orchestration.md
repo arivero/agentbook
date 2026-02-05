@@ -1,9 +1,15 @@
 ---
-title: "Chapter 2: Agent Orchestration"
+title: "Agent Orchestration"
 order: 2
 ---
 
-# Chapter 2: Agent Orchestration
+# Agent Orchestration
+
+## Chapter Preview
+
+- Compare common orchestration patterns and when to use each.
+- Map orchestration to roles (planner, executor, reviewer).
+- Apply practical guardrails for coordination at scale.
 
 ## Understanding Agent Orchestration
 
@@ -14,7 +20,7 @@ Agent orchestration is the art and science of coordinating multiple agents to wo
 ### Sequential Execution
 Agents work one after another, each building on previous results.
 
-```
+```text
 Agent A → Agent B → Agent C → Result
 ```
 
@@ -25,7 +31,7 @@ Agent A → Agent B → Agent C → Result
 ### Parallel Execution
 Multiple agents work simultaneously on independent tasks.
 
-```
+```text
 Agent A ↘
 Agent B → Aggregator → Result
 Agent C ↗
@@ -38,7 +44,7 @@ Agent C ↗
 ### Hierarchical Execution
 A supervisor agent delegates tasks to specialized worker agents.
 
-```
+```text
 Supervisor Agent
     ├─> Worker A
     ├─> Worker B
@@ -52,7 +58,7 @@ Supervisor Agent
 ### Event-Driven Orchestration
 Agents respond to events and trigger other agents.
 
-```
+```text
 Event → Agent A → Event → Agent B → Event → Agent C
 ```
 
@@ -84,7 +90,7 @@ Agents directly call other agents:
 
 ## Best Practices
 
-### 1. Clear Responsibilities
+### Clear Responsibilities
 Define what each agent is responsible for:
 ```yaml
 agents:
@@ -97,26 +103,34 @@ agents:
     tools: [pytest, jest, test_framework]
 ```
 
-### 2. Error Handling
+### Error Handling
 Agents should handle failures gracefully:
 - Retry logic for transient failures
 - Fallback strategies
 - Clear error reporting
 - Rollback capabilities
 
-### 3. Monitoring
+### Monitoring
 Track agent performance:
 - Execution time
 - Success/failure rates
 - Resource usage
 - Output quality
 
-### 4. Isolation
+### Isolation
 Keep agents independent:
 - Minimize shared dependencies
 - Use clear interfaces
 - Version agent capabilities
 - Test agents independently
+
+> **Note:** Orchestration should surface a clear audit trail: who decided, who executed, and who approved. Capture this early so later chapters can build on it.
+
+## Key Takeaways
+
+- Orchestration is the coordination layer that turns goals into reliable execution.
+- Use the simplest pattern that matches your dependency graph.
+- Isolation, monitoring, and auditability are core design constraints.
 
 ## Orchestration Frameworks
 
@@ -129,13 +143,13 @@ jobs:
   review:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v6
       - name: Code Review Agent
         run: ./agents/review.sh
 ```
 
 ### LangChain
-Python framework for LLM applications:
+LangChain (<https://python.langchain.com/>) is a Python framework for LLM applications:
 ```python
 from langchain.agents import AgentExecutor
 from langchain.agents import create_agent

@@ -1,17 +1,23 @@
 ---
-title: "Chapter 3: Agentic Scaffolding"
+title: "Agentic Scaffolding"
 order: 3
 ---
 
-# Chapter 3: Agentic Scaffolding
+# Agentic Scaffolding
 
-## What is Agentic Scaffolding?
+## Chapter Preview
+
+- Identify the scaffolding layers that make agentic workflows reliable.
+- Learn how to balance flexibility with safety controls.
+- Map scaffolding decisions to operational risks.
+
+## What Is Agentic Scaffolding?
 
 Agentic scaffolding is the infrastructure, frameworks, and patterns that enable agents to operate effectively. Just as scaffolding supports construction workers, agentic scaffolding provides the foundation for agent-driven development.
 
 ## Core Components
 
-### 1. Tool Access Layer
+### Tool Access Layer
 Agents need controlled access to tools and APIs.
 
 ```python
@@ -39,7 +45,7 @@ class ToolRegistry:
         raise PermissionError(f"Agent {agent_id} lacks permission for {name}")
 ```
 
-### 2. Context Management
+### Context Management
 Maintain and share context between agent invocations.
 
 ```python
@@ -68,7 +74,7 @@ class AgentContext:
         return self.history
 ```
 
-### 3. Execution Environment
+### Execution Environment
 Provide safe, isolated environments for agent execution.
 
 ```yaml
@@ -89,7 +95,7 @@ USER agent
 ENTRYPOINT ["python", "agent_runner.py"]
 ```
 
-### 4. Communication Protocol
+### Communication Protocol
 Standardize how agents communicate.
 
 ```typescript
@@ -294,6 +300,8 @@ class ResilientAgent:
                 self._log_error(e)
                 raise
 ```
+
+> **Warning:** Sandboxing and permission boundaries are not optional. Treat every tool invocation as a least-privilege request and validate all side effects in a separate review step.
 
 ## Scaffolding for This Book
 

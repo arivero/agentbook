@@ -8,7 +8,7 @@ book_continuous: true
 
 A living book about agentic workflows, agent orchestration, and agentic scaffolding.
 
-[Download PDF](https://github.com/arivero/agentbook/releases/latest/download/agentic-workflows-book.pdf)
+[Download PDF](https://github.com/arivero/agentbook/raw/main/book/agentic-workflows-book.pdf)
 
 ## Chapters
 
