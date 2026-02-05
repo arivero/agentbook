@@ -48,7 +48,7 @@ jobs:
             --number-sections \
             -V geometry:margin=1in \
             -V documentclass=report \
-            --listings \
+            --syntax-highlighting=idiomatic \
             --include-in-header=book/pandoc/latex-header.tex
 
       - name: Move PDF into repo
