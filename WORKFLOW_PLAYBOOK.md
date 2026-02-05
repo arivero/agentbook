@@ -37,3 +37,5 @@ When a workflow source file changes:
 1. Re-compile to the matching `.lock.yml`.
 2. Commit source and lock file together.
 3. Keep this matrix updated in the same PR.
+
+**Important**: The `gh aw compile` command can be executed via the MCP server using the bash tool. This enables AI agents to compile workflows programmatically. See [COMPILING_WORKFLOWS.md](COMPILING_WORKFLOWS.md) for complete details on workflow compilation.

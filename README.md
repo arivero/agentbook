@@ -121,6 +121,7 @@ This work is licensed under the [MIT License](LICENSE) and available for educati
 
 - **[README](README.md)** - Project overview and workflow summary
 - **[SETUP](SETUP.md)** - Installation and configuration guide
+- **[COMPILING_WORKFLOWS](COMPILING_WORKFLOWS.md)** - Guide for compiling GH-AW workflows via MCP
 - **[WORKFLOW_PLAYBOOK](WORKFLOW_PLAYBOOK.md)** - Fast-track and full-playbook maintenance process
 - **[LICENSE](LICENSE)** - MIT License
 

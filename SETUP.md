@@ -48,6 +48,8 @@ For the `main` branch:
   - Fast-track path for small changes
   - Human review checkpoints before merge
 
+**Note**: GH-AW workflows use source-to-lock compilation. See [COMPILING_WORKFLOWS.md](COMPILING_WORKFLOWS.md) for details on compiling workflow source files.
+
 ## Labels
 
 The following labels are used by the automated workflows:
@@ -144,6 +146,40 @@ pandoc combined.md -o book.pdf --pdf-engine=xelatex --toc --number-sections
 - Verify workflow permissions include `issues: write`
 - Check if labels exist in the repository
 - Review workflow logs for errors
+
+## Compiling Agentic Workflows
+
+### Overview
+
+GitHub Agentic Workflows (GH-AW) use a source-to-lock compilation model:
+- **Source files**: `.github/workflows/*.md` (human-editable)
+- **Lock files**: `.github/workflows/*.lock.yml` (generated)
+
+### Quick Start
+
+```bash
+# Install gh-aw extension (one-time setup)
+gh extension install github/gh-aw
+
+# Compile all workflows
+gh aw compile
+
+# Compile specific workflow
+gh aw compile .github/workflows/issue-intake-triage.md
+```
+
+### Important Rules
+
+- ✅ **DO** edit `.md` source files
+- ✅ **DO** run `gh aw compile` after editing
+- ✅ **DO** commit both `.md` and `.lock.yml` together
+- ❌ **DON'T** edit `.lock.yml` files by hand
+
+### Via MCP Server
+
+The `gh aw compile` command **CAN** be executed via the MCP server using the bash tool. This enables AI agents to compile workflows programmatically.
+
+For complete details, see [COMPILING_WORKFLOWS.md](COMPILING_WORKFLOWS.md).
 
 ## Further Customization
 
