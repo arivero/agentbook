@@ -53,8 +53,6 @@ The primary way to contribute is by **opening an issue** with your suggestion:
 
 All suggestions related to agentic workflows, orchestration, scaffolding, skills/tools, or GitHub agents are welcome.
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines.
-
 ## 🛠️ Local Development
 
 To run the book locally:
@@ -111,14 +109,9 @@ This work is licensed under the [MIT License](LICENSE) and available for educati
 ## 📚 Documentation
 
 - **[README](README.md)** - Project overview and quick start
-- **[CONTRIBUTING](CONTRIBUTING.md)** - How to contribute content
 - **[WORKFLOWS](WORKFLOWS.md)** - Detailed workflow guide for GH-AW automation
 - **[SETUP](SETUP.md)** - Installation and configuration guide
 - **[WORKFLOW_PLAYBOOK](WORKFLOW_PLAYBOOK.md)** - GH-AW maintenance process
-- **[PROJECT_SUMMARY](PROJECT_SUMMARY.md)** - Comprehensive project overview
-- **[SECURITY_SUMMARY](SECURITY_SUMMARY.md)** - Security scan results and practices
-- **[CHANGELOG](CHANGELOG.md)** - Version history and changes
-- **[CODE_OF_CONDUCT](CODE_OF_CONDUCT.md)** - Community guidelines
 - **[LICENSE](LICENSE)** - MIT License
 
 ## 🌟 Acknowledgments
