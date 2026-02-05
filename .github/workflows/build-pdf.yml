@@ -24,6 +24,9 @@ jobs:
             apk update
             apk add git github-cli
 
+      - name: Install bash
+        run: apk add --no-cache bash
+  
       - name: Configure git for container
         run: |
           git config --global --add safe.directory "$GITHUB_WORKSPACE"
