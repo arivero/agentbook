@@ -84,6 +84,8 @@ bash_tool.execute({
 })
 ```
 
+For a complete step-by-step example with error handling, see [scripts/MCP_COMPILE_EXAMPLE.md](scripts/MCP_COMPILE_EXAMPLE.md).
+
 ## Workflow Editing Best Practices
 
 ### DO:
