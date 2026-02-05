@@ -12,7 +12,8 @@
   - `gh aw compile <workflow-id> --json` for specific error messages
   - `gh aw compile --verbose` to see which files are being compiled
   - `gh aw compile <workflow-id>` for one workflow at a time (avoid compiling `AGENTS.md`, which has no frontmatter)
-  - If you see errors about write permissions, switch permissions to read-only and configure `safe-outputs` for labels/comments/PRs (see https://github.com/github/gh-aw/blob/main/.github/aw/github-agentic-workflows.md#safe-outputs).
+  - If you see errors about write permissions, switch permissions to read-only and configure `safe-outputs` for labels/comments/PRs.
+    - Reference: https://github.com/github/gh-aw/blob/main/.github/aw/github-agentic-workflows.md#safe-outputs
 - Issue status labels must follow this lifecycle unless explicitly rejected/closed early:
   - `acknowledged`
   - `triaged-fast-track` **or** `triaged-for-research`
