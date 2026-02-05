@@ -1,0 +1,39 @@
+name: Compile Agentic Workflows
+
+on:
+  push:
+    paths:
+      - '.github/workflows/*.md'
+  pull_request:
+    paths:
+      - '.github/workflows/*.md'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  compile-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Install gh-aw extension
+        run: gh extension install github/gh-aw
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+      - name: Compile agentic workflows
+        run: gh aw compile
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+      - name: Verify lock files are up to date
+        run: |
+          if ! git diff --quiet -- .github/workflows/*.lock.yml; then
+            echo "::error::Lock files are out of date. Run 'gh aw compile' locally and commit the results."
+            git diff -- .github/workflows/*.lock.yml
+            exit 1
+          fi
+          echo "All .lock.yml files are up to date."
