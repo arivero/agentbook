@@ -33,3 +33,9 @@ order: 99
 - Lean documentation. <https://lean-lang.org/learn/>. Accessed: 2026-02-05.
 - Coq. <https://coq.inria.fr/>. Accessed: 2026-02-05.
 - Isabelle. <https://isabelle.in.tum.de/>. Accessed: 2026-02-05.
+
+<!-- Edit notes:
+Sections expanded: None (bibliography entries are an actual enumerable reference list that must remain as individual items)
+Lists preserved: All bibliography entries (reference lists must remain enumerable for citation purposes)
+Ambiguous phrases left ambiguous: None identified
+-->

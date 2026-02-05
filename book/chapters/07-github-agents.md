@@ -7,9 +7,7 @@ order: 7
 
 ## Chapter Preview
 
-- Describe how agents operate inside GitHub issues, PRs, and Actions.
-- Show safe assignment, review, and approval flows.
-- Map GitHub agent capabilities to real repository workflows.
+This chapter describes how agents operate inside GitHub issues, pull requests, and Actions, providing practical context for building agent-powered workflows. It shows safe assignment, review, and approval flows that keep humans in control of consequential changes. Finally, it maps GitHub agent capabilities to real repository workflows, demonstrating patterns you can adapt for your own projects.
 
 ## Understanding GitHub Agents
 
@@ -21,11 +19,7 @@ This chapter explores the landscape of GitHub Agents, their capabilities, and ho
 
 ### GitHub Copilot
 
-GitHub Copilot (<https://docs.github.com/en/copilot>) is the foundation of GitHub's AI-powered development tools. It provides:
-
-- **Code Completion**: Real-time suggestions as you type
-- **Chat Interface**: Natural language conversations about code
-- **Context Awareness**: Understanding of your codebase and intent
+GitHub Copilot (<https://docs.github.com/en/copilot>) is the foundation of GitHub's AI-powered development tools. It provides **code completion** with real-time suggestions as you type, predicting the code you're likely to write next. It offers a **chat interface** for natural language conversations about code, allowing you to ask questions and request explanations. And it provides **context awareness**, understanding your codebase and intent so suggestions fit your project's patterns and conventions.
 
 ```python
 # Example: Copilot helping write a function
@@ -39,12 +33,9 @@ def validate_email(email):
 
 ### GitHub Copilot Coding Agent
 
-The Coding Agent extends Copilot's capabilities to autonomous task completion. See <https://docs.github.com/en/copilot/how-tos/use-copilot-agents/coding-agent> for the supported assignment and review flow:
+The Coding Agent extends Copilot's capabilities to autonomous task completion. See <https://docs.github.com/en/copilot/how-tos/use-copilot-agents/coding-agent> for the supported assignment and review flow.
 
-- **Assigned Tasks**: Receives issues or requests and works independently
-- **Multi-File Changes**: Can modify multiple files across a codebase
-- **Pull Request Creation**: Generates complete PRs with descriptions
-- **Iterative Development**: Responds to review feedback
+The Coding Agent can receive **assigned tasks** from issues or requests and work independently without continuous human guidance. It supports **multi-file changes**, modifying multiple files across a codebase in a single operation. It handles **pull request creation**, generating complete PRs with descriptions that explain what changed and why. And it supports **iterative development**, responding to review feedback and making additional changes based on comments.
 
 **Key Characteristics:**
 
@@ -87,41 +78,23 @@ jobs:
 
 ### Reading and Understanding
 
-Agents can read and understand:
-
-- **Code**: Source files, configurations, dependencies
-- **Documentation**: READMEs, wikis, comments
-- **Issues and PRs**: Descriptions, comments, reviews
-- **Repository Structure**: File organization, patterns
+Agents can read and understand various types of content within a repository. They can process **code**, including source files, configurations, and dependency manifests. They can interpret **documentation** such as READMEs, wikis, and inline comments. They can analyse **issues and pull requests**, including descriptions, comments, and reviews. And they can comprehend **repository structure**, recognising file organisation patterns and project conventions.
 
 ### Writing and Creating
 
-Agents can produce:
-
-- **Code Changes**: New files, modifications, refactoring
-- **Documentation**: READMEs, comments, API docs
-- **Issues and Comments**: Status updates, analysis reports
-- **Pull Requests**: Complete PRs with proper descriptions
+Agents can produce several types of output. They can make **code changes**, creating new files, modifying existing ones, or refactoring for improved structure. They can write **documentation**, including READMEs, inline comments, and API docs. They can create **issues and comments**, posting status updates and analysis reports. And they can generate **pull requests** with complete descriptions that explain the changes.
 
 ### Reasoning and Deciding
 
-Agents can:
-
-- **Analyze Problems**: Understand issue context and requirements
-- **Plan Solutions**: Break down tasks into steps
-- **Make Decisions**: Choose between approaches
-- **Adapt**: Respond to feedback and changing requirements
+Agents can perform higher-level cognitive tasks. They can **analyse problems**, understanding issue context and requirements to identify what needs to be done. They can **plan solutions**, breaking down complex tasks into manageable steps. They can **make decisions**, choosing between alternative approaches based on trade-offs. And they can **adapt**, responding to feedback and changing requirements rather than failing when conditions shift.
 
 ## Multi-Agent Orchestration
 
 ### Why Multiple Agents?
 
-Single agents have limitations. Multi-agent systems provide:
+Single agents have limitations in capability, perspective, and throughput. Multi-agent systems address these through four key benefits.
 
-1. **Specialization**: Each agent excels at specific tasks
-2. **Perspective Diversity**: Different models bring different strengths
-3. **Scalability**: Parallel processing of independent tasks
-4. **Resilience**: Failure of one agent doesn't stop the workflow
+**Specialisation** allows each agent to excel at specific tasks, with dedicated agents for code review, documentation, testing, and other concerns. **Perspective diversity** means different models bring different strengths—one model may be better at security analysis while another excels at explaining concepts clearly. **Scalability** enables parallel processing of independent tasks, reducing total time to completion. **Resilience** ensures that failure of one agent does not stop the workflow; other agents can continue working or pick up where the failed agent left off.
 
 ### Orchestration Patterns
 
@@ -178,18 +151,17 @@ Agents work until human decision is needed:
 Agents work -> Human checkpoint -> Agents continue
 ```
 
-This pattern is essential for:
-- Approving significant changes
-- Resolving ambiguous decisions
-- Quality assurance
+This pattern is essential for approving significant changes that have broad impact, resolving ambiguous decisions where judgement is required, and ensuring quality assurance before changes reach production.
 
 ### Agent Handoff Protocol
 
-When agents need to pass context to each other:
+When agents need to pass context to each other, they follow a structured handoff protocol.
 
-1. **State in Labels**: Use GitHub labels to track workflow stage
-2. **Context in Comments**: Agents document their findings in issue comments
-3. **Structured Output**: Use consistent formats for machine readability
+**State in labels.** Agents use GitHub labels to track workflow stage, allowing both humans and other agents to see at a glance where an issue stands in the process.
+
+**Context in comments.** Agents document their findings in issue comments, creating a persistent record of what was discovered and decided.
+
+**Structured output.** Agents use consistent formats for machine readability, enabling downstream agents to parse and act on upstream results programmatically.
 
 ```yaml
 # Example: Structured agent output
@@ -319,27 +291,15 @@ Use consistent formats for agent-to-agent communication:
 
 ### Human Checkpoints
 
-Always include human review points:
-
-- Before significant changes
-- After agent recommendations
-- Before closing issues
+Always include human review points at critical junctures. Review should happen before significant changes that could affect production systems or user experience. Review should happen after agent recommendations, ensuring a human validates the suggested course of action. And review should happen before closing issues, confirming that the work is complete and meets requirements.
 
 ### Audit Trail
 
-Maintain visibility into agent actions:
-
-- All agent actions should be visible in comments
-- Use labels to track workflow state
-- Log important decisions and reasoning
+Maintain visibility into agent actions throughout the workflow. All agent actions should be visible in comments, creating a complete record of what happened. Use labels to track workflow state, making progress visible at a glance. Log important decisions and reasoning so future reviewers can understand why choices were made.
 
 ### Graceful Degradation
 
-Design for agent failures:
-
-- Use `continue-on-error` for non-critical steps
-- Provide manual fallback options
-- Alert maintainers when intervention is needed
+Design for agent failures rather than assuming they will not occur. Use `continue-on-error` for non-critical steps so that failures do not halt the entire workflow. Provide manual fallback options that humans can use when automated approaches fail. Alert maintainers when intervention is needed, ensuring problems are addressed promptly.
 
 ## Security Considerations
 
@@ -426,9 +386,7 @@ This very book uses GitHub Agents for self-maintenance:
 
 ### Configuration
 
-The workflow is defined using GitHub Agentic Workflows (GH-AW). The repository includes:
-- GH-AW workflows: `.github/workflows/issue-*.lock.yml`
-- Agent definitions: `.github/agents/*.md`
+The workflow is defined using GitHub Agentic Workflows (GH-AW). The repository includes GH-AW workflows in `.github/workflows/issue-*.lock.yml` and agent definitions in `.github/agents/*.md`.
 
 For a detailed explanation of the workflow architecture and why GH-AW is the canonical approach, see the repository's [WORKFLOWS.md](../../WORKFLOWS.md) documentation.
 
@@ -438,14 +396,9 @@ Modern repositories need to support multiple AI agent platforms. Different codin
 
 ### The Challenge of Agent Diversity
 
-When multiple AI agents work with your repository, you face a coordination challenge:
+When multiple AI agents work with your repository, you face a coordination challenge. **GitHub Copilot** reads `.github/copilot-instructions.md` for project-specific guidance. **Claude** automatically incorporates `CLAUDE.md`; the generic `AGENTS.md` may still be useful as shared project documentation but should be explicitly referenced for reliable Claude workflows. **OpenAI Codex (GPT-5.2-Codex)** can be configured with system instructions and skills packaged via `SKILL.md` (see <https://platform.openai.com/docs/guides/codex/skills>). **Generic agents** look for `AGENTS.md` as the emerging standard for project-level instructions.
 
-- **GitHub Copilot** reads `.github/copilot-instructions.md` for project-specific guidance
-- **Claude** automatically incorporates `CLAUDE.md`; `AGENTS.md` may still be useful as shared project documentation, but should be explicitly referenced for reliable Claude workflows
-- **OpenAI Codex (GPT-5.2-Codex)** can be configured with system instructions and skills packaged via `SKILL.md` (see <https://platform.openai.com/docs/guides/codex/skills>)
-- **Generic agents** look for `AGENTS.md` as the emerging standard
-
-Each platform has slightly different expectations, but the core information they need is similar.
+Each platform has slightly different expectations, but the core information they need is similar: project structure, coding conventions, build commands, and constraints.
 
 ### Repository Documentation as Agent Configuration
 
@@ -517,58 +470,55 @@ project/
 
 ### This Repository's Approach
 
-This book repository demonstrates multi-platform compatibility:
+This book repository demonstrates multi-platform compatibility through several mechanisms. The **`.github/copilot-instructions.md`** file provides detailed Copilot configuration with project structure, coding guidelines, and constraints. The **Skills and Tools Management** and **Agents for Coding** chapters discuss AGENTS.md as the emerging standard. The **documentation files** such as README and CONTRIBUTING provide context any agent can use. The **GH-AW workflows** use the `engine: copilot` setting but the pattern works with other engines.
 
-- **`.github/copilot-instructions.md`** - Detailed Copilot configuration with project structure, coding guidelines, and constraints
-- **Skills and Tools Management** and **Agents for Coding** discuss AGENTS.md as the emerging standard
-- **Documentation files** (README, CONTRIBUTING, etc.) provide context any agent can use
-- **GH-AW workflows** use the `engine: copilot` setting but the pattern works with other engines
-
-The key insight is that well-structured documentation benefits both human developers and AI agents. When you write clear README files, contribution guidelines, and coding standards, you're simultaneously creating better agent configuration.
+The key insight is that well-structured documentation benefits both human developers and AI agents. When you write clear README files, contribution guidelines, and coding standards, you are simultaneously creating better agent configuration.
 
 ### Best Practices for Agent-Friendly Repositories
 
-1. **Be explicit about constraints**: Clearly state what agents should NOT do
-2. **Document your tech stack**: Agents perform better when they understand the tools in use
-3. **Describe the project structure**: Help agents navigate your codebase efficiently
-4. **Provide examples**: Show preferred patterns through code examples
-5. **List protected paths**: Specify files agents should not modify
-6. **Include build/test commands**: Enable agents to verify their changes
-7. **State coding conventions**: Help agents write consistent code
+Several practices make repositories more compatible with AI agents.
+
+**Be explicit about constraints.** Clearly state what agents should NOT do, preventing them from making changes that would violate project policies.
+
+**Document your tech stack.** Agents perform better when they understand the tools in use, including languages, frameworks, and build systems.
+
+**Describe the project structure.** Help agents navigate your codebase efficiently by explaining where different types of code live.
+
+**Provide examples.** Show preferred patterns through code examples that agents can emulate.
+
+**List protected paths.** Specify files agents should not modify, such as security-critical configuration or workflow definitions.
+
+**Include build and test commands.** Enable agents to verify their changes work correctly before submitting them for review.
+
+**State coding conventions.** Help agents write consistent code that matches your project's style.
 
 ## Future of GitHub Agents
 
 ### Emerging Capabilities
 
-- **Code Generation**: Agents writing production-quality code
-- **Test Authoring**: Automatic test creation and maintenance
-- **Documentation Sync**: Keeping docs in sync with code
-- **Security Analysis**: Proactive vulnerability detection
+Several capabilities are becoming increasingly mature. **Code generation** now produces production-quality code that can be merged with minimal human editing. **Test authoring** automates test creation and maintenance, keeping test suites current as code evolves. **Documentation sync** keeps docs aligned with code, detecting when documentation drifts from implementation. **Security analysis** provides proactive vulnerability detection, identifying issues before they reach production.
 
 ### Integration Trends
 
-- **IDE Integration**: Deeper VS Code and editor integration
-- **CI/CD Native**: Agents as first-class CI/CD citizens
-- **Cross-Repo**: Agents working across multiple repositories
-- **Multi-Cloud**: Agents coordinating across platforms
+Integration is deepening across several dimensions. **IDE integration** brings deeper VS Code and editor support, making agents available throughout the development workflow. **CI/CD native** support treats agents as first-class CI/CD citizens rather than add-ons. **Cross-repo** capabilities allow agents to work across multiple repositories, coordinating changes that span projects. **Multi-cloud** support enables agents to coordinate across platforms, working with infrastructure that spans providers.
 
 ## Key Takeaways
 
-1. **GitHub Agents** are AI-powered assistants that can reason, decide, and act within repositories.
+**GitHub Agents** are AI-powered assistants that can reason, decide, and act within repositories, going beyond simple autocomplete to autonomous task completion.
 
-2. **Copilot Coding Agent** can autonomously complete tasks and create pull requests.
+**Copilot Coding Agent** can autonomously complete tasks and create pull requests, working independently on assigned issues while respecting review requirements.
 
-3. **Multi-agent orchestration** enables specialized, resilient, and scalable automation.
+**Multi-agent orchestration** enables specialised, resilient, and scalable automation by dividing work among agents with different strengths.
 
-4. **Human checkpoints** remain essential for quality and safety.
+**Human checkpoints** remain essential for quality and safety; agents propose changes but humans make final decisions on consequential modifications.
 
-5. **Clear protocols** for agent communication ensure smooth handoffs.
+**Clear protocols** for agent communication ensure smooth handoffs, using labels, comments, and structured output to pass context between agents.
 
-6. **Security** must be designed into agent workflows from the start.
+**Security** must be designed into agent workflows from the start, with least-privilege permissions, input validation, and protected paths.
 
-7. **Multi-platform compatibility** is achieved through well-structured documentation (copilot-instructions.md, AGENTS.md, etc.).
+**Multi-platform compatibility** is achieved through well-structured documentation including copilot-instructions.md, AGENTS.md, and related files.
 
-8. **This book** demonstrates these concepts through its own multi-agent maintenance workflow.
+**This book** demonstrates these concepts through its own multi-agent maintenance workflow, serving as a working example of the patterns described.
 
 ## Learn More
 
@@ -602,3 +552,9 @@ These documents serve as both useful references and examples of how to structure
 - **[Agents for Coding](08-agents-for-coding.md)** - Detailed coverage of coding agent platforms
 
 ---
+
+<!-- Edit notes:
+Sections expanded: Chapter Preview, GitHub Copilot description, GitHub Copilot Coding Agent capabilities, Agent Capabilities (all three subsections), Why Multiple Agents, Agent Handoff Protocol, Human Checkpoints, Audit Trail, Graceful Degradation, Configuration, The Challenge of Agent Diversity, This Repository's Approach, Best Practices for Agent-Friendly Repositories, Future of GitHub Agents (both subsections), Key Takeaways
+Lists preserved: Key Characteristics table (must remain tabular), code blocks (must remain as-is), file path listings (must remain enumerable for reference)
+Ambiguous phrases left ambiguous: None identified
+-->

@@ -7,28 +7,21 @@ order: 4
 
 ## Chapter Preview
 
-- Define tools, skills, and how they map to operational workflows.
-- Compare packaging formats and protocols for distributing skills.
-- Walk through safe patterns for skill development and lifecycle management.
+This chapter defines tools and skills and explains how they map to operational workflows in agentic systems. It compares packaging formats and protocols for distributing skills, helping you choose the right approach for your organisation's needs. Finally, it walks through safe patterns for skill development and lifecycle management, covering versioning, testing, and deprecation.
 
 ## Understanding Skills vs. Tools
 
 ### Tools
-**Tools** are atomic capabilities that agents can use to interact with their environment. They are the building blocks of agent functionality.
 
-Examples:
-- File system operations (read, write, delete)
-- API calls (GET, POST, PUT, DELETE)
-- Shell commands
-- Database queries
+**Tools** are atomic capabilities that agents can use to interact with their environment. They are the building blocks of agent functionality, each performing a single well-defined operation.
+
+Examples of tools include file system operations such as read, write, and delete; API calls including GET, POST, PUT, and DELETE methods; shell commands that execute system operations; and database queries that retrieve or modify stored data.
 
 ### Skills
-**Skills** are higher-level capabilities composed of multiple tools and logic. They represent complex behaviors that agents can learn and apply.
 
-Examples:
-- Code review (using git, static analysis, test execution)
-- Documentation writing (using research, markdown editing, validation)
-- Bug fixing (using debugging, testing, code editing)
+**Skills** are higher-level capabilities composed of multiple tools and logic. They represent complex behaviours that agents can learn and apply, combining atomic operations into coherent workflows.
+
+Examples of skills include code review, which uses Git for diffs, static analysis for issue detection, and test execution for validation. Documentation writing is another skill, combining research tools to gather information, markdown editing tools to write content, and validation tools to check correctness. Bug fixing is a skill that combines debugging tools to identify causes, testing tools to verify fixes, and code editing tools to implement changes.
 
 ## Tool Design Principles
 
@@ -336,7 +329,7 @@ JSON-RPC itself is battle-tested in other ecosystems (for example, Language Serv
 
 ### Relationship to MCP
 
-Use **Agent Skills** to define and distribute reusable capability packages. Use **MCP** to expose tools, data sources, or execution surfaces to models. In mature systems, these combine naturally: Agent Skills provide instructions and assets, while MCP provides controlled runtime tool access.
+Use **Agent Skills** to define and distribute reusable capability packages. Use **MCP** (Model Context Protocol) to expose tools, data sources, or execution surfaces to models. In mature systems, these combine naturally: Agent Skills provide the instructions and assets that tell agents how to accomplish tasks, while MCP provides controlled runtime tool access that actually executes operations. The two standards complement each other rather than competing.
 
 ## Skill Development
 
@@ -1305,15 +1298,16 @@ Understanding how agents discover and manage imports is essential for building r
 
 ## Key Takeaways
 
-- Tools are atomic capabilities; skills are composed behaviors
-- Design tools with single responsibility and clear interfaces
-- Skills orchestrate multiple tools to accomplish complex tasks
-- Use registries for discovery and management
-- Skills can be composed to create more powerful capabilities
-- Always document, test, and version your tools and skills
-- Monitor usage to identify issues and optimization opportunities
-- AGENTS.md is the emerging standard for project-level agent instructions
-- Skills Protocol defines how runtimes execute skills; Agent Skills defines how they are packaged
-- MCP standardizes tool interoperability across clients and hosts
-- Import awareness requires combining static analysis, LSP, and project configuration
-- OpenClaw, LangChain, CrewAI, and similar frameworks share common patterns for tool and skill management
+Tools are atomic capabilities that perform single operations, while skills are composed behaviours that orchestrate multiple tools to accomplish complex tasks. When designing tools, follow single responsibility principles and provide clear interfaces that agents can use reliably. Skills orchestrate multiple tools to accomplish complex tasks, and they can themselves be composed to create more powerful capabilities.
+
+Use registries for discovery and management, allowing agents to find available tools and skills at runtime. Always document, test, and version your tools and skills so that changes are traceable and consumers know what to expect. Monitor usage to identify issues and optimisation opportunities—without metrics, you cannot improve performance or reliability.
+
+AGENTS.md is the emerging standard for project-level agent instructions, providing a single source of truth for how agents should work within a codebase. Skills Protocol defines how runtimes execute skills, while Agent Skills defines how skills are packaged for distribution. MCP standardises tool interoperability across clients and hosts, allowing the same tool server to work with multiple agent platforms.
+
+Import awareness requires combining static analysis, Language Server Protocol (LSP) integration, and project configuration reading to ensure agents generate code with correct dependencies. OpenClaw, LangChain, CrewAI, and similar frameworks share common patterns for tool and skill management that you can learn from regardless of which platform you choose.
+
+<!-- Edit notes:
+Sections expanded: Chapter Preview, Understanding Skills vs. Tools (both subsections), Relationship to MCP, Key Takeaways
+Lists preserved: Examples in code blocks (these are actual code/configuration examples that must remain as-is), file structure layouts (must remain enumerable for clarity)
+Ambiguous phrases left ambiguous: None identified
+-->

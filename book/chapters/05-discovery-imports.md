@@ -7,138 +7,89 @@ order: 5
 
 ## Chapter Preview
 
-This chapter standardizes language that often gets overloaded in agentic systems. We define what an artefact is, what discovery means in practice, and how import, install, and activate are separate operations with different safety controls.
+This chapter standardises language that often gets overloaded in agentic systems. We define what an artefact is, what discovery means in practice, and how import, install, and activate are separate operations with different safety controls.
 
-- Build a taxonomy for what gets discovered: tools, skills, agents, and workflow fragments.
-- Compare discovery mechanisms: local scan, registry, domain convention, and explicit configuration.
-- Disambiguate import/install/activate and map each step to trust and supply-chain controls.
+The chapter builds a taxonomy for what gets discovered—tools, skills, agents, and workflow fragments—providing clear definitions that prevent confusion as systems grow more complex. It compares discovery mechanisms including local scans, registries, domain conventions, and explicit configuration, explaining the trade-offs of each approach. Finally, it disambiguates the operations of import, install, and activate, mapping each step to appropriate trust and supply-chain controls.
 
 ## Terminology Baseline for the Rest of the Book
 
-To keep later chapters precise, this chapter uses five core terms consistently:
+To keep later chapters precise, this chapter uses five core terms consistently.
 
-- **artefact**: any reusable unit a workflow can reference (tool endpoint metadata, a skill bundle, an agent definition, or a workflow fragment).
-- **discovery**: the process of finding candidate artefacts.
-- **import**: bringing a discovered artefact into the current resolution/evaluation context.
-- **install**: fetching and persisting an artefact (typically pinned), plus integrity metadata.
-- **activate**: making an installed/imported artefact callable by an agent in a specific run context.
+An **artefact** is any reusable unit a workflow can reference, including tool endpoint metadata, a skill bundle, an agent definition, or a workflow fragment. **Discovery** is the process of finding candidate artefacts that might be useful for a given task. **Import** means bringing a discovered artefact into the current resolution or evaluation context so it can be referenced. **Install** means fetching and persisting an artefact (typically pinned to a specific version), along with integrity metadata such as checksums or signatures. **Activate** means making an installed or imported artefact callable by an agent in a specific run context.
 
-> **Standardization rule:** Use these verbs literally. Do not use “import” when you mean “install,” and do not use “install” when you mean “activate.”
+> **Standardisation rule:** Use these verbs literally. Do not use "import" when you mean "install," and do not use "install" when you mean "activate." Precise terminology prevents misunderstandings about what security controls apply at each stage.
 
 ## A Taxonomy That Disambiguates What We Are Discovering
 
 ### 1) Tool artefacts
 
-A **tool** is an executable capability exposed via a protocol or command surface.
+A **tool** is an executable capability exposed via a protocol or command surface. A tool's **identity** is its endpoint identity, such as an MCP server URL combined with an authentication context. A tool's **interface** consists of the enumerated callable operations it exposes, including their names, schemas, and permission requirements.
 
-- **Identity**: endpoint identity (for example, an MCP server URL + auth context).
-- **Interface**: enumerated callable tools (names, schemas, permissions).
-
-Discovery usually finds endpoints first; tool enumeration happens after connection.
+Discovery usually finds endpoints first; tool enumeration happens after connection, when the client can query what operations the tool server supports.
 
 ### 2) Skill artefacts
 
-A **skill** is a packaged reusable bundle of instructions, templates, and optional scripts.
-
-- **Identity**: bundle source (repo path, registry coordinate, version/digest).
-- **Interface**: documented entrypoints, expected inputs/outputs, and policy constraints.
+A **skill** is a packaged reusable bundle of instructions, templates, and optional scripts. A skill's **identity** is its bundle source, which may be a repository path, a registry coordinate, or a version and digest combination. A skill's **interface** comprises its documented entrypoints, expected inputs and outputs, and policy constraints that govern how it may be used.
 
 ### 3) Agent artefacts
 
-An **agent** artefact is a role/config definition (persona, constraints, and operating policy).
-
-- **Identity**: a named definition file and version.
-- **Interface**: responsibilities, boundaries, and allowed capability set.
+An **agent** artefact is a role and configuration definition that specifies a persona, constraints, and operating policy. An agent's **identity** is a named definition file and version. An agent's **interface** includes its responsibilities, boundaries, and the set of capabilities it is allowed to use.
 
 ### 4) Workflow-fragment artefacts
 
-A **workflow fragment** is a reusable partial workflow (for example, a GH-AW component).
-
-- **Identity**: source file path or import address.
-- **Interface**: parameters, expected context, and emitted outputs.
+A **workflow fragment** is a reusable partial workflow, such as a GH-AW component that can be imported into other workflows. A workflow fragment's **identity** is its source file path or import address. A workflow fragment's **interface** includes its parameters, the context it expects, and the outputs it emits.
 
 ### Confusing cases to stop using
 
-- **tool != skill**: tools execute capabilities; skills package guidance/assets.
-- **skill != agent**: skills are reusable bundles; agents are operating roles.
-- **agent != workflow fragment**: an agent is an actor; a fragment is orchestration structure.
+Several common conflations cause confusion and should be avoided. A **tool is not the same as a skill**: tools execute capabilities, while skills package guidance and assets that tell agents how to use tools effectively. A **skill is not the same as an agent**: skills are reusable bundles of instructions, while agents are operating roles that may use skills. An **agent is not the same as a workflow fragment**: an agent is an actor that performs work, while a fragment is orchestration structure that defines how work flows between actors.
 
-When this book says “discover capabilities,” read it as “discover artefacts, then import/install/activate according to type.”
+When this book says "discover capabilities," read it as "discover artefacts, then import, install, or activate according to type."
 
 ## Discovery Mechanisms
 
-Discovery is how runtimes gather candidate artefacts before selection.
+Discovery is how runtimes gather candidate artefacts before selection. Different mechanisms suit different contexts.
 
 ### Local scan
 
-Scan repository paths and conventions (for example, `.github/workflows/`, `skills/`, `agents/`).
-
-- **Pros**: low latency, high transparency, easy review in code.
-- **Cons**: limited scope, convention drift in large monorepos.
+Local scanning examines repository paths and conventions (for example, `.github/workflows/`, `skills/`, `agents/`) to find artefacts available within the codebase. The advantages are low latency, high transparency, and easy review in code—everything is visible in the repository. The disadvantages are limited scope and convention drift in large monorepos, where different teams may adopt inconsistent conventions.
 
 ### Registry discovery
 
-Query a curated index/marketplace for artefacts.
-
-- **Pros**: centralized metadata, version visibility, governance hooks.
-- **Cons**: trust shifts to registry policy; namespace collisions possible.
+Registry discovery queries a curated index or marketplace for artefacts. The advantages include centralised metadata, version visibility, and governance hooks that can enforce organisational policy. The disadvantages are that trust shifts to registry policy (the registry becomes a critical dependency), and namespace collisions are possible when multiple teams use similar names.
 
 ### Domain-convention discovery
 
-Resolve artefacts via domain naming conventions (for example, `.well-known`-style descriptors).
-
-- **Pros**: interoperable discovery across organizational boundaries.
-- **Cons**: conventions may be ecosystem-specific, not always standardized.
+Domain-convention discovery resolves artefacts via domain naming conventions, such as `.well-known`-style descriptors that expose capability metadata at predictable URLs. The advantage is interoperable discovery across organisational boundaries—you can discover capabilities from external partners using a standard protocol. The disadvantage is that conventions may be ecosystem-specific and are not always standardised across vendors.
 
 ### Explicit configuration
 
-Use a pinned manifest that enumerates allowed sources and versions.
+Explicit configuration uses a pinned manifest that enumerates allowed sources and versions. The advantages are strongest reproducibility and auditability—you know exactly what artefacts will be used. The disadvantages are less flexibility and the need for deliberate updates whenever artefacts change.
 
-- **Pros**: strongest reproducibility and auditability.
-- **Cons**: less flexible; requires deliberate updates.
-
-**Decision rule:** if provenance cannot be authenticated, prefer explicit configuration over dynamic discovery.
+**Decision rule:** If provenance cannot be authenticated, prefer explicit configuration over dynamic discovery. Security concerns outweigh convenience when you cannot verify where an artefact came from.
 
 ## Import, Install, Activate: Three Different Operations
 
 ### Import
 
-Import brings an artefact into the current resolution context.
-
-- Language/module example: `from src.utils import helpers`
-- GH-AW example: `imports: [shared/common-tools.md]`
+Import brings an artefact into the current resolution context. In language and module terms, this looks like `from src.utils import helpers`. In GH-AW terms, this looks like `imports: [shared/common-tools.md]`. Import makes the artefact available for reference but does not necessarily make it callable.
 
 ### Install
 
-Install fetches and persists artefacts for repeatable use.
-
-- Example: store `skill-x@1.4.2` with checksum/signature metadata.
-- Example: lock workflow component revision to a commit digest.
+Install fetches and persists artefacts for repeatable use. For example, you might store `skill-x@1.4.2` with checksum and signature metadata to ensure integrity. Another example is locking a workflow component revision to a commit digest so that future runs use the exact same version.
 
 ### Activate
 
-Activate makes an artefact callable under policy.
+Activate makes an artefact callable under policy. For example, you might expose only `bash` and `edit` tools to a CI agent, withholding more dangerous capabilities. Another example is enabling a skill only after an approval gate passes, ensuring human oversight for high-impact operations.
 
-- Example: expose only `bash` and `edit` tools to a CI agent.
-- Example: enable a skill only after approval gate passes.
-
-A practical sequence is often: **discover -> select -> import/install -> activate -> execute**.
+A practical sequence is often: **discover → select → import/install → activate → execute**.
 
 ## Trust Boundaries and Supply Chain (Compact Model)
 
-Each stage has distinct risks and controls:
+Each stage has distinct risks and controls.
 
-- **Integrity** (was artefact tampered with?): checksums, signatures.
-- **Authenticity** (who published it?): identity verification, trusted publisher lists.
-- **Provenance** (how was it built?): attestations/SBOM, reproducible build metadata.
-- **Capability safety** (what can it do?): least privilege, sandboxing, constrained outputs.
+**Integrity** addresses whether an artefact was tampered with, and the controls are checksums and signatures. **Authenticity** addresses who published the artefact, and the controls are identity verification and trusted publisher lists. **Provenance** addresses how an artefact was built, and the controls are attestations, software bills of materials (SBOM), and reproducible build metadata. **Capability safety** addresses what an artefact can do, and the controls are least privilege, sandboxing, and constrained outputs.
 
-Control mapping:
-
-- **Discovery controls**: allowlists of domains/registries.
-- **Import/install controls**: pinning + checksum/signature verification.
-- **Activation controls**: permission gates, scoped credentials, sandbox profiles.
-- **Runtime controls**: audit logs, safe outputs, and policy evaluation traces.
+The control mapping by stage is as follows. **Discovery controls** include allowlists of domains and registries. **Import and install controls** include pinning plus checksum and signature verification. **Activation controls** include permission gates, scoped credentials, and sandbox profiles. **Runtime controls** include audit logs, safe outputs, and policy evaluation traces.
 
 ## Worked Examples
 
@@ -156,10 +107,7 @@ permissions:
   contents: read
 ```
 
-Interpretation:
-- `shared/common-tools.md` is a **workflow-fragment artefact**.
-- `imports` is the **import** operation.
-- A separate policy decides whether imported tools are **activated**.
+In this example, `shared/common-tools.md` is a **workflow-fragment artefact**. The `imports` directive is the **import** operation. A separate policy decides whether imported tools are **activated** at runtime.
 
 ### Example B: AGENTS.md import conventions as resolution policy
 
@@ -170,10 +118,7 @@ Interpretation:
 - Use `@/` alias for `src/`
 ```
 
-Interpretation:
-- This does **not** install dependencies.
-- It standardizes **import resolution behavior** so agents generate consistent code.
-- Activation still depends on tool/runtime permissions.
+This example does **not** install dependencies. It standardises **import resolution behaviour** so agents generate consistent code. Activation still depends on tool and runtime permissions.
 
 ### Example C: Capability discovery and activation policy
 
@@ -193,15 +138,16 @@ activation_gates:
     - "bash.exec"
 ```
 
-Interpretation:
-- Discovery scope is constrained first.
-- Install/import are pinned and integrity-checked.
-- High-impact capabilities require explicit activation approval.
+In this example, discovery scope is constrained first by the allowed domains and registries. Import and install are pinned and integrity-checked via the pinned versions and checksums. High-impact capabilities require explicit activation approval through the activation gates.
 
 ## Key Takeaways
 
-- Treat **artefact**, **discovery**, **import**, **install**, and **activate** as distinct terms.
-- Discovering a tool endpoint is not the same as activating its capabilities.
-- Use taxonomy-first language: tool, skill, agent, and workflow fragment are different artefact types.
-- Prefer explicit, pinned configuration when provenance or authenticity is uncertain.
-- Apply controls by stage: allowlist at discovery, verify at import/install, and least privilege at activation/runtime.
+Treat **artefact**, **discovery**, **import**, **install**, and **activate** as distinct terms with precise meanings. Discovering a tool endpoint is not the same as activating its capabilities—each stage requires different security controls. Use taxonomy-first language: tool, skill, agent, and workflow fragment are different artefact types with different identity and interface properties.
+
+Prefer explicit, pinned configuration when provenance or authenticity is uncertain; the convenience of dynamic discovery is not worth the security risk. Apply controls by stage: allowlist at discovery, verify at import and install, and enforce least privilege at activation and runtime.
+
+<!-- Edit notes:
+Sections expanded: Chapter Preview, Terminology Baseline for the Rest of the Book, all four artefact type subsections (Tool, Skill, Agent, Workflow-fragment), Confusing cases to stop using, all four Discovery Mechanisms subsections (Local scan, Registry, Domain-convention, Explicit configuration), Import/Install/Activate (all three subsections), Trust Boundaries and Supply Chain, all three Worked Examples interpretations, Key Takeaways
+Lists preserved: Worked Examples code blocks (must remain as-is for clarity)
+Ambiguous phrases left ambiguous: None identified
+-->
