@@ -1,0 +1,26 @@
+name: Check External Links (internet required)
+
+on:
+  workflow_dispatch:
+  schedule:
+    # Roughly every 15 days (1st and 16th of each month) at 06:00 UTC.
+    - cron: '0 6 1,16 * *'
+
+jobs:
+  check-external-links:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+      - name: Verify internet connectivity
+        run: |
+          python3 - <<'PY'
+          from urllib.request import urlopen
+
+          with urlopen('https://example.com', timeout=10) as resp:
+              if resp.status < 200 or resp.status >= 400:
+                  raise SystemExit(f"Unexpected status from connectivity check: {resp.status}")
+          print('Internet connectivity: OK')
+          PY
+      - name: Run external link checker
+        run: python3 scripts/check-links.py --root book --mode external

@@ -1,17 +1,21 @@
-name: Check Links
+name: Check Links (offline)
 
 on:
   push:
     paths:
       - 'book/**/*.md'
       - 'scripts/check-links.py'
+  pull_request:
+    paths:
+      - 'book/**/*.md'
+      - 'scripts/check-links.py'
   workflow_dispatch:
 
 jobs:
-  check-links:
+  check-links-offline:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v6
-      - name: Run link checker
-        run: python3 scripts/check-links.py --root book
+      - name: Run internal link checker (offline-safe)
+        run: python3 scripts/check-links.py --root book --mode internal
