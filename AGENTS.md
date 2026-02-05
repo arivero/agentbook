@@ -1,5 +1,13 @@
 # Agentbook contributor notes
 
+## Environment Setup
+
+- To check your environment for GitHub CLI and tokens:
+  - `bash scripts/check-env.sh`
+  - This verifies GH_TOKEN/GITHUB_TOKEN presence and gh CLI installation
+
+## Link Checking
+
 - After changing files under `book/`, run the offline-safe checker:
   - `python3 scripts/check-links.py --root book --mode internal`
 - When internet access is available, also run:
