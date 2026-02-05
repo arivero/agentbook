@@ -547,9 +547,9 @@ These documents serve as both useful references and examples of how to structure
 
 ### Related Sections
 
-- **[Skills and Tools Management](04-skills-tools.md)** - Covers AGENTS.md standard and MCP protocol for tool management
-- **[GitHub Agentic Workflows (GH-AW)](06-gh-agentic-workflows.md)** - GH-AW specification and engine configuration
-- **[Agents for Coding](08-agents-for-coding.md)** - Detailed coverage of coding agent platforms
+- **[Skills and Tools Management](040-skills-tools.md)** - Covers AGENTS.md standard and MCP protocol for tool management
+- **[GitHub Agentic Workflows (GH-AW)](060-gh-agentic-workflows.md)** - GH-AW specification and engine configuration
+- **[Agents for Coding](080-agents-for-coding.md)** - Detailed coverage of coding agent platforms
 
 ---
 

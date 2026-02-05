@@ -286,7 +286,7 @@ You can define safe inputs to structure what the agent receives. This is a good 
 
 ## Imports and Reusable Components
 
-For terminology and trust-model definitions, see [Discovery and Imports](05-discovery-imports.md). This section focuses only on GH-AW-specific syntax and composition patterns.
+For terminology and trust-model definitions, see [Discovery and Imports](050-discovery-imports.md). This section focuses only on GH-AW-specific syntax and composition patterns.
 
 GH-AW supports imports in two ways:
 
