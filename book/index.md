@@ -31,23 +31,3 @@ A living book about agentic workflows, agent orchestration, and agentic scaffold
 </section>
 {% endif %}
 {% endfor %}
-
-## About This Book
-
-This book demonstrates modern AI-powered development practices by being self-maintaining - the book updates itself based on community suggestions and contributions through automated workflows.
-
-### What You'll Learn
-
-- **Agentic Workflows**: Understanding how AI agents can automate complex tasks
-- **Agent Orchestration**: Coordinating multiple agents to work together effectively
-- **Agentic Scaffolding**: Building the infrastructure for agent-driven development
-- **Skills and Tools**: How to use, import, and compose agent capabilities
-- **GitHub Agentic Workflows**: Practical implementation with GitHub Actions
-
-### Contributing
-
-This book welcomes contributions! Open an issue with suggestions, and our automated workflows will process and integrate valuable feedback.
-
-### License
-
-This work is open source and available for educational purposes.
