@@ -79,7 +79,7 @@ Provide safe, isolated environments for agent execution.
 
 ```yaml
 # Docker-based agent environment
-FROM python:3.9-slim
+FROM python:3.11-slim
 
 # Install dependencies
 RUN pip install langchain openai requests

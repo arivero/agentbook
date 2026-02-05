@@ -44,7 +44,10 @@ You should be comfortable with Git, GitHub Actions, and basic software engineeri
 - **Inline code** is shown in a monospaced font.
 - **File names** appear above code blocks (Example 4-2, etc.).
 - **Commands** use fenced code blocks with a language tag.
-- **Code samples** are illustrative pseudocode unless explicitly labeled “Runnable.”
+- **Code samples** include a snippet-status label when version drift is likely:
+  - **Runnable**: intended to run with minor adaptation, usually with a version/date note.
+  - **Illustrative pseudocode**: architecture pattern, not copy/paste ready.
+  - **Simplified**: runnable shape, but omits production details (auth, retries, error handling).
 - **Tip**, **Note**, and **Warning** callouts highlight critical guidance.
 
 > **Tip:** Prefer pinned action SHAs in CI workflows that handle secrets.
