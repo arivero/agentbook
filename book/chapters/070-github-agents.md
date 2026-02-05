@@ -388,7 +388,7 @@ This very book uses GitHub Agents for self-maintenance:
 
 The workflow is defined using GitHub Agentic Workflows (GH-AW). The repository includes GH-AW workflows in `.github/workflows/issue-*.lock.yml` and agent definitions in `.github/agents/*.md`.
 
-For a detailed explanation of the workflow architecture and why GH-AW is the canonical approach, see the repository's [WORKFLOWS.md](../../WORKFLOWS.md) documentation.
+For a detailed explanation of the workflow architecture and why GH-AW is the canonical approach, see the repository's [README workflow section](../../README.md#-workflows) and [WORKFLOW_PLAYBOOK.md](../../WORKFLOW_PLAYBOOK.md).
 
 ## Multi-Agent Platform Compatibility
 
@@ -528,7 +528,7 @@ This book's repository includes comprehensive documentation that demonstrates OS
 
 - **[README](../../README.md)** - Overview and quick start guide
 - **[CONTRIBUTING](../../CONTRIBUTING.md)** - How to contribute using the multi-agent workflow
-- **[WORKFLOWS](../../WORKFLOWS.md)** - Detailed workflow guide and GH-AW explanation
+- **[README](../../README.md#-workflows)** - Workflow overview and GH-AW positioning
 - **[SETUP](../../SETUP.md)** - Installation and configuration instructions
 - **[WORKFLOW_PLAYBOOK](../../WORKFLOW_PLAYBOOK.md)** - Agentic workflow maintenance patterns
 - **[PROJECT_SUMMARY](../../PROJECT_SUMMARY.md)** - Complete project overview
