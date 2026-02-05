@@ -262,59 +262,18 @@ class MarkdownValidatorTool:
         return issues
 ```
 
-## Skills Protocol and Agent Skills
+## Agent Skills Standard (Primary Reference)
 
-The ecosystem now distinguishes between **runtime protocols** (how tools are exposed to agents) and **packaging formats** (how skills are stored and documented). Three complementary standards matter most:
+For practical interoperability, treat **Agent Skills** as the primary standard today. The authoritative docs are:
 
-- **Skills Protocol**: A runtime protocol for connecting agents to Skills and Blobs through a Skills Runtime, with sandboxed code execution and a consistent tool surface. Official docs live at <https://skillsprotocol.com/> and the implementation guide at <https://skillsprotocol.com/implementation-guide>.  
-- **Agent Skills format**: A filesystem packaging spec centered on a `SKILL.md` file plus optional scripts, references, and assets. The canonical format is described at <https://skillsprotocol.com/skill-structure> and <https://skillsprotocol.com/skill-manifest>.
-- **MCP (Model Context Protocol)**: A protocol for connecting models to external tools and data sources. See <https://modelcontextprotocol.io/>.
+- Overview and motivation: <https://agentskills.io/home>
+- Core concept page: <https://agentskills.io/what-are-skills>
+- Full format specification: <https://agentskills.io/specification>
+- Integration guidance: <https://agentskills.io/integrate-skills>
 
-### Relationship to MCP
+The current ecosystem signal is strongest around this filesystem-first model: a `SKILL.md` contract with progressive disclosure, plus optional `scripts/`, `references/`, and `assets/` directories.
 
-Use **Skills Protocol** when you need a runtime that can mount skills, execute code in a sandbox, and handle large artifacts (blobs). Use **MCP** when you need a standardized tool gateway across many models or environments. Use **Agent Skills** when you want a portable, repo-friendly way to package skills—regardless of whether you serve them via Skills Protocol or MCP.
-
-### Skills Protocol: Minimal Tool Surface (Protocol Sketch)
-
-The Skills Protocol specification defines a small, stable set of tool methods. A runtime exposes these tools to an agent via JSON-RPC over HTTP. The method names below match the official specification (see the docs cited above):
-
-```json
-{
-  "jsonrpc": "2.0",
-  "id": "request-1",
-  "method": "list_skills",
-  "params": {}
-}
-```
-
-```json
-{
-  "jsonrpc": "2.0",
-  "id": "request-2",
-  "method": "describe_skill",
-  "params": {
-    "skill_id": "skill://code-review"
-  }
-}
-```
-
-```json
-{
-  "jsonrpc": "2.0",
-  "id": "request-3",
-  "method": "execute_skill",
-  "params": {
-    "skill_id": "skill://code-review",
-    "inputs": {
-      "pull_request": 128
-    }
-  }
-}
-```
-
-> **Note:** These are protocol-level sketches for clarity. Refer to the Skills Protocol Implementation Guide for the full schema and error model.
-
-### Agent Skills Format: Canonical Layout
+### Canonical Layout
 
 Example 4-1. `skills/code-review/`
 
@@ -337,26 +296,43 @@ Example 4-2. `skills/code-review/SKILL.md`
 ---
 name: code-review
 description: Review pull requests for security, correctness, and clarity.
-inputs:
-  pull_request:
-    type: integer
-    description: Pull request number to review.
-runtime:
-  entrypoint: scripts/review.py
-  language: python
-permissions:
-  network: false
-  filesystem:
-    read:
-      - repo/*
+compatibility: Requires git and Python 3.11+
+allowed-tools: Bash(git:*) Read
+metadata:
+  author: engineering-platform
+  version: "1.2"
 ---
 
 # Code Review Skill
 
-This skill reviews a pull request and produces a structured report.
+## When to use
+Use this skill when reviewing pull requests for correctness, security, and clarity.
+
+## Workflow
+1. Run `scripts/review.py --pr <number>`.
+2. If policy checks fail, consult `references/rubric.md`.
+3. Return findings grouped by severity and file.
 ```
 
-> **Tip:** Keep `SKILL.md` concise and front-load the information the agent needs to act. Progressive disclosure means heavier details move to `references/` or `scripts/` so the agent loads them only when needed (see the Codex skills guide at <https://platform.openai.com/docs/guides/codex/skills>).
+> **Tip:** Keep `SKILL.md` concise and front-load decision-critical instructions. Put deep references in `references/` and executable logic in `scripts/` so agents load content only when needed.
+
+### Conformance Notes: Agent Skills vs. JSON-RPC Runtime Specs
+
+The main discrepancy you will see across docs in the wild is **where standardization happens**:
+
+- **Agent Skills** standardizes the **artifact format** (directory + `SKILL.md` schema + optional folders).
+- Some alternative specs standardize a **remote runtime API** (often JSON-RPC-style methods such as `list`, `describe`, `execute`).
+
+In production, the Agent Skills packaging approach currently has clearer multi-tool adoption because it works in both:
+
+1. **Filesystem-based agents** (agent can `cat` and run local scripts).
+2. **Tool-based agents** (host platform loads and mediates skill content).
+
+JSON-RPC itself is battle-tested in other ecosystems (for example, Language Server Protocol, Ethereum node APIs, and MCP transport patterns), but there are still fewer public, concrete references to large-scale deployments of a dedicated JSON-RPC **skills runtime** than to plain `SKILL.md`-based workflows. For most teams, this makes Agent Skills the safest default and JSON-RPC skill runtimes an optional layering.
+
+### Relationship to MCP
+
+Use **Agent Skills** to define and distribute reusable capability packages. Use **MCP** to expose tools, data sources, or execution surfaces to models. In mature systems, these combine naturally: Agent Skills provide instructions and assets, while MCP provides controlled runtime tool access.
 
 ## Skill Development
 
