@@ -6,7 +6,7 @@ This directory contains utility scripts for the Agentbook project.
 
 ### check-env.sh
 
-**Purpose**: Verify GitHub environment setup
+**Purpose**: Verify GitHub CLI installation
 
 **Usage**:
 ```bash
@@ -14,15 +14,18 @@ bash scripts/check-env.sh
 ```
 
 **What it checks**:
-- Presence of `GH_TOKEN` environment variable
-- Presence of `GITHUB_TOKEN` environment variable
 - GitHub CLI (gh) installation and version
-- GitHub CLI authentication status
+- Presence of `GH_TOKEN` or `GITHUB_TOKEN` environment variables (optional)
+- GitHub CLI authentication status (optional)
+
+**Important Note**: This project uses `github-mcp-server` for GitHub API access,
+which handles authentication internally. Tokens and gh authentication are only
+needed if you want to use the gh CLI directly for manual operations.
 
 **When to use**:
 - Before starting local development
-- When troubleshooting GitHub API or CLI issues
-- To verify CI/CD environment setup
+- To verify gh CLI is available for manual operations
+- When troubleshooting gh CLI issues
 
 ### check-links.py
 

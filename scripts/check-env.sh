@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
-# Environment Check Script for GitHub CLI and Tokens
-# This script verifies the presence of GitHub tokens and gh CLI installation
+# Environment Check Script for GitHub CLI
+# This script verifies gh CLI installation (tokens are optional)
+#
+# Note: This project uses github-mcp-server for GitHub API access in automated
+# workflows, which handles authentication internally. GH_TOKEN/GITHUB_TOKEN are
+# only needed if you want to use the gh CLI directly for manual operations.
 
 set -e
 
@@ -9,21 +13,21 @@ echo "GitHub Environment Check"
 echo "============================================"
 echo ""
 
-# Check for GH_TOKEN
-echo "1. Checking for GH_TOKEN environment variable..."
+# Check for GH_TOKEN (optional)
+echo "1. Checking for GH_TOKEN environment variable (optional)..."
 if [ -n "$GH_TOKEN" ]; then
     echo "   ✓ GH_TOKEN is set (length: ${#GH_TOKEN} characters)"
 else
-    echo "   ✗ GH_TOKEN is NOT set"
+    echo "   ℹ GH_TOKEN is not set (optional - only needed for direct gh CLI usage)"
 fi
 echo ""
 
-# Check for GITHUB_TOKEN
-echo "2. Checking for GITHUB_TOKEN environment variable..."
+# Check for GITHUB_TOKEN (optional)
+echo "2. Checking for GITHUB_TOKEN environment variable (optional)..."
 if [ -n "$GITHUB_TOKEN" ]; then
     echo "   ✓ GITHUB_TOKEN is set (length: ${#GITHUB_TOKEN} characters)"
 else
-    echo "   ✗ GITHUB_TOKEN is NOT set"
+    echo "   ℹ GITHUB_TOKEN is not set (optional - only needed for direct gh CLI usage)"
 fi
 echo ""
 
@@ -39,15 +43,15 @@ else
 fi
 echo ""
 
-# Check gh authentication status
-echo "4. Checking gh authentication status..."
+# Check gh authentication status (optional)
+echo "4. Checking gh authentication status (optional for direct CLI usage)..."
 if gh auth status &> /dev/null; then
     echo "   ✓ gh is authenticated"
     gh auth status 2>&1 | head -n 3
 else
-    echo "   ✗ gh is NOT authenticated"
+    echo "   ℹ gh is not authenticated"
+    echo "   Note: Authentication only needed if using gh CLI directly"
     echo "   To authenticate, run: gh auth login"
-    echo "   Or set GH_TOKEN or GITHUB_TOKEN environment variable"
 fi
 echo ""
 
@@ -55,32 +59,27 @@ echo ""
 echo "============================================"
 echo "Summary"
 echo "============================================"
-
-TOKEN_SET=false
-if [ -n "$GH_TOKEN" ] || [ -n "$GITHUB_TOKEN" ]; then
-    TOKEN_SET=true
-fi
+echo ""
+echo "ℹ️  Important Note:"
+echo "This project uses github-mcp-server for GitHub API access, which"
+echo "handles authentication internally. GH_TOKEN/GITHUB_TOKEN and gh CLI"
+echo "authentication are only needed for direct manual gh CLI operations."
+echo ""
 
 GH_INSTALLED=false
 if command -v gh &> /dev/null; then
     GH_INSTALLED=true
 fi
 
-if [ "$TOKEN_SET" = true ] && [ "$GH_INSTALLED" = true ]; then
-    echo "Status: ✓ Environment is properly configured"
+if [ "$GH_INSTALLED" = true ]; then
+    echo "Status: ✓ Environment is ready"
     echo ""
-    echo "GitHub token is available and gh CLI is installed."
-    exit 0
-elif [ "$GH_INSTALLED" = true ]; then
-    echo "Status: ⚠ Partially configured"
-    echo ""
-    echo "gh CLI is installed but no GitHub token is set."
-    echo "You may need to authenticate with: gh auth login"
-    echo "Or set GH_TOKEN or GITHUB_TOKEN environment variable."
+    echo "gh CLI is installed and available for manual operations if needed."
     exit 0
 else
-    echo "Status: ✗ Missing requirements"
+    echo "Status: ⚠ gh CLI not found"
     echo ""
-    echo "Please install gh CLI from: https://cli.github.com/"
-    exit 1
+    echo "gh CLI is optional but recommended for manual GitHub operations."
+    echo "To install, visit: https://cli.github.com/"
+    exit 0
 fi

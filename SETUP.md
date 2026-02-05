@@ -99,21 +99,21 @@ All workflows support manual triggering:
 
 - Ruby (2.7 or higher)
 - Bundler
-- GitHub CLI (gh) - optional but recommended for GitHub interactions
+- GitHub CLI (gh) - optional, only needed for manual GitHub operations
 
 ### Environment Check
 
 Before starting, you can verify your environment setup:
 
 ```bash
-# Check for GitHub tokens and gh CLI
+# Check gh CLI installation
 bash scripts/check-env.sh
 ```
 
-This script will verify:
-- Presence of `GH_TOKEN` or `GITHUB_TOKEN` environment variables
-- GitHub CLI (gh) installation and version
-- Authentication status
+**Note**: This project uses `github-mcp-server` for GitHub API access in automated
+workflows, which handles authentication internally. The `GH_TOKEN`/`GITHUB_TOKEN`
+environment variables and gh CLI authentication are only needed if you want to use
+the gh CLI directly for manual operations.
 
 ### Setup
 

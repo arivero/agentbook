@@ -2,9 +2,10 @@
 
 ## Environment Setup
 
-- To check your environment for GitHub CLI and tokens:
+- To check your environment:
   - `bash scripts/check-env.sh`
-  - This verifies GH_TOKEN/GITHUB_TOKEN presence and gh CLI installation
+  - This verifies gh CLI installation (optional, only for manual operations)
+  - Note: This project uses github-mcp-server for GitHub API access, which handles authentication internally
 
 ## Link Checking
 
