@@ -7,20 +7,13 @@ order: 6
 
 ## Chapter Preview
 
-- Explain how GH-AW compiles markdown into deterministic workflows.
-- Show how to set up GH-AW with the supported setup actions.
-- Highlight safety controls (permissions, safe outputs, approvals).
+This chapter explains how GH-AW compiles markdown into deterministic workflows that GitHub Actions can execute. It shows how to set up GH-AW with the supported setup actions, including both vendored and upstream approaches. Finally, it highlights the safety controls that make agentic workflows production-ready: permissions, safe outputs, and approval gates.
 
 ## Why GH-AW Matters
 
 GitHub Agentic Workflows (GH-AW) (<https://github.github.io/gh-aw/>) turns natural language into automated repository agents that run inside GitHub Actions. Instead of writing large YAML pipelines by hand, you write markdown instructions that an AI agent executes with guardrails. The result is a workflow you can read like documentation but run like automation.
 
-At a glance, GH-AW provides:
-
-- **Natural language workflows**: Markdown instructions drive the agent’s behavior.
-- **Compile-time structure**: Markdown is compiled into GitHub Actions workflows for reproducibility.
-- **Security boundaries**: Permissions, tools, and safe outputs define what the agent can and cannot do.
-- **Composable automation**: Imports and shared components enable reuse across repositories.
+At a glance, GH-AW provides several key capabilities. **Natural language workflows** allow you to write markdown instructions that drive the agent's behaviour, making automation readable to humans. **Compile-time structure** means your markdown is compiled into GitHub Actions workflows, ensuring reproducibility across runs. **Security boundaries** let you define permissions, tools, and safe outputs that constrain what the agent can and cannot do. **Composable automation** enables imports and shared components that you can reuse across repositories.
 
 ## Core Workflow Structure
 
@@ -46,15 +39,9 @@ Read issue #${{ github.event.issue.number }} and summarize it.
 
 **Key parts:**
 
-1. **Frontmatter**
-   - `on`: GitHub Actions triggers (issues, schedules, dispatch, etc.)
-   - `permissions`: least-privilege access to GitHub APIs
-   - `tools`: the capabilities your agent can invoke (edit, bash, web, github)
-   - `engine`: AI model/provider (Copilot, Claude Code, Codex)
+The **frontmatter** section configures the workflow's behaviour. The `on` field specifies GitHub Actions triggers such as issues, schedules, or dispatch events. The `permissions` field declares least-privilege access to GitHub APIs, ensuring the agent can only perform authorised operations. The `tools` field lists the capabilities your agent can invoke, such as edit, bash, web, or github. The `engine` field specifies the AI model or provider to use, such as Copilot, Claude Code, or Codex.
 
-2. **Markdown instructions**
-   - Natural language steps for the agent
-   - Context variables from the event payload (issue number, PR, repo)
+The **markdown instructions** section contains natural language steps for the agent to follow. You can include context variables from the event payload, such as issue number, PR number, or repository name, using template syntax.
 
 ## How GH-AW Runs
 
@@ -85,9 +72,7 @@ If you do not vendor the GH-AW `actions/` directory in your repository, you can 
 
 ### Key Behaviors
 
-- **Frontmatter edits require recompile**.
-- **Markdown instruction updates can often be edited directly** (the runtime loads the markdown body).
-- **Shared components** can be stored as markdown files without `on:`; they are imported, not compiled.
+There are three key behaviours to understand about the compilation model. First, **frontmatter edits require recompile**—any changes to triggers, permissions, tools, or engine settings must be followed by running `gh aw compile` to regenerate the lock file. Second, **markdown instruction updates can often be edited directly** because the runtime loads the markdown body at execution time; however, structural changes may still require recompilation. Third, **shared components** can be stored as markdown files without an `on:` trigger; these are imported rather than compiled, allowing reuse without duplication.
 
 ## Compilation Model Examples
 
@@ -289,13 +274,7 @@ GH-AW workflows are designed for safety by default. Agents run with minimal acce
 
 ### Tools
 
-Tools are capabilities the agent can use:
-
-- **edit**: modify files in the workspace
-- **bash**: run shell commands (by default only safe commands)
-- **web-fetch / web-search**: fetch or search web content
-- **github**: operate on issues, PRs, discussions, projects
-- **playwright**: browser automation for UI checks
+Tools are capabilities the agent can use. The **edit** tool allows the agent to modify files in the workspace. The **bash** tool runs shell commands, with safe commands enabled by default. The **web-fetch** and **web-search** tools allow the agent to fetch or search web content. The **github** tool operates on issues, pull requests, discussions, and projects. The **playwright** tool provides browser automation for UI checks.
 
 ### Safe Outputs
 
@@ -331,43 +310,34 @@ In GH-AW, these imports are typically workflow-fragment artefacts: shared prompt
 
 GH-AW documents a **ResearchPlanAssign** strategy: a scaffolded loop that keeps humans in control while delegating research and execution to agents.
 
-**Phase 1: Research**
-- A scheduled agent scans the repo or ecosystem (new libraries, frameworks, scaffolds).
-- It produces a report in an issue or discussion.
+**Phase 1: Research.** A scheduled agent scans the repository or ecosystem for updates such as new libraries, frameworks, or scaffolds. It produces a report in an issue or discussion, summarising findings and flagging items that may warrant attention.
 
-**Phase 2: Plan**
-- Maintainers review the report and decide whether to proceed.
-- A planning agent drafts the implementation steps if approved.
+**Phase 2: Plan.** Maintainers review the report and decide whether to proceed. If approved, a planning agent drafts the implementation steps, breaking the work into discrete tasks that can be assigned and tracked.
 
-**Phase 3: Assign & Implement**
-- Agents are assigned to implement the approved changes.
-- Updates are validated, committed, and published.
+**Phase 3: Assign and Implement.** Agents are assigned to implement the approved changes. Updates are validated through tests and reviews, committed to the repository, and published to the appropriate outputs.
 
 This pattern maps well to this book: use scheduled research to discover new agentic tooling, post a proposal issue, build consensus, then update the chapters and blog.
 
 ## Applying GH-AW to This Repository
 
-Here’s how GH-AW can drive the book’s maintenance:
+Here is how GH-AW can drive the book's maintenance through a four-stage cycle.
 
-1. **Research (scheduled)**
-   - Use web-search tooling to scan for new agentic workflow libraries.
-   - Produce a structured report in a GitHub issue.
-2. **Consensus (issues/discussions)**
-   - Collect votes or comments to accept/reject the proposal.
-   - Label outcomes (`accepted`, `needs-revision`, `rejected`).
-3. **Implementation (assigned agent)**
-   - Update or add chapters.
-   - Refresh the table of contents and homepage.
-   - Add a blog post summarizing the update.
-4. **Publish (automation)**
-   - Pages and PDF rebuild automatically after merge.
+**Research (scheduled).** The system uses web-search tooling to scan for new agentic workflow libraries and related developments. It produces a structured report in a GitHub issue, documenting what was found and why it may be relevant.
+
+**Consensus (issues/discussions).** The community collects votes or comments to accept or reject the proposal. Maintainers label outcomes with tags like `accepted`, `needs-revision`, or `rejected` to track decisions.
+
+**Implementation (assigned agent).** An agent updates or adds chapters as needed, refreshes the table of contents and homepage, and adds a blog post summarising the update. All changes go through the normal pull request review process.
+
+**Publish (automation).** Pages and PDF outputs rebuild automatically after merge, ensuring the public site stays current without manual intervention.
 
 This approach keeps the book aligned with the latest GH-AW practices while maintaining a transparent, auditable workflow.
 
 ## Key Takeaways
 
-- GH-AW turns markdown instructions into reproducible GitHub Actions workflows.
-- Frontmatter defines triggers, permissions, tools, and models.
-- Imports enable composable, reusable workflow building blocks.
-- Safe inputs/outputs and least-privilege permissions reduce risk.
-- ResearchPlanAssign provides a practical loop for continuous, agent-powered improvement.
+GH-AW turns markdown instructions into reproducible GitHub Actions workflows, combining the readability of documentation with the reliability of automation. Frontmatter defines triggers, permissions, tools, and models, giving you fine-grained control over what the agent can do. Imports enable composable, reusable workflow building blocks that reduce duplication across repositories. Safe inputs and outputs combined with least-privilege permissions reduce the risk of unintended changes. The ResearchPlanAssign pattern provides a practical loop for continuous, agent-powered improvement with human oversight at key decision points.
+
+<!-- Edit notes:
+Sections expanded: Chapter Preview, at-a-glance list, Key parts (Frontmatter and Markdown instructions), Key Behaviors, Tools list, ResearchPlanAssign phases, Applying GH-AW to This Repository, Key Takeaways
+Lists preserved: File structure layouts (must remain enumerable), code blocks (must remain as-is)
+Ambiguous phrases left ambiguous: None identified
+-->
