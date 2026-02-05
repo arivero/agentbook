@@ -1,7 +1,4 @@
 ---
 ---
 
-// Since we're overriding the theme's layouts with custom ones in _layouts/,
-// we need to manually import the theme CSS (which includes Rouge syntax highlighting).
-// Custom layouts: default.html and book.html provide custom page structure and styling.
 @import "jekyll-theme-minimal";
