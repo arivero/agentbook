@@ -23,7 +23,9 @@ The progression of coding agents follows a clear trajectory through four phases.
 
 **Context-Aware Assistance (2022–2024)** added understanding of project structure and intent, allowing agents to make suggestions that fit the broader codebase.
 
-**Task-Oriented Agents (2024–present)** can complete multi-step tasks independently, taking a high-level instruction and executing a series of operations to fulfil it.
+**Task-Oriented Agents (2024–2025)** can complete multi-step tasks independently, taking a high-level instruction and executing a series of operations to fulfil it.
+
+**Policy-Aware Autonomy (2025–2026)** adds built-in guardrails: agents respect repository policies, run targeted tests before proposing changes, and keep human approval loops intact even when operating independently.
 
 **Autonomous Development (emerging)** represents the frontier, with agents capable of full feature implementation, testing, and deployment with minimal human intervention.
 
@@ -38,6 +40,8 @@ Modern coding agents can perform a range of sophisticated tasks.
 **Generate code.** Agents can write production-quality code across multiple files, handling everything from utility functions to full modules.
 
 **Test and debug.** Agents can create tests, identify bugs, and fix issues, shortening the feedback loop between writing code and validating it.
+
+**Respect policy.** Agents now execute within repository policies by default—branch protections, required reviews, and allowed-permission sets—surfacing any policy gaps before work starts.
 
 **Scaffold projects.** Agents can initialise projects with appropriate structure and configuration, setting up the foundation for further development.
 

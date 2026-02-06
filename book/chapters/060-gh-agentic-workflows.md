@@ -15,6 +15,8 @@ GitHub Agentic Workflows (GH-AW) (<https://github.github.io/gh-aw/>) turns natur
 
 At a glance, GH-AW provides several key capabilities. **Natural language workflows** allow you to write markdown instructions that drive the agent's behaviour, making automation readable to humans. **Compile-time structure** means your markdown is compiled into GitHub Actions workflows, ensuring reproducibility across runs. **Security boundaries** let you define permissions, tools, and safe outputs that constrain what the agent can and cannot do. **Composable automation** enables imports and shared components that you can reuse across repositories.
 
+As of January 2026, GH-AW emphasises predictability: lockfiles keep pinned action SHAs, safe outputs gate any write paths, and the engine field supports multiple providers so you can align models with task profiles. Most production setups now run a compile-and-validate check in CI before agents execute, catching permission drift early.
+
 ## Core Workflow Structure
 
 A GH-AW workflow is a markdown file with frontmatter and instructions:
