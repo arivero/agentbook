@@ -95,6 +95,14 @@ As agents move into production, observability and evaluation are becoming first-
 
 **Cost attribution** is becoming more sophisticated as agent workflows involve multiple model calls, tool invocations, and sub-agent spawns. Understanding per-task cost is essential for making agents economically viable at scale.
 
+### Multimodal and Physical Agency
+
+Multimodal agents that blend text, vision, speech, and code are becoming default rather than optional. Frameworks are adding toolchains for document understanding, UI automation, and robotic control, closing the loop between digital and physical actions. This shift matters because it expands the surface area of what an agent can verify autonomously (e.g., reading dashboards, inspecting UI states, interpreting camera feeds) without human intervention.
+
+### Governance and Safety Automation
+
+Regulators are increasingly demanding traceability, data minimisation, and safety controls for autonomous systems. Agent stacks are responding with policy engines that enforce allow/deny rules, runtime red-teaming, and signed skill bundles. Expect governance requirements (audit logs, privacy zones, least-privilege tool access) to become a gating factor for enterprise deployment, pushing teams to treat safety automation as a first-class feature rather than an afterthought.
+
 ## The Local-First Personal AI Wave
 
 One of the most striking developments of late 2025 and early 2026 is the explosive growth of local-first personal AI assistants, led by **OpenClaw** (169,000+ GitHub stars, 3,000+ community skills). These are not coding agents or enterprise tools—they are general-purpose AI assistants that users self-host on their own hardware, connecting to WhatsApp, Telegram, Slack, Discord, and dozens of other channels through a single brain with shared context and persistent memory.
@@ -117,6 +125,8 @@ Several questions remain genuinely open and will shape the field's direction.
 
 **What happens to developer roles?** The stratification of coding agents into assistants, CLI agents, and autonomous agents will reshape how development teams organise. The balance between human oversight and agent autonomy will vary by organisation, risk tolerance, and regulatory context.
 
+**How will governance and regulation keep pace?** Jurisdictions are drafting rules for auditability, provenance, and safety thresholds. Agent platforms may need built-in certification hooks, provenance tracking, and opt-in data minimisation to satisfy region-specific requirements without forking architectures.
+
 ## Key Takeaways
 
 **Protocol standardisation** (MCP for agent-to-tool, A2A for agent-to-agent) is reducing integration friction and enabling cross-vendor agent ecosystems. Invest in these standards now rather than building bespoke integrations.
@@ -128,6 +138,8 @@ Several questions remain genuinely open and will shape the field's direction.
 **Progressive autonomy** is the standard deployment model. Start supervised, measure performance, and expand autonomy incrementally based on evidence.
 
 **Observability and evaluation** are becoming as important as agent capability. Invest in tracing, cost attribution, and scenario-based evaluation alongside agent development.
+
+**Governance and safety automation** will shape deployment eligibility. Build policy controls, audit trails, and least-privilege defaults early to satisfy regulatory expectations.
 
 **Local-first personal AI assistants** (OpenClaw, Letta, LettaBot) are validating enterprise agentic patterns at consumer scale, while surfacing security and data sovereignty challenges that affect the whole field.
 
