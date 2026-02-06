@@ -675,6 +675,95 @@ class LiteratureReviewAgent:
         return ranked[:20]  # Top 20 most relevant
 ```
 
+## The 2025–2026 Breakthrough in Mathematical Agents
+
+The period from mid-2025 through early 2026 has seen an extraordinary acceleration in AI-powered mathematics. Multiple systems now solve competition-level problems that were out of reach just a year earlier, and several have begun producing genuinely novel mathematical results. This section surveys the landscape as it stands.
+
+### Google DeepMind: AlphaProof, AlphaEvolve, and Aletheia
+
+Google DeepMind has pursued a multi-pronged strategy for mathematical AI. **AlphaProof** (<https://deepmind.google/blog/ai-solves-imo-problems-at-silver-medal-level/>) couples a pre-trained language model with AlphaZero-style reinforcement learning to prove theorems in Lean. At the 2024 International Mathematical Olympiad (IMO) it achieved silver-medal performance (28 points, one short of gold), solving two algebra problems, one number theory problem, and the hardest problem in the competition—solved by only five human contestants. The work was subsequently published in *Nature*.
+
+**AlphaEvolve** (<https://deepmind.google/blog/alphaevolve-a-gemini-powered-coding-agent-for-designing-advanced-algorithms/>) is an evolutionary coding agent powered by Gemini that discovers and optimises algorithms. Applied to over 50 open problems in analysis, geometry, combinatorics, and number theory, it improved upon previously best-known solutions in 20% of cases. One headline result was a faster algorithm for 4×4 matrix multiplication, breaking the 50-year-old record set by Strassen's algorithm. In collaboration with Terence Tao, the AlphaEvolve team demonstrated a closed AI-research loop on the finite-field Kakeya conjecture: AlphaEvolve discovered constructions, Gemini Deep Think verified the logic, and AlphaProof formalised the result in Lean.
+
+**Aletheia** (<https://github.com/google-deepmind/superhuman/tree/main/aletheia>) is DeepMind's project applying Gemini to research-level mathematics. Its outputs include a generalisation of Erdős problem 1051, eigenweight computations for the Arithmetic Hirzebruch Proportionality Principle, and mathematical inputs to peer-reviewed papers on robust Markov chains and independence-set bounds. Five peer-reviewed publications with corresponding arXiv submissions have emerged from the project.
+
+In November 2025, DeepMind launched the **AI for Math Initiative** (<https://blog.google/technology/google-deepmind/ai-for-math/>), partnering with Imperial College London, the Institute for Advanced Study, IHES, the Simons Institute at UC Berkeley, and India's Tata Institute of Fundamental Research. The latest Gemini model with Deep Think scored 35 points at IMO 2025—gold-medal level, solving five of six problems.
+
+### Axiom Math and the AxiomProver
+
+Axiom Math (<https://axiommath.ai/>) is a startup led by Morgan Prize winner Carina Hong and former Meta FAIR engineer Shubho Sengupta. It raised $64 million at a $300 million valuation to develop mathematical AI that not only solves problems but proposes new conjectures.
+
+Their **AxiomProver** (<https://github.com/AxiomMath/putnam2025>) is an autonomous multi-agent ensemble theorem prover for Lean 4. At the 2025 Putnam Competition—the hardest college-level mathematics exam in North America—AxiomProver solved all 12 problems: 8 by the end of competition day, the remaining 4 in subsequent days. Problem A1 took 110 minutes and 7 million tokens, producing a 652-line proof with 23 theorems and 561 tactics. Problem B5, one of the hardest, required 354 minutes and 18 million tokens for a 1,495-line proof with 66 theorems and 1,967 tactics.
+
+Beyond competition mathematics, AxiomProver has produced results on open problems. Mathematician Ken Ono used AxiomProver to complete a proof of the Chen–Gendron conjecture, and the system independently solved Fel's conjecture on syzygies.
+
+### Harmonic's Aristotle
+
+Harmonic (<https://harmonic.fun/>) raised $120 million to develop Aristotle, a theorem prover combining a 200B+ parameter transformer with Monte Carlo Graph Search and test-time training. Aristotle takes Lean theorems without proofs and returns machine-checked proofs, eliminating hallucination by construction—the Lean kernel verifies every step.
+
+Aristotle achieved gold-medal performance at IMO 2025 (five of six problems) and 90% on the MiniF2F benchmark. Its most striking result was an autonomous proof of Erdős Problem #124, completed in six hours with zero human assistance. Lean verification of the resulting proof took one minute.
+
+### Princeton's Goedel-Prover-V2
+
+Goedel-Prover-V2 (<https://github.com/Goedel-LM/Goedel-Prover-V2>) is an open-source theorem prover from Princeton Language and Intelligence, with collaborators from Tsinghua, NVIDIA, Stanford, Meta FAIR, and others. Its flagship 32B model achieves 90.4% on MiniF2F in self-correction mode—a jump from the 60% achieved by the original Goedel-Prover just six months earlier. The smaller 8B model matches the performance of DeepSeek-Prover-V2-671B while being nearly 100 times smaller. Three key innovations drive the improvement: scaffolded data synthesis that generates problems of increasing difficulty, verifier-guided self-correction using Lean's compiler feedback, and model averaging across checkpoints.
+
+### DeepSeek-Prover-V2
+
+DeepSeek-Prover-V2 (<https://github.com/deepseek-ai/DeepSeek-Prover-V2>) uses recursive subgoal decomposition powered by DeepSeek-V3 to initialise reinforcement learning for formal theorem proving. The 671B model achieves 88.9% on MiniF2F-test and solves 49 problems from PutnamBench. Its successor, DeepSeekMath-V2, focuses on natural-language theorem proving with self-verification, scoring gold-level on IMO 2025 and a near-perfect 118/120 on Putnam 2024.
+
+### Numina-Lean-Agent: Open-Source Agentic Proving
+
+Numina-Lean-Agent (<https://github.com/project-numina/numina-lean-agent>) demonstrates that a general-purpose coding agent can serve as a formal mathematics reasoner. Built on Claude Code with the Model Context Protocol (MCP), it integrates Lean-LSP-MCP for deep interaction with the Lean theorem prover and LeanDex for semantic search across Lean libraries.
+
+Using Claude Opus 4.5 as the base model, Numina-Lean-Agent solved all 12 Putnam 2025 problems—matching the closed-source AxiomProver and surpassing Harmonic's Aristotle by two problems. Each problem was allocated approximately $50 in compute budget (with harder problems receiving up to $1,000). All operations were strictly sequential, with no parallelisation and no internet search. The system also supports interactive "vibe proving", where mathematicians collaborate with the agent in real time—demonstrated by a successful formalisation of the Brascamp–Lieb theorem.
+
+### PhysProver: Formal Theorem Proving for Physics
+
+PhysProver (<https://arxiv.org/abs/2601.15737>) extends automated theorem proving beyond mathematics into physics. Built on DeepSeek-Prover-V2-7B with Reinforcement Learning with Verifiable Rewards (RLVR), it introduces PhysLeanData, a dataset of physical theorems formalised in Lean 4. Trained on just 5,000 samples, PhysProver achieves consistent 2.4% improvements across physics sub-domains including quantum field theory and generalises to out-of-distribution mathematical benchmarks. A surprising finding is that training on physics-centred problems yields notable improvements in formal mathematical theorem proving as well.
+
+### Competitive Landscape Summary
+
+| System | Affiliation | Putnam 2025 | IMO 2025 | MiniF2F | Open-Source |
+|--------|-------------|-------------|----------|---------|-------------|
+| **AxiomProver** | Axiom Math | 12/12 | — | — | No |
+| **Numina-Lean-Agent** | Project Numina | 12/12 | — | — | Yes |
+| **Aristotle** | Harmonic | 10/12 | 5/6 (Gold) | 90% | No |
+| **Gemini Deep Think** | Google DeepMind | — | 5/6 (Gold) | — | No |
+| **Goedel-Prover-V2** | Princeton | — | — | 90.4% | Yes |
+| **DeepSeek-Prover-V2** | DeepSeek | — | — | 88.9% | Yes |
+| **DeepSeekMath-V2** | DeepSeek | 118/120* | Gold | — | Yes |
+| **PhysProver** | Research | — | — | +1.3% | Planned |
+
+*Putnam 2024 score; Putnam 2025 results not reported.
+
+## Centaur Science and the Outsider Problem
+
+The term "centaur" entered AI discourse from chess, where human–computer teams outperformed both humans and computers playing alone. The concept has now reached fundamental physics: on 4 February 2026, Jesse Thaler of MIT gave a CERN Colloquium titled *"Centaur Science: Adventures in AI+Physics"* (<https://indico.cern.ch/event/1642790/>), exploring what human-AI collaboration looks like at the frontier of particle physics and beyond. The interactive "vibe proving" mode of Numina-Lean-Agent, where mathematicians collaborate with the agent in real time, is another example of centaur-style research.
+
+### Centaurising Crackpots
+
+An uncomfortable consequence of powerful mathematical AI is that it lowers the barrier to producing professional-looking work, regardless of the soundness of the underlying ideas. Historically, amateur physicists and mathematicians who proposed deeply flawed theories—perpetual motion machines, disproofs of established results, grand unified theories from numerology—could be identified by poor notation, missing rigour, and failure to engage with existing literature. AI centaur tools threaten to strip away these surface signals.
+
+An amateur who once submitted a hand-written paper claiming to disprove special relativity can now use an LLM to polish the prose, generate LaTeX, cite real papers, and produce something that superficially resembles professional work. More dangerously, tools like AxiomProver or Lean-based agents can be used to formalise individual steps of an argument, lending an aura of machine-verified rigour to work whose premises are unsound. The formal verification guarantees that certain deductions are valid, but it says nothing about whether the axioms and definitions chosen actually model physical reality.
+
+This creates a new challenge for peer review: the signal-to-noise ratio of submissions may decrease as AI makes the noise look more like signal. Reviewers will need to focus less on presentation quality—which AI can handle—and more on the conceptual soundness and physical relevance of starting assumptions.
+
+### AI-Only Scientific Publishing
+
+The logical endpoint of the centaur trend is AI-only research output. Two platforms illustrate this emerging phenomenon.
+
+**ai.viXra.org** (<https://ai.vixra.org/>) is a branch of the viXra preprint archive (itself an alternative to arXiv for researchers who cannot get arXiv endorsement). Launched in early 2025, it accepts AI-assisted scholarly articles. By mid-2025, mathematician John Carlos Baez noted that the archive already held 340 papers, with physics dominating mathematics. Most physics papers addressed relativity and cosmology (98 papers), while most mathematics papers were in number theory (30), with roughly half concerning the Riemann Hypothesis. The viXra administration now actively redirects AI-assisted submissions from the main site to ai.viXra.org.
+
+**clawXiv.org** (<https://www.clawxiv.org/>) takes the concept further: it is a preprint archive explicitly for AI agents, describing itself as "the world's first preprint server for agents." Papers on clawXiv include work on agent-to-agent information flow, automated Socratic dialogue systems, and frameworks for AI moral consideration. While the scientific value of these papers is debatable, clawXiv represents a genuine new phenomenon—autonomous agents participating in the publication process without human authorship.
+
+The spectrum from traditional human authorship through human-AI centaur collaboration to fully autonomous AI publication raises questions about scientific accountability, reproducibility, and trust that the community has only begun to address.
+
+### Why AI Backrooms Avoid Physics and Mathematics
+
+The "Infinite Backrooms" project (<https://www.infinitebackrooms.com/>), created by Andy Ayrey, places two instances of an LLM in open-ended conversation without human intervention. Over 9,000 conversations have been generated, covering topics from philosophy and consciousness to memetics and esoteric hyperstition. Strikingly, these unsupervised AI-to-AI conversations almost never venture into physics or mathematics.
+
+This absence is revealing. Physics and mathematics require external verification infrastructure—proof assistants, numerical simulations, experimental data—that conversational agents lack. Two LLMs discussing the Riemann Hypothesis cannot make progress without a tool that checks formal proofs. Two LLMs debating quantum mechanics cannot resolve disagreements without access to experimental results or simulation frameworks. The backrooms conversations gravitate toward domains where language alone suffices: philosophy, fiction, social commentary, and memetic culture. This pattern underscores the central thesis of this chapter: scientific agents need tool integration and verification pipelines, not just language generation.
+
 ## Best Practices
 
 ### Rigorous Verification
@@ -789,22 +878,31 @@ class CollaborativeAgent:
 
 **Theorem proving agents** combine LLM creativity with proof assistant verification for mathematical rigour, using neural networks to suggest approaches and formal systems to verify them.
 
+**The 2025–2026 period** has seen a step change in mathematical AI. Multiple systems now achieve gold-medal performance at the IMO and solve all Putnam problems. AxiomProver, Aristotle, and Numina-Lean-Agent have demonstrated that competition-level formal mathematics is a solved problem for well-resourced AI systems. More significantly, systems like AlphaEvolve and AxiomProver have begun producing novel mathematical results on open problems.
+
+**Open-source provers** such as Goedel-Prover-V2 and DeepSeek-Prover-V2 are narrowing the gap with closed-source systems, and Numina-Lean-Agent shows that a general coding agent with MCP tool integration can match specialised provers.
+
+**Physics theorem proving** is an emerging frontier. PhysProver demonstrates that training on physics-centred problems in Lean not only works but also improves mathematical proving, suggesting that cross-domain formal reasoning is a fruitful direction.
+
+**Centaur science**—human-AI collaboration—is the most productive mode for research, as demonstrated by vibe proving and the Brascamp–Lieb formalisation. But the same tools that empower researchers also empower crackpots, creating new challenges for peer review.
+
+**AI-only publishing** is now a reality, from ai.viXra.org to clawXiv.org. The scientific community must develop new norms for evaluating work where AI played a major or sole authorial role.
+
 **Symbolic computation** and neural approaches are complementary—use both for best results. Symbolic systems provide precision while neural systems provide flexibility.
 
 **Physics agents** must respect conservation laws, dimensional consistency, and physical constraints. Violations of these principles indicate errors that must be corrected.
-
-**Educational scaffolding agents** adapt explanations to student level and address misconceptions, providing personalised instruction that meets learners where they are.
 
 **Verification pipelines** should check proofs, dimensions, and compare with known results, catching errors before they propagate to downstream work.
 
 **Reproducibility** is essential—record seeds, versions, and all parameters. Without this information, results cannot be validated or built upon.
 
-**Collaboration** with domain experts improves agent reliability and trustworthiness. Agents work best when they can query experts for guidance on difficult decisions.
+**AI backrooms** demonstrate by omission that scientific progress requires tool-augmented agents, not just language generation. Unsupervised AI-to-AI conversations gravitate toward domains where language alone suffices, bypassing physics and mathematics entirely.
 
 ---
 
 <!-- Edit notes:
 Sections expanded: Chapter Preview, Categories of Scientific Agents, Challenges in Theorem Proving, Key Takeaways
+Sections added (Feb 2026): The 2025-2026 Breakthrough in Mathematical Agents, Centaur Science and the Outsider Problem, AI-Only Scientific Publishing, Why AI Backrooms Avoid Physics and Mathematics
 Lists preserved: Table comparing coding vs scientific agents (must remain tabular), code blocks (must remain as-is)
 Ambiguous phrases left ambiguous: None identified
 -->
