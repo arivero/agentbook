@@ -581,11 +581,9 @@ In practice, a single integration might expose multiple tools and enable multipl
 
 ## Case Study: OpenClaw and pi-mono
 
-> **Note:** OpenClaw and pi-mono are hypothetical composite examples used to illustrate architecture patterns. They are not official products as of 2026-02.
+**OpenClaw** (<https://openclaw.ai/>, <https://github.com/openclaw/openclaw>) is an open-source, local-first personal AI assistant that runs a gateway control plane and connects to over 50 chat providers and device surfaces. Originally published in November 2025 as Clawdbot by Austrian software engineer Peter Steinberger, the project was renamed to OpenClaw in January 2026. With over 169,000 GitHub stars and 3,000+ community-built skills, it has become one of the most popular open-source AI projects. OpenClaw emphasizes multi-channel inboxes ("one brain, many channels"), tool access, and skill management inside a user-owned runtime.
 
-**OpenClaw** is a personal, local-first AI assistant that runs a gateway control plane and connects to many chat providers and device surfaces. It emphasizes multi-channel inboxes, tool access, and skill management inside a user-owned runtime.
-
-OpenClaw is built on the **pi-mono** ecosystem. The pi-mono monorepo provides an agent runtime, tool calling infrastructure, and multi-provider LLM APIs that OpenClaw can leverage to keep the assistant portable across models and deployments.
+OpenClaw is built on the **pi-mono** ecosystem (<https://github.com/badlogic/pi-mono>). The pi-mono monorepo provides an agent runtime, tool calling infrastructure, and multi-provider LLM APIs that OpenClaw leverages to keep the assistant portable across models and deployments.
 
 ### OpenClaw Architecture in Detail
 
@@ -630,20 +628,37 @@ OpenClaw's architecture consists of several interconnected components:
 **4. Extensible Skills/Plugin Ecosystem**
 - Skills expand the agent's abilities: file automation, web scraping, email, calendar
 - Plugins are hot-reloadable and built in TypeScript
-- Community skill marketplace for sharing and discovery
+- Community skill marketplace with 3,000+ skills as of February 2026
 
 ### Key Design Principles
 
 1. **Privacy-First**: All state and memory default to local storage—data never leaves the device unless explicitly configured
-2. **BYOM (Bring Your Own Model)**: Seamlessly supports cloud LLMs and local inference
+2. **BYOM (Bring Your Own Model)**: Seamlessly supports cloud LLMs (Claude Opus 4.5 recommended) and local inference via Ollama
 3. **Proactive Behavior**: "Heartbeat" feature enables autonomous wake-up and environment monitoring
 4. **Persistent Memory**: Learns and adapts over long-term interactions
+5. **One Brain, Many Channels**: A single AI assistant maintains shared context across all 50+ messaging channels simultaneously—message from WhatsApp on your phone, switch to Telegram on your laptop, and the same assistant remembers everything
+
+> **Warning:** Security researchers have flagged local-first AI assistants as potential targets for infostealers. Without encryption-at-rest and proper containerisation, a compromised device exposes the assistant's full memory and credentials. Treat OpenClaw deployments with the same security discipline as any service handling sensitive data.
 
 Key takeaways for skills/tools architecture:
 
 - **Gateway + runtime separation** keeps tools and skills consistent while integrations change: the gateway handles channels and routing, while pi-mono-style runtimes handle tool execution.
 - **Integration catalogs** (like OpenClaw’s integrations list and skill registry) are a user-facing map of capability. They surface what tools can do and what skills are available without forcing users to understand low-level APIs.
 - **Skills become reusable assets** once tied to integrations: a “Slack triage” skill can target different workspaces without changing the underlying tools, as long as the integration provides the same tool contracts.
+
+### The Personal AI Ecosystem Beyond OpenClaw
+
+OpenClaw is the largest project in a rapidly growing personal AI assistant category. Several related frameworks share its local-first philosophy while making different architectural trade-offs.
+
+**Letta** (<https://www.letta.com/>, formerly MemGPT) is a platform for building stateful agents with advanced memory that can learn and self-improve over time. In January 2026, Letta shipped a Conversations API for agents with shared memory across parallel user experiences, and its **Letta Code** agent ranked #1 on Terminal-Bench among model-agnostic open-source agents. Letta's architecture emphasises programmable memory management—where OpenClaw focuses on channel integration and skills, Letta focuses on making agents that remember and adapt intelligently. The **LettaBot** project (<https://github.com/letta-ai/lettabot>) brings Letta's memory capabilities to a multi-channel personal assistant supporting Telegram, Slack, Discord, WhatsApp, and Signal.
+
+**Langroid** (<https://langroid.github.io/langroid/>) is a Python multi-agent framework from CMU and UW-Madison researchers that emphasises simplicity and composability. As of early 2026, Langroid has enhanced MCP support with persistent connections, Portkey integration for unified access to 200+ LLMs, and declarative task termination patterns. Its architecture treats agents, tasks, and tools as lightweight composable objects, making it well-suited for teams that want multi-agent orchestration without heavy infrastructure.
+
+**Open Interpreter** (<https://github.com/openinterpreter/open-interpreter>) provides a natural language interface for controlling computers. Its "New Computer Update" (late 2024) was a complete rewrite supporting a standard interface between language models and computer operations. While less focused on multi-channel messaging than OpenClaw, Open Interpreter fills a complementary niche: using an LLM to drive local computer actions (file management, browser automation, system administration) through plain language.
+
+**Leon** (<https://getleon.ai/>) is an open-source personal assistant built in JavaScript with natural speech recognition, task management, and extendable skills. It is installable via npm on Linux, Mac, or Windows, and appeals to developers who want a lightweight, self-hosted assistant without the full complexity of OpenClaw's multi-channel architecture.
+
+These projects collectively represent a broad trend: users increasingly expect AI assistants that run locally, remember context across sessions and channels, and respect data privacy by default. The architectural patterns that OpenClaw popularised—gateway/runtime separation, plugin-based skills, model-agnostic backends—are now standard across the category.
 
 ## Related Architectures and Frameworks
 

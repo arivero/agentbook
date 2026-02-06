@@ -44,6 +44,15 @@ order: 99
 - A2A protocol GitHub repository. <https://github.com/a2aproject/A2A>. Accessed: 2026-02-06.
 - Amazon Bedrock Agents. <https://aws.amazon.com/bedrock/agents/>. Accessed: 2026-02-06.
 - Vercel AI SDK. <https://ai-sdk.dev/>. Accessed: 2026-02-06.
+- OpenClaw. <https://openclaw.ai/>. Accessed: 2026-02-06.
+- OpenClaw GitHub repository. <https://github.com/openclaw/openclaw>. Accessed: 2026-02-06.
+- pi-mono agent toolkit. <https://github.com/badlogic/pi-mono>. Accessed: 2026-02-06.
+- Letta (formerly MemGPT). <https://www.letta.com/>. Accessed: 2026-02-06.
+- Letta GitHub repository. <https://github.com/letta-ai/letta>. Accessed: 2026-02-06.
+- LettaBot: multi-channel personal AI assistant. <https://github.com/letta-ai/lettabot>. Accessed: 2026-02-06.
+- Langroid. <https://langroid.github.io/langroid/>. Accessed: 2026-02-06.
+- Open Interpreter. <https://github.com/openinterpreter/open-interpreter>. Accessed: 2026-02-06.
+- Leon: open-source personal assistant. <https://getleon.ai/>. Accessed: 2026-02-06.
 - Ollama. <https://ollama.com/>. Accessed: 2026-02-05.
 - Tailscale. <https://tailscale.com/>. Accessed: 2026-02-05.
 - Lean documentation. <https://lean-lang.org/learn/>. Accessed: 2026-02-05.

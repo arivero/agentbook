@@ -95,6 +95,16 @@ As agents move into production, observability and evaluation are becoming first-
 
 **Cost attribution** is becoming more sophisticated as agent workflows involve multiple model calls, tool invocations, and sub-agent spawns. Understanding per-task cost is essential for making agents economically viable at scale.
 
+## The Local-First Personal AI Wave
+
+One of the most striking developments of late 2025 and early 2026 is the explosive growth of local-first personal AI assistants, led by **OpenClaw** (169,000+ GitHub stars, 3,000+ community skills). These are not coding agents or enterprise tools—they are general-purpose AI assistants that users self-host on their own hardware, connecting to WhatsApp, Telegram, Slack, Discord, and dozens of other channels through a single brain with shared context and persistent memory.
+
+This trend represents a shift in who controls the agent. Where cloud-hosted AI services control the data, the model, and the interaction surface, local-first assistants put all three under user ownership. The architectural patterns—gateway/runtime separation, model-agnostic backends, plugin-based skills—mirror what enterprise agent frameworks provide, but optimised for individual users rather than organisations.
+
+The personal AI ecosystem is diversifying rapidly. **Letta** (formerly MemGPT) focuses on sophisticated memory management, allowing agents to learn and self-improve over time. **LettaBot** brings Letta's memory to a multi-channel assistant. **Langroid** provides lightweight multi-agent orchestration. **Open Interpreter** turns natural language into computer actions. **Leon** offers a minimal, self-hosted assistant.
+
+For the broader agentic workflows field, the personal AI wave matters for three reasons. First, it validates the architectural patterns described throughout this book—skills, tools, MCP integration, multi-agent orchestration—at consumer scale. Second, it surfaces security challenges (infostealer targeting, credential exposure, data sovereignty) that enterprise deployments will also face. Third, it demonstrates that the demand for AI agents extends far beyond software development into every domain of digital life.
+
 ## Open Questions
 
 Several questions remain genuinely open and will shape the field's direction.
@@ -118,5 +128,7 @@ Several questions remain genuinely open and will shape the field's direction.
 **Progressive autonomy** is the standard deployment model. Start supervised, measure performance, and expand autonomy incrementally based on evidence.
 
 **Observability and evaluation** are becoming as important as agent capability. Invest in tracing, cost attribution, and scenario-based evaluation alongside agent development.
+
+**Local-first personal AI assistants** (OpenClaw, Letta, LettaBot) are validating enterprise agentic patterns at consumer scale, while surfacing security and data sovereignty challenges that affect the whole field.
 
 **Open questions** around autonomy limits, standard convergence, security, and developer roles will shape the field over the next two to three years. Stay informed and maintain architectural flexibility.
