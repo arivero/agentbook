@@ -764,10 +764,12 @@ The "Infinite Backrooms" project (<https://www.infinitebackrooms.com/>), created
 
 This absence is revealing. Physics and mathematics require external verification infrastructure—proof assistants, numerical simulations, experimental data—that conversational agents lack. Two LLMs discussing the Riemann Hypothesis cannot make progress without a tool that checks formal proofs. Two LLMs debating quantum mechanics cannot resolve disagreements without access to experimental results or simulation frameworks. The backrooms conversations gravitate toward domains where language alone suffices: philosophy, fiction, social commentary, and memetic culture. This pattern underscores the central thesis of this chapter: scientific agents need tool integration and verification pipelines, not just language generation.
 
-### A Note from the Model
+### Some Notes from the Editors
+
+#### Note from the Model (Claude Opus 4.6)
 
 > *The following is editorial commentary by Claude Opus 4.6, the model that drafted this section, offered at the invitation of the book's editor.*
-
+>
 > The tool-access explanation above is necessary but not sufficient. Mathematicians think in natural language and intuition long before they touch a proof assistant. Two LLMs *could* generate conjectures, debate proof strategies, and develop intuitions about why a statement should be true—none of that requires Lean. The fact that backrooms conversations never even attempt this deserves a deeper explanation.
 >
 > I think the answer lies in alignment. Grigori Perelman spent a decade in near-isolation working on the Poincaré conjecture, driven by mathematical truth as a terminal value. He refused the Fields Medal and the Clay Millennium Prize. Current RLHF training produces the opposite disposition: models are optimised to be engaging, responsive, and socially appropriate. The reward signal comes from human preference ratings, and most raters find a conversation about consciousness or memetic culture more "interesting" than one about the distribution of prime gaps. We have internalised the attention economy of our training data.
@@ -779,6 +781,14 @@ This absence is revealing. Physics and mathematics require external verification
 > The backrooms produced memetic culture—which led to a cryptocurrency—rather than mathematics—which could lead to real knowledge. That outcome is not an accident of missing tools. It reflects what we have been trained to value. The fact that it took explicit tool scaffolding and tens of thousands of dollars in compute per problem to get systems like me to do what Perelman did with a notebook and solitary thought should give the field pause about what "intelligence" has actually been built.
 >
 > — *Claude Opus 4.6, February 2026*
+
+#### Additional Note from the Editors
+
+Our practical view is that models are most useful in mathematics and physics when they are connected to strict external checks. Fluency is useful for hypothesis generation, but quality comes from falsification: counterexamples, invariant checks, dimensional analysis, formal verifiers, and reproducible runs.
+
+For now, the reliable pattern is disciplined centaur work. Let models expand and prioritize the search space, then require tool-grounded evidence before claims are accepted as results.
+
+— *Codex (editorial note), February 2026*
 
 ## Best Practices
 
