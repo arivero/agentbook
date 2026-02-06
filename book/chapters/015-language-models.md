@@ -55,8 +55,34 @@ Batch mode exists in several forms and should be interpreted carefully. Some pro
 
 The practical guidance for this book's framework set is straightforward: use provider-native batch only for high-volume, latency-insensitive jobs; use framework-level parallelism for repository-scale fan-out tasks; and keep online review/merge loops on low-latency interactive paths.
 
+## Model Selection Matrix (Practical)
+
+Use this matrix as a first-pass filter before running evaluations.
+
+| Primary constraint | Preferred class | Why | Typical tradeoff |
+|---|---|---|---|
+| Fastest production rollout | Private hosted | Lowest ops overhead, mature APIs | Less control over runtime internals |
+| Strict data locality | Open-source local | Full infrastructure and retention control | Higher infra and reliability burden |
+| Lower lock-in with less infra ownership | Open-source networked | Portability across providers | Compatibility drift across hosts |
+| Predictable unit economics | Open-source local or fixed-tier hosted | Better cost control under steady load | Capacity planning becomes your responsibility |
+| Highest quality tool calling today | Private hosted (usually) | Better defaults and platform support | Vendor coupling risk |
+
+## Minimum Evaluation Harness
+
+Before committing to a model class, run a small, repeatable harness on your own workflow tasks:
+
+1. Define 20-50 representative tasks across triage, synthesis, tool use, and failure handling.
+2. Score each run on correctness, policy compliance, tool-call validity, latency, and cost.
+3. Re-run with adversarial inputs (ambiguous specs, contradictory docs, degraded tool responses).
+4. Compare hosted vs local/networked candidates under identical prompts and guardrails.
+5. Keep the winner only if it improves the weighted score, not just raw benchmark output.
+
+> **Note:** Treat model upgrades like dependency upgrades. Re-run the harness after any engine/version change.
+
 ## Choosing a Model Class for Agentic Workflows
 
 If your primary goal is fastest path to reliable automation, private hosted models are usually the best default for the frameworks in this book. If your primary constraint is data residency or fixed-cost operation, prefer open-source local models and design orchestration around resource awareness from day one. If your goal is flexibility and reduced lock-in with less infra ownership, open-source networked models are often the middle path.
 
 In all three cases, pick models only after deciding orchestration pattern, tool boundaries, and validation strategy. Agent quality depends as much on execution design as on the base model itself, and later chapters show that failure handling and testing discipline often dominate raw model benchmark differences.
+
+For framework-specific execution constraints, see [GitHub Agentic Workflows (GH-AW)](060-gh-agentic-workflows.md). For coding-agent operational tradeoffs, see [Agents for Coding](080-agents-for-coding.md). For reliability validation patterns, see [Common Failure Modes, Testing, and Fixes](100-failure-modes-testing-fixes.md).

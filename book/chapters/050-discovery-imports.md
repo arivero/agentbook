@@ -146,6 +146,8 @@ Treat **artefact**, **discovery**, **import**, **install**, and **activate** as 
 
 Prefer explicit, pinned configuration when provenance or authenticity is uncertain; the convenience of dynamic discovery is not worth the security risk. Apply controls by stage: allowlist at discovery, verify at import and install, and enforce least privilege at activation and runtime.
 
+For tool and skill design conventions, see [Skills and Tools Management](040-skills-tools.md). For GH-AW composition syntax, see [GitHub Agentic Workflows (GH-AW)](060-gh-agentic-workflows.md).
+
 <!-- Edit notes:
 Sections expanded: Chapter Preview, Terminology Baseline for the Rest of the Book, all four artefact type subsections (Tool, Skill, Agent, Workflow-fragment), Confusing cases to stop using, all four Discovery Mechanisms subsections (Local scan, Registry, Domain-convention, Explicit configuration), Import/Install/Activate (all three subsections), Trust Boundaries and Supply Chain, all three Worked Examples interpretations, Key Takeaways
 Lists preserved: Worked Examples code blocks (must remain as-is for clarity)

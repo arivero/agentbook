@@ -220,60 +220,7 @@ safety:
 
 ### The AGENTS.md Standard
 
-The **AGENTS.md** file has emerged as the de facto standard for providing AI coding agents with project-specific instructions. It serves as a "README for agents," offering structured, machine-readable guidance.
-
-#### Purpose and Placement
-
-```text
-project/
-|-- AGENTS.md           # Root-level agent instructions
-|-- src/
-|   `-- AGENTS.md       # Module-specific instructions
-|-- tests/
-|   `-- AGENTS.md       # Testing conventions
-`-- docs/
-    `-- AGENTS.md       # Documentation guidelines
-```
-
-Agents use the nearest AGENTS.md file, enabling scoped configuration for monorepos or complex projects.
-
-#### Standard Structure
-
-```markdown
-# AGENTS.md
-
-## Project Overview
-Brief description of the project and its purpose.
-
-## Setup Instructions
-How to install dependencies and configure the environment.
-
-## Coding Conventions
-- Language: TypeScript 5.x
-- Style guide: Airbnb
-- Formatting: Prettier with provided config
-
-## Testing Requirements
-- Framework: Jest
-- Coverage threshold: 80%
-- Required test types: unit, integration
-
-## Build and Deploy
-- Build command: `npm run build`
-- Deploy process: CI/CD via GitHub Actions
-
-## Agent-Specific Notes
-- Always run linting before committing
-- Never modify files in `vendor/`
-- Secrets are in environment variables, never hardcoded
-```
-
-#### Benefits
-
-1. **Consistency**: All agents receive the same instructions
-2. **Onboarding**: New agents (or new agent sessions) understand the project immediately
-3. **Safety**: Clear boundaries prevent accidental damage
-4. **Maintainability**: Single source of truth for agent behavior
+For canonical AGENTS.md structure and rationale, see [Skills and Tools Management](040-skills-tools.md). For import/install/activate terminology and trust boundaries, see [Discovery and Imports](050-discovery-imports.md). In this chapter we focus on coding-agent execution patterns and platform behavior.
 
 ### Context Management
 

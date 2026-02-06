@@ -409,45 +409,14 @@ Your repository's documentation files serve dual purposes—they guide human con
 | File | Human Purpose | Agent Purpose |
 |------|---------------|---------------|
 | `README.md` | Project overview | Context for understanding the codebase |
-| `CONTRIBUTING.md` | Contribution guidelines | Workflow rules and constraints |
+| `WORKFLOW_PLAYBOOK.md` | Lifecycle and label matrix | Source of truth for issue workflow routing |
 | `.github/copilot-instructions.md` | N/A | Copilot-specific configuration |
 | `AGENTS.md` | N/A | Generic agent instructions |
 | `CLAUDE.md` | N/A | Claude-specific configuration |
 
 ### The copilot-instructions.md File
 
-GitHub Copilot reads `.github/copilot-instructions.md` to understand how to work with your repository. This file should include:
-
-```markdown
-# Copilot Instructions for [Project Name]
-
-## Project Overview
-Brief description of what this project does.
-
-## Tech Stack
-- **Language**: Python 3.11
-- **Framework**: FastAPI
-- **Database**: PostgreSQL
-- **Testing**: pytest
-
-## Coding Guidelines
-- Follow PEP 8 style guide
-- All functions require type hints
-- Tests are required for new features
-
-## File Structure
-Describe important directories and their purposes.
-
-## Build and Test Commands
-- `make test` - Run all tests
-- `make lint` - Run linters
-- `make build` - Build the project
-
-## Important Constraints
-- Never commit secrets or credentials
-- Protected paths: `.github/workflows/`, `secrets/`
-- All PRs require review before merge
-```
+GitHub Copilot reads `.github/copilot-instructions.md` to understand how to work with your repository. Keep this file short and operational: project purpose, build/test commands, protected paths, and security constraints. For canonical long-form structure examples, see [Skills and Tools Management](040-skills-tools.md).
 
 ### Cross-Platform Strategy
 
@@ -472,7 +441,7 @@ project/
 
 ### This Repository's Approach
 
-This book repository demonstrates multi-platform compatibility through several mechanisms. The **`.github/copilot-instructions.md`** file provides detailed Copilot configuration with project structure, coding guidelines, and constraints. The **Skills and Tools Management** and **Agents for Coding** chapters discuss AGENTS.md as the emerging standard. The **documentation files** such as README and CONTRIBUTING provide context any agent can use. The **GH-AW workflows** use the `engine: copilot` setting but the pattern works with other engines.
+This book repository demonstrates multi-platform compatibility through several mechanisms. The **`.github/copilot-instructions.md`** file provides Copilot configuration with project structure, coding guidelines, and constraints. The **Skills and Tools Management** and **Agents for Coding** chapters discuss AGENTS.md as the emerging standard. The **documentation files** such as README and WORKFLOW_PLAYBOOK provide context any agent can use. The **GH-AW workflows** use the `engine: copilot` setting but the pattern works with other engines.
 
 The key insight is that well-structured documentation benefits both human developers and AI agents. When you write clear README files, contribution guidelines, and coding standards, you are simultaneously creating better agent configuration.
 

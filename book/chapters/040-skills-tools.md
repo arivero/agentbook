@@ -908,6 +908,8 @@ class MonitoredTool:
 
 ## Emerging Standards: AGENTS.md
 
+This chapter is the canonical AGENTS.md reference for the book. Other chapters should link here rather than duplicating full templates.
+
 ### The AGENTS.md Pseudo-Standard
 
 **AGENTS.md** has emerged as an open pseudo-standard for providing AI coding agents with project-specific instructions. Think of it as a "README for agents"—offering structured, machine-readable guidance that helps agents understand how to work within a codebase.

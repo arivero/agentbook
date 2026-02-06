@@ -9,6 +9,10 @@ order: 80
 
 This chapter surveys the trajectories that are likely to reshape agentic workflows over the coming years. It identifies concrete trends already underway—protocol standardisation, framework convergence, and autonomous agent maturation—rather than speculative predictions. The goal is to help practitioners position their architectures and skill investments for the landscape that is forming now.
 
+> **Snapshot note (February 2026):** Vendor capabilities, funding figures, and adoption metrics in this chapter are time-sensitive and may change quickly. Treat this chapter as a dated landscape snapshot, and verify current status before making purchasing or platform commitments.
+
+External claims in this chapter are sourced in [Bibliography](990-bibliography.md).
+
 ## The Standardisation Wave
 
 ### Interoperability Protocols

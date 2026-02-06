@@ -99,10 +99,6 @@ Keeping agents independent reduces the blast radius of failures and simplifies t
 
 > **Note:** Orchestration should surface a clear audit trail: who decided, who executed, and who approved. Capture this early so later chapters can build on it.
 
-## Key Takeaways
-
-Orchestration is the coordination layer that turns goals into reliable execution. Without it, agents work in isolation and cannot combine their strengths. Use the simplest pattern that matches your dependency graph—sequential for linear pipelines, parallel for independent tasks, hierarchical for complex delegation, and event-driven for reactive workflows. Isolation, monitoring, and auditability are core design constraints, not afterthoughts; they make the difference between a prototype and a production system.
-
 ## Orchestration Frameworks
 
 ### GitHub Actions
@@ -200,6 +196,8 @@ The gap between backrooms-style free conversation and productive multi-agent orc
 ## Key Takeaways
 
 Orchestration coordinates multiple agents effectively, turning independent capabilities into coherent workflows. Choose the right pattern for your use case based on dependency structure and scaling requirements. Clear responsibilities and interfaces are essential for maintainability and debugging. Monitor and iterate on your orchestration strategies as you learn what works. Use established frameworks when possible, but be ready to customise when your needs diverge from standard patterns. The AI backrooms pattern demonstrates by contrast what happens without orchestration: agents default to domains where language alone suffices, bypassing any task that requires tools, verification, or structured coordination.
+
+For implementation-oriented workflow examples, see [GitHub Agentic Workflows (GH-AW)](060-gh-agentic-workflows.md). For reliability controls on multi-agent systems, see [Common Failure Modes, Testing, and Fixes](100-failure-modes-testing-fixes.md).
 
 <!-- Edit notes:
 Sections expanded: Chapter Preview, Coordination Mechanisms (all three subsections), Error Handling, Monitoring, Isolation, first Key Takeaways, Real-World Example, Challenges and Solutions (all four), second Key Takeaways

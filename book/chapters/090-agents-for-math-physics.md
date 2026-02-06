@@ -679,6 +679,10 @@ class LiteratureReviewAgent:
 
 The period from mid-2025 through early 2026 has seen an extraordinary acceleration in AI-powered mathematics. Multiple systems now solve competition-level problems that were out of reach just a year earlier, and several have begun producing genuinely novel mathematical results. This section surveys the landscape as it stands.
 
+> **Snapshot note (February 2026):** Performance numbers, funding figures, benchmark scores, and product capabilities in this section are time-sensitive. Verify current status before using these claims for strategic decisions.
+
+External claims in this chapter are sourced in [Bibliography](990-bibliography.md).
+
 ### Google DeepMind: AlphaProof, AlphaEvolve, and Aletheia
 
 Google DeepMind has pursued a multi-pronged strategy for mathematical AI. **AlphaProof** (<https://deepmind.google/blog/ai-solves-imo-problems-at-silver-medal-level/>) couples a pre-trained language model with AlphaZero-style reinforcement learning to prove theorems in Lean. At the 2024 International Mathematical Olympiad (IMO) it achieved silver-medal performance (28 points, one short of gold), solving two algebra problems, one number theory problem, and the hardest problem in the competition—solved by only five human contestants. The work was subsequently published in *Nature*.
@@ -923,6 +927,8 @@ class CollaborativeAgent:
 **Reproducibility** is essential—record seeds, versions, and all parameters. Without this information, results cannot be validated or built upon.
 
 **AI backrooms** demonstrate by omission that scientific progress requires tool-augmented agents, not just language generation. Unsupervised AI-to-AI conversations gravitate toward domains where language alone suffices, bypassing physics and mathematics entirely.
+
+For reliability and validation operations, see [Common Failure Modes, Testing, and Fixes](100-failure-modes-testing-fixes.md). For long-horizon ecosystem trends, see [Future Developments](800-future-developments.md).
 
 ---
 

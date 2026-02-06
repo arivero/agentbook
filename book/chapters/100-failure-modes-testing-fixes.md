@@ -186,6 +186,18 @@ Several anti-patterns undermine agentic system reliability.
 
 Before enabling broad production use, confirm the following items are complete. Snippets and examples should be clearly labelled as runnable, pseudocode, or simplified. Tool contracts should be versioned and validated. CI should include policy, security, and regression checks. Failure injection scenarios should be part of routine testing. Rollback and escalation paths should be documented and exercised.
 
+## Applying This to This Repository
+
+For this repository, a minimal operational checklist is:
+
+- Run `python3 scripts/check-links.py --root book --mode internal` for any `book/` content change.
+- Keep `.github/workflows/*.md` and `.github/workflows/*.lock.yml` in sync when GH-AW source workflows change.
+- Validate label lifecycle behavior against `WORKFLOW_PLAYBOOK.md` after workflow edits.
+- Preserve least-privilege + `safe-outputs` patterns in GH-AW workflow frontmatter.
+- Treat failed Pages/PDF runs as release blockers for documentation changes.
+
+For orchestration context, see [Agent Orchestration](020-orchestration.md). For infrastructure boundaries, see [Agentic Scaffolding](030-scaffolding.md).
+
 ## Chapter Summary
 
 Reliable agentic systems are built, not assumed. Teams that combine clear contracts, layered testing, progressive autonomy, strong policy gates, and incident-driven learning consistently outperform teams relying on prompt-only tuning.

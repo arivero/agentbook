@@ -307,6 +307,19 @@ This book's scaffolding includes several interconnected components.
 
 **GitHub Actions** provides workflow orchestration, triggering agents in response to issues, pull requests, and schedules. **Issue Templates** provide structured input for suggestions, ensuring agents receive information in a consistent format they can parse reliably. **Agent Scripts** are Python scripts for content management that handle tasks like generating tables of contents and updating cross-references. **Tool Access** includes Git for version control, markdown processors for content transformation, and PDF generators for final output. **State Management** uses the Git repository itself as persistent state, with commits recording the history of changes. **Communication** flows through the GitHub API, which provides the coordination layer for all agent interactions.
 
+### Concrete Repo Components
+
+In this repository, the scaffolding is implemented in concrete files:
+
+- Link and integrity checks: `scripts/check-links.py`
+- Markdown assembly for PDF: `scripts/build-combined-md.sh`
+- GH-AW source workflows: `.github/workflows/issue-*.md`
+- Compiled GH-AW lock files: `.github/workflows/issue-*.lock.yml`
+- Publishing workflows: `.github/workflows/pages.yml` and `.github/workflows/build-pdf.yml`
+- Lifecycle policy: `WORKFLOW_PLAYBOOK.md`
+
+For workflow semantics, see [GitHub Agentic Workflows (GH-AW)](060-gh-agentic-workflows.md). For failure handling and validation strategy, see [Common Failure Modes, Testing, and Fixes](100-failure-modes-testing-fixes.md).
+
 ## Best Practices
 
 **Start Simple.** Build minimal scaffolding first and expand only as needed. Over-engineering early creates maintenance burden without corresponding benefit; let actual requirements drive complexity.
