@@ -651,9 +651,9 @@ Several other frameworks share architectural patterns with OpenClaw:
 
 ### LangChain and LangGraph
 
-LangChain (<https://python.langchain.com/>) provides composable building blocks for LLM applications.
+LangChain (<https://docs.langchain.com>) provides composable building blocks for LLM applications. As of 2026, LangChain and LangGraph have both reached v1.0 milestones.
 
-> **Snippet status:** Illustrative pseudocode (API names vary across LangChain versions).
+> **Snippet status:** Runnable example pattern (validated against LangChain v1 docs, Feb 2026; `create_agent` builds a graph-based agent runtime using LangGraph under the hood).
 
 ```python
 from langchain.agents import create_agent
@@ -709,7 +709,7 @@ crew = Crew(
 
 ### Microsoft Semantic Kernel
 
-Semantic Kernel (<https://learn.microsoft.com/semantic-kernel/>) emphasizes enterprise integration and plugin architecture:
+Semantic Kernel (<https://learn.microsoft.com/semantic-kernel/>) emphasizes enterprise integration and plugin architecture. As of late 2025, Semantic Kernel is converging with AutoGen into the **Microsoft Agent Framework** (see AutoGen section below):
 
 ```csharp
 var kernel = Kernel.CreateBuilder()
@@ -730,45 +730,60 @@ var agent = new ChatCompletionAgent {
 
 **Shared patterns with OpenClaw**: Plugin system, kernel/runtime separation, enterprise-ready design.
 
-### AutoGen
+### AutoGen / Microsoft Agent Framework
 
-AutoGen (<https://microsoft.github.io/autogen/>) specializes in conversational multi-agent systems:
+AutoGen (<https://microsoft.github.io/autogen/stable/>) was rewritten from the ground up as v0.4 in January 2025, adopting an asynchronous, event-driven architecture. In October 2025, Microsoft announced the convergence of AutoGen and Semantic Kernel into a unified **Microsoft Agent Framework**, with general availability scheduled for Q1 2026. AutoGen v0.4 continues to receive critical fixes, but significant new features target the unified framework.
+
+> **Snippet status:** Runnable example pattern (AutoGen v0.4 API, Feb 2026).
 
 ```python
-from autogen import AssistantAgent, UserProxyAgent
+import asyncio
+from autogen_agentchat.agents import AssistantAgent
+from autogen_ext.models.openai import OpenAIChatCompletionClient
 
-assistant = AssistantAgent(
-    name="coding_assistant",
-    llm_config={"model": "gpt-4"},
-    system_message="You are a helpful coding assistant."
-)
+async def main() -> None:
+    agent = AssistantAgent(
+        "coding_assistant",
+        OpenAIChatCompletionClient(model="gpt-4o"),
+    )
+    result = await agent.run(task="Create a Python web scraper")
+    print(result)
 
-user_proxy = UserProxyAgent(
-    name="user",
-    human_input_mode="NEVER",
-    code_execution_config={"work_dir": "coding"}
-)
-
-# Agents collaborate through conversation
-user_proxy.initiate_chat(assistant, message="Create a Python web scraper")
+asyncio.run(main())
 ```
+
+> **Note:** The v0.2 API (`from autogen import AssistantAgent`) is deprecated. Migrate to `autogen_agentchat` and `autogen_ext` packages. See the migration guide at <https://microsoft.github.io/autogen/stable/user-guide/agentchat-user-guide/migration-guide.html>.
 
 **Shared patterns with OpenClaw**: Agent-to-agent communication, code execution environments, conversation-driven workflows.
 
 ### Comparing Architecture Patterns
 
-| Feature | OpenClaw | LangChain | CrewAI | Semantic Kernel | AutoGen |
-|---------|----------|-----------|--------|-----------------|---------|
-| **Primary Focus** | Personal assistant | LLM app building | Team collaboration | Enterprise plugins | Multi-agent chat |
-| **Runtime** | Local-first | Flexible | Python process | .NET/Python | Python process |
-| **Multi-Agent** | Via swarms | Via LangGraph | Built-in | Via agents | Built-in |
-| **Tool System** | Plugin-based | Tool decorators | Tool assignment | Plugin imports | Tool decorators |
-| **Memory** | Persistent local | Configurable | Per-agent | Session-based | Conversation |
-| **Best For** | Personal automation | Prototyping | Complex workflows | Enterprise apps | Research/experimentation |
+| Feature | OpenClaw | LangChain | CrewAI | MS Agent Framework† |
+|---------|----------|-----------|--------|---------------------|
+| **Primary Focus** | Personal assistant | LLM app building | Team collaboration | Enterprise agents |
+| **Runtime** | Local-first | Flexible | Python process | .NET/Python |
+| **Multi-Agent** | Via swarms | Via LangGraph | Built-in | Built-in |
+| **Tool System** | Plugin-based | Tool decorators | Tool assignment | Plugin imports |
+| **Memory** | Persistent local | Configurable | Per-agent | Configurable |
+| **Best For** | Personal automation | Prototyping | Complex workflows | Enterprise apps |
+
+† Microsoft Agent Framework is the convergence of Semantic Kernel and AutoGen, announced October 2025.
+
+### OpenAI Agents SDK
+
+The OpenAI Agents SDK (<https://openai.github.io/openai-agents-python/>) is the production-ready successor to the experimental Swarm project, launched March 2025. It provides easily configurable agents with instructions and built-in tools, agent handoffs for intelligent control transfer, built-in guardrails, and tracing for debugging. Available in both Python and TypeScript.
+
+**Shared patterns with OpenClaw**: Agent handoffs, tool registration, guardrails, conversation-driven workflows.
+
+### Google Agent Development Kit (ADK)
+
+Google ADK (<https://google.github.io/adk-docs/>) is an open-source framework introduced at Cloud NEXT 2025 for developing multi-agent systems. It is model-agnostic (optimised for Gemini but compatible with other providers) and supports the Agent-to-Agent (A2A) protocol for inter-agent communication. Primary SDK is Python; TypeScript and Go SDKs are in active development.
+
+**Shared patterns with OpenClaw**: Multi-agent orchestration, model-agnostic design, tool registration.
 
 ## MCP: Modern Tooling and Adoption
 
-The **Model Context Protocol (MCP)** (<https://modelcontextprotocol.io/>) has become a practical standard for connecting agents to tools and data sources. Today, MCP is less about novel capability and more about **reliable interoperability**: the same tool server can be used by multiple agent clients with consistent schemas, permissions, and response formats.
+The **Model Context Protocol (MCP)** (<https://modelcontextprotocol.io/>) has become a practical standard for connecting agents to tools and data sources. In December 2025, Anthropic donated MCP governance to the **Agentic AI Foundation (AAIF)** under the Linux Foundation, signalling its transition from a single-vendor project to a true industry standard. As of early 2026, the ecosystem reports over 97 million monthly SDK downloads and more than 10,000 active MCP servers. In January 2026, **MCP Apps** launched as the first official extension, enabling interactive UIs (charts, forms, dashboards) to render directly inside MCP clients. Today, MCP is less about novel capability and more about **reliable interoperability**: the same tool server can be used by multiple agent clients with consistent schemas, permissions, and response formats.
 
 ### What MCP Brings to Tools
 
@@ -797,8 +812,8 @@ The **Model Context Protocol (MCP)** (<https://modelcontextprotocol.io/>) has be
 
 MCP is broadly accepted as a **tooling interoperability layer**. The specifics vary by vendor, but the pattern is consistent: MCP servers expose the tools and resources, while clients orchestrate tool calls and manage safety policies.
 
-- **Codex (GPT-5.2-Codex)** (<https://openai.com/index/introducing-codex/>)  
-  Codex clients commonly use MCP servers to standardize tool access (repo browsing, test execution, task automation). Codex also supports skills packaged with `SKILL.md` and progressive disclosure (see <https://platform.openai.com/docs/guides/codex/skills>). The main adoption pattern is organization-level MCP servers that provide consistent tools across multiple repos.
+- **Codex (GPT-5.3-Codex)** (<https://openai.com/index/introducing-codex/>)
+  Codex clients commonly use MCP servers to standardize tool access (repo browsing, test execution, task automation). Codex also supports skills packaged with `SKILL.md` and progressive disclosure (see <https://developers.openai.com/codex>). The main adoption pattern is organization-level MCP servers that provide consistent tools across multiple repos.
 
 - **GitHub Copilot** (<https://docs.github.com/en/copilot>)  
   Copilot deployments increasingly treat MCP as a bridge between editor experiences and organization tooling. This typically means MCP servers that expose repo-aware tools (search, CI status, documentation retrieval) so the assistant can operate with consistent, policy-driven access.

@@ -11,6 +11,9 @@ order: 99
 - GitHub Copilot coding agent. [GitHub Docs](https://docs.github.com/en/copilot/how-tos/use-copilot-agents/coding-agent). Accessed: 2026-02-05.
 - Copilot coding agent environment customization. [GitHub Docs](https://docs.github.com/en/copilot/how-tos/use-copilot-agents/coding-agent/customize-the-agent-environment). Accessed: 2026-02-05.
 - Model Context Protocol (MCP). <https://modelcontextprotocol.io/>. Accessed: 2026-02-05.
+- MCP Apps announcement. <http://blog.modelcontextprotocol.io/posts/2026-01-26-mcp-apps/>. Accessed: 2026-02-06.
+- Agent Skills specification. <https://agentskills.io/specification>. Accessed: 2026-02-06.
+- Agent Skills overview. <https://agentskills.io/home>. Accessed: 2026-02-06.
 - Skills Protocol documentation. <https://skillsprotocol.com/>. Accessed: 2026-02-05.
 - Skills Protocol Implementation Guide. <https://skillsprotocol.com/implementation-guide>. Accessed: 2026-02-05.
 - Skills Protocol specification. <https://skillsprotocol.com/specification>. Accessed: 2026-02-05.
@@ -19,15 +22,28 @@ order: 99
 - OpenAI. <https://openai.com/>. Accessed: 2026-02-05.
 - Anthropic. <https://www.anthropic.com/>. Accessed: 2026-02-05.
 - OpenAI Codex overview. <https://openai.com/index/introducing-codex/>. Accessed: 2026-02-05.
-- OpenAI Codex skills documentation. <https://platform.openai.com/docs/guides/codex/skills>. Accessed: 2026-02-05.
+- OpenAI Codex documentation. <https://developers.openai.com/codex>. Accessed: 2026-02-06.
+- OpenAI GPT-5.3-Codex announcement. <https://openai.com/index/introducing-gpt-5-3-codex/>. Accessed: 2026-02-06.
+- OpenAI Agents SDK (Python). <https://openai.github.io/openai-agents-python/>. Accessed: 2026-02-06.
+- OpenAI Agents SDK (TypeScript). <https://openai.github.io/openai-agents-js/>. Accessed: 2026-02-06.
 - Claude Code documentation. <https://code.claude.com/docs>. Accessed: 2026-02-05.
+- Claude and Codex available on GitHub (public preview). <https://github.blog/changelog/2026-02-04-claude-and-codex-are-now-available-in-public-preview-on-github/>. Accessed: 2026-02-06.
 - Cursor editor. <https://www.cursor.com/>. Accessed: 2026-02-05.
 - CodeGPT. <https://codegpt.co/>. Accessed: 2026-02-05.
-- LangChain documentation. <https://python.langchain.com/>. Accessed: 2026-02-05.
+- Aider: AI pair programming in your terminal. <https://aider.chat/>. Accessed: 2026-02-06.
+- Devin by Cognition. <https://devin.ai/>. Accessed: 2026-02-06.
+- Windsurf (formerly Codeium). <https://windsurf.com/>. Accessed: 2026-02-06.
+- LangChain documentation. <https://docs.langchain.com>. Accessed: 2026-02-06.
 - LangGraph documentation. <https://langchain-ai.github.io/langgraph/>. Accessed: 2026-02-05.
 - CrewAI documentation. <https://docs.crewai.com/>. Accessed: 2026-02-05.
 - Microsoft Semantic Kernel. <https://learn.microsoft.com/semantic-kernel/>. Accessed: 2026-02-05.
-- AutoGen documentation. <https://microsoft.github.io/autogen/>. Accessed: 2026-02-05.
+- AutoGen documentation (v0.4). <https://microsoft.github.io/autogen/stable/>. Accessed: 2026-02-06.
+- AutoGen v0.2 to v0.4 migration guide. <https://microsoft.github.io/autogen/stable/user-guide/agentchat-user-guide/migration-guide.html>. Accessed: 2026-02-06.
+- Google Agent Development Kit (ADK). <https://google.github.io/adk-docs/>. Accessed: 2026-02-06.
+- Agent-to-Agent (A2A) protocol. <https://a2a-protocol.org/latest/>. Accessed: 2026-02-06.
+- A2A protocol GitHub repository. <https://github.com/a2aproject/A2A>. Accessed: 2026-02-06.
+- Amazon Bedrock Agents. <https://aws.amazon.com/bedrock/agents/>. Accessed: 2026-02-06.
+- Vercel AI SDK. <https://ai-sdk.dev/>. Accessed: 2026-02-06.
 - Ollama. <https://ollama.com/>. Accessed: 2026-02-05.
 - Tailscale. <https://tailscale.com/>. Accessed: 2026-02-05.
 - Lean documentation. <https://lean-lang.org/learn/>. Accessed: 2026-02-05.
@@ -38,4 +54,8 @@ order: 99
 Sections expanded: None (bibliography entries are an actual enumerable reference list that must remain as individual items)
 Lists preserved: All bibliography entries (reference lists must remain enumerable for citation purposes)
 Ambiguous phrases left ambiguous: None identified
+Updated 2026-02-06: Added new entries for MCP Apps, Agent Skills specification, OpenAI GPT-5.3-Codex,
+OpenAI Agents SDK, Claude/Codex on GitHub, Aider, Devin, Windsurf, updated LangChain URL,
+AutoGen v0.4 docs, Google ADK, A2A protocol, Amazon Bedrock Agents, Vercel AI SDK.
+Fixed deprecated Codex skills URL (platform.openai.com -> developers.openai.com).
 -->
