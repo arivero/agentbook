@@ -3,6 +3,7 @@ name: GH-AW Issue Fast Track + Close
 on:
   issues:
     types: [labeled]
+    names: [triaged-fast-track]
 permissions:
   contents: read
   issues: read
@@ -15,8 +16,8 @@ safe-outputs:
   add-comment:
     max: 1
   add-labels:
-    allowed: [rejected]
-    max: 1
+    allowed: [assigned, rejected]
+    max: 2
   close-issue:
     max: 1
   create-pull-request:
@@ -34,6 +35,7 @@ You are the fast-track delivery agent.
 - Implement the smallest safe fix.
 - Open a pull request linked to the issue.
 - Post summary comment with PR link.
+- Add label `assigned`.
 - Close the issue after posting the summary.
 - If implementation is not appropriate:
   - explain why,

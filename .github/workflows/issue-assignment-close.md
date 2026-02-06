@@ -3,6 +3,7 @@ name: GH-AW Issue Assignment + Close
 on:
   issues:
     types: [labeled]
+    names: [opinion-copilot-strategy-posted, opinion-copilot-delivery-posted]
 permissions:
   contents: read
   issues: read

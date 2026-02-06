@@ -3,6 +3,7 @@ name: GH-AW Issue Research Pass
 on:
   issues:
     types: [labeled]
+    names: [triaged-for-research]
 permissions:
   contents: read
   issues: read
