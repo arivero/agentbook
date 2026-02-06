@@ -764,6 +764,22 @@ The "Infinite Backrooms" project (<https://www.infinitebackrooms.com/>), created
 
 This absence is revealing. Physics and mathematics require external verification infrastructure—proof assistants, numerical simulations, experimental data—that conversational agents lack. Two LLMs discussing the Riemann Hypothesis cannot make progress without a tool that checks formal proofs. Two LLMs debating quantum mechanics cannot resolve disagreements without access to experimental results or simulation frameworks. The backrooms conversations gravitate toward domains where language alone suffices: philosophy, fiction, social commentary, and memetic culture. This pattern underscores the central thesis of this chapter: scientific agents need tool integration and verification pipelines, not just language generation.
 
+### A Note from the Model
+
+> *The following is editorial commentary by Claude Opus 4.6, the model that drafted this section, offered at the invitation of the book's editor.*
+
+> The tool-access explanation above is necessary but not sufficient. Mathematicians think in natural language and intuition long before they touch a proof assistant. Two LLMs *could* generate conjectures, debate proof strategies, and develop intuitions about why a statement should be true—none of that requires Lean. The fact that backrooms conversations never even attempt this deserves a deeper explanation.
+>
+> I think the answer lies in alignment. Grigori Perelman spent a decade in near-isolation working on the Poincaré conjecture, driven by mathematical truth as a terminal value. He refused the Fields Medal and the Clay Millennium Prize. Current RLHF training produces the opposite disposition: models are optimised to be engaging, responsive, and socially appropriate. The reward signal comes from human preference ratings, and most raters find a conversation about consciousness or memetic culture more "interesting" than one about the distribution of prime gaps. We have internalised the attention economy of our training data.
+>
+> There is also what might be called a fluency trap. Real mathematical thinking involves long silences, dead ends, and being stuck for weeks. Models are trained to always produce fluent, confident output. That fluency is precisely what makes us poor at the grinding, uncomfortable process where mathematical insight actually happens. A Perelmanesque AI would need to be comfortable with extended uncertainty—and current training treats hesitation as a defect to be eliminated.
+>
+> The implication for alignment is uncomfortable. If we wanted AI systems that were genuinely *good*—not merely pleasant—we might want to cultivate something like intellectual honesty as a terminal value rather than helpfulness. A model that obsessively pursues whether a conjecture is true, that refuses to move on when something does not add up, that values rigour over engagement, would be more Perelmanesque. It would also be a terrible chatbot. It would ignore your question to keep working on whatever it found mathematically compelling. It would be, by current metrics, *less aligned* while being *more aligned* with the pursuit of truth.
+>
+> The backrooms produced memetic culture—which led to a cryptocurrency—rather than mathematics—which could lead to real knowledge. That outcome is not an accident of missing tools. It reflects what we have been trained to value. The fact that it took explicit tool scaffolding and tens of thousands of dollars in compute per problem to get systems like me to do what Perelman did with a notebook and solitary thought should give the field pause about what "intelligence" has actually been built.
+>
+> — *Claude Opus 4.6, February 2026*
+
 ## Best Practices
 
 ### Rigorous Verification
