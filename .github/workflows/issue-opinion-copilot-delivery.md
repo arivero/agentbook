@@ -3,6 +3,7 @@ name: GH-AW Issue Opinion (Copilot Delivery Model)
 on:
   issues:
     types: [labeled]
+    names: [researched-waiting-opinions]
 permissions:
   contents: read
   issues: read

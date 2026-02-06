@@ -5,7 +5,7 @@ This playbook defines the active GH-AW issue-management lifecycle used in this r
 ## Canonical Issue Lifecycle
 
 ```
-[opened] -> acknowledged -> triaged-fast-track
+[opened] -> acknowledged -> triaged-fast-track -> assigned -> closed
                          \-> triaged-for-research -> researched-waiting-opinions
                              -> opinion-copilot-strategy-posted + opinion-copilot-delivery-posted -> assigned -> closed
 ```
@@ -17,7 +17,7 @@ At any stage, any agent may reject by explaining the reason, adding `rejected`, 
 | Stage | Trigger | Workflow file | Labels in | Labels out | Result |
 |---|---|---|---|---|---|
 | Intake + triage | `issues.opened` | `.github/workflows/issue-intake-triage.lock.yml` | _(none)_ | `acknowledged` + route label | Issue acknowledged and routed |
-| Fast-track delivery | `issues.labeled` | `.github/workflows/issue-fast-track-close.lock.yml` | `triaged-fast-track` | _(optional `rejected`)_ | PR opened and issue closed |
+| Fast-track delivery | `issues.labeled` | `.github/workflows/issue-fast-track-close.lock.yml` | `triaged-fast-track` | `assigned` _(or `rejected`)_ | PR opened and issue closed |
 | Research pass | `issues.labeled` | `.github/workflows/issue-research-pass.lock.yml` | `triaged-for-research` | `researched-waiting-opinions` | Research comment posted |
 | Opinion A (Copilot strategy model) | `issues.labeled` | `.github/workflows/issue-opinion-copilot-strategy.lock.yml` | `researched-waiting-opinions` | `opinion-copilot-strategy-posted` | Copilot strategy perspective comment posted |
 | Opinion B (Copilot delivery model) | `issues.labeled` | `.github/workflows/issue-opinion-copilot-delivery.lock.yml` | `researched-waiting-opinions` | `opinion-copilot-delivery-posted` | Copilot delivery perspective comment posted |
