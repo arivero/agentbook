@@ -165,5 +165,5 @@ Modify `_config.yml` and `_layouts/` to change the appearance.
 
 For issues or questions:
 - Open an issue in the repository
-- Check the [CONTRIBUTING.md](CONTRIBUTING.md) guide
+- Check the [README contributing section](README.md#contributing)
 - Review GitHub Actions documentation

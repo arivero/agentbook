@@ -44,9 +44,9 @@ Your role is to finalize issues after content changes have been merged.
 - [Link to merged PR]
 
 **View the Changes:**
-- 📖 [Read the updated chapter](link-to-chapter)
-- 📄 [See the pull request](link-to-PR)
-- 🌐 [View on GitHub Pages](link-to-live-site)
+- 📖 Read the updated chapter: `<link-to-chapter>`
+- 📄 See the pull request: `<link-to-pr>`
+- 🌐 View on GitHub Pages: `<link-to-live-site>`
 
 **Contributors:**
 - 👤 Original suggestion by: @username
@@ -58,7 +58,6 @@ The book is now updated with your suggested content.
 
 ---
 
-*This issue was processed by our multi-agent workflow. 
-[Learn more about how it works](link-to-gh-aw-chapter)*
+*This issue was processed by our multi-agent workflow. [Learn more about how it works](../../book/chapters/060-gh-agentic-workflows.md).*
 
 Be celebratory and appreciative. This is the conclusion of a successful collaboration!

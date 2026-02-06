@@ -356,17 +356,17 @@ This pattern maps well to this book: use scheduled research to discover new agen
 
 ## Applying GH-AW to This Repository
 
-Here is how GH-AW can drive the book's maintenance through a four-stage cycle.
+This repository uses a label-driven lifecycle documented in [WORKFLOW_PLAYBOOK.md](../../WORKFLOW_PLAYBOOK.md).
 
-**Research (scheduled).** The system uses web-search tooling to scan for new agentic workflow libraries and related developments. It produces a structured report in a GitHub issue, documenting what was found and why it may be relevant.
+**Intake + triage.** When an issue is opened, the intake workflow acknowledges it and routes it to either `triaged-fast-track` or `triaged-for-research`.
 
-**Consensus (issues/discussions).** The community collects votes or comments to accept or reject the proposal. Maintainers label outcomes with tags like `accepted`, `needs-revision`, or `rejected` to track decisions.
+**Fast-track lane.** Issues labeled `triaged-fast-track` are implemented directly by the fast-track workflow, which opens a PR, adds `assigned`, and closes the issue.
 
-**Implementation (assigned agent).** An agent updates or adds chapters as needed, refreshes the table of contents and homepage, and adds a blog post summarising the update. All changes go through the normal pull request review process.
+**Research lane.** Issues labeled `triaged-for-research` move to `researched-waiting-opinions`, receive both opinion labels (`opinion-copilot-strategy-posted` and `opinion-copilot-delivery-posted`), then the assignment workflow adds `assigned` and closes the issue.
 
-**Publish (automation).** Pages and PDF outputs rebuild automatically after merge, ensuring the public site stays current without manual intervention.
+**Rejection path.** At any stage, an agent can add `rejected` with rationale and close the issue.
 
-This approach keeps the book aligned with the latest GH-AW practices while maintaining a transparent, auditable workflow.
+Publishing remains a separate automation concern: `pages.yml` deploys the site, and `build-pdf.yml` maintains the generated PDF.
 
 ## Key Takeaways
 

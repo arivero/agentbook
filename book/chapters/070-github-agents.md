@@ -388,7 +388,7 @@ This very book uses GitHub Agents for self-maintenance:
 
 The workflow is defined using GitHub Agentic Workflows (GH-AW). The repository includes GH-AW workflows in `.github/workflows/issue-*.lock.yml` and agent definitions in `.github/agents/*.md`.
 
-For a detailed explanation of the workflow architecture and why GH-AW is the canonical approach, see the repository's [README workflow section](../../README.md#-workflows) and [WORKFLOW_PLAYBOOK.md](../../WORKFLOW_PLAYBOOK.md).
+For a detailed explanation of the workflow architecture and why GH-AW is the canonical approach, see the repository's [README workflow section](../../README.md#workflows) and [WORKFLOW_PLAYBOOK.md](../../WORKFLOW_PLAYBOOK.md).
 
 ## Multi-Agent Platform Compatibility
 
@@ -529,14 +529,13 @@ Integration is deepening across several dimensions. **IDE integration** brings d
 This book's repository includes comprehensive documentation that demonstrates OSS best practices:
 
 - **[README](../../README.md)** - Overview and quick start guide
-- **[CONTRIBUTING](../../CONTRIBUTING.md)** - How to contribute using the multi-agent workflow
-- **[README](../../README.md#-workflows)** - Workflow overview and GH-AW positioning
+- **[Contributing section](../../README.md#contributing)** - How to contribute using issue-driven workflows
+- **[Workflows section](../../README.md#workflows)** - Publishing and validation workflow overview
 - **[SETUP](../../SETUP.md)** - Installation and configuration instructions
 - **[WORKFLOW_PLAYBOOK](../../WORKFLOW_PLAYBOOK.md)** - Agentic workflow maintenance patterns
-- **[PROJECT_SUMMARY](../../PROJECT_SUMMARY.md)** - Complete project overview
-- **[SECURITY_SUMMARY](../../SECURITY_SUMMARY.md)** - Security practices and scan results
-- **[CHANGELOG](../../CHANGELOG.md)** - Version history and changes
-- **[CODE_OF_CONDUCT](../../CODE_OF_CONDUCT.md)** - Community guidelines
+- **[AGENTS](../../AGENTS.md)** - Contributor notes and required checks
+- **[CLAUDE](../../CLAUDE.md)** - Repository-specific agent guidance
+- **[Workflow authoring notes](../../.github/workflows/AGENTS.md)** - GH-AW compilation and lifecycle rules
 - **[LICENSE](../../LICENSE)** - MIT License
 
 ### Agent Configuration Files

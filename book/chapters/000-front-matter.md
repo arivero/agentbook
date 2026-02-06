@@ -29,9 +29,9 @@ order: 0
 
 # Copyright {-}
 
-Copyright © 2026 Agentbook Contributors. All rights reserved.
+Copyright © 2026 Agentbook Contributors.
 
-This is an open-source manuscript distributed for educational purposes. No part of this work may be reproduced in any form or by any means without the prior written permission of the contributors, except for brief quotations in reviews.
+This manuscript is open source and licensed under the [MIT License](../../LICENSE). You may use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies, subject to the MIT license terms.
 
 # Preface {-}
 
