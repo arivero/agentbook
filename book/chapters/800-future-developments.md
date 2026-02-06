@@ -9,7 +9,7 @@ order: 80
 
 This chapter surveys the trajectories that are likely to reshape agentic workflows over the coming years. It identifies concrete trends already underway—protocol standardisation, framework convergence, and autonomous agent maturation—rather than speculative predictions. The goal is to help practitioners position their architectures and skill investments for the landscape that is forming now.
 
-> **Snapshot note (February 2026):** Vendor capabilities, funding figures, and adoption metrics in this chapter are time-sensitive and may change quickly. Treat this chapter as a dated landscape snapshot, and verify current status before making purchasing or platform commitments.
+> **Snapshot note:** Vendor capabilities, funding figures, and adoption metrics in this chapter are time-sensitive and may change quickly. Treat this chapter as a dated landscape snapshot, and verify current status before making purchasing or platform commitments.
 
 External claims in this chapter are sourced in [Bibliography](990-bibliography.md).
 
@@ -19,9 +19,11 @@ External claims in this chapter are sourced in [Bibliography](990-bibliography.m
 
 The most consequential near-term development is the maturation of open interoperability protocols. Two protocols stand out.
 
-**Model Context Protocol (MCP)** has crossed the threshold from single-vendor project to industry infrastructure. Anthropic donated MCP governance to the Agentic AI Foundation (AAIF) under the Linux Foundation in December 2025, and as of early 2026 the ecosystem reports over 97 million monthly SDK downloads and more than 10,000 active MCP servers. First-class client support now spans Claude, ChatGPT, Cursor, Gemini, Microsoft Copilot, and Visual Studio Code. The January 2026 launch of **MCP Apps**—interactive UIs rendered directly inside MCP clients—signals that the protocol is expanding beyond tool calls into richer agent-user interaction surfaces.
+**Model Context Protocol (MCP)** has crossed the threshold from single-vendor project to industry infrastructure. Anthropic donated MCP governance to the Agentic AI Foundation (AAIF) under the Linux Foundation, and the ecosystem reports over 97 million monthly SDK downloads and more than 10,000 active MCP servers. First-class client support now spans Claude, ChatGPT, Cursor, Gemini, Microsoft Copilot, and Visual Studio Code. The launch of **MCP Apps**—interactive UIs rendered directly inside MCP clients—signals that the protocol is expanding beyond tool calls into richer agent-user interaction surfaces.
 
 The practical implication is that tool authors can now write a single MCP server and have it work across all major agent clients. Teams investing in tool infrastructure should treat MCP as the default integration layer rather than building bespoke connectors for each client.
+
+Recent MCP spec revisions also show a shift from basic interoperability toward production hardening. The protocol has moved toward streamable HTTP transport, standardized OAuth 2.1-based authorization discovery, and clearer user-input elicitation patterns. In parallel, registry patterns are becoming mainstream: teams can separate discovery (what tools exist) from activation (what tools are actually allowed in a given run).
 
 **Agent-to-Agent (A2A) protocol**, contributed by Google to the Linux Foundation in June 2025, addresses a complementary gap: how agents discover and communicate with each other. While MCP connects agents to tools and data, A2A enables agents to collaborate in their natural modalities—exchanging tasks, status updates, and results. Built on HTTP, SSE, and JSON-RPC (with gRPC support added in version 0.3), A2A has attracted over 150 organisations to its ecosystem. For teams building multi-agent architectures that span organisational boundaries, A2A provides a standard handshake protocol.
 
@@ -59,6 +61,10 @@ Major cloud providers have introduced first-party agent platforms that bundle mo
 
 These platforms lower the barrier to deploying production agents by bundling infrastructure concerns (scaling, monitoring, identity) that teams would otherwise build themselves.
 
+### API-Native Agent Runtimes
+
+A related trend is the rise of API-native runtime primitives that reduce custom orchestration glue. In OpenAI's Responses stack, teams can combine built-in tools, remote MCP server calls, and computer-use tools in one runtime model. This changes architecture decisions: instead of wiring every capability in your own orchestrator, you can treat the API runtime as part of the control plane and keep your own code focused on policy, routing, and business logic.
+
 ## The Autonomous Coding Agent Frontier
 
 ### From Assistants to Autonomous Agents
@@ -67,7 +73,7 @@ The coding agent landscape has stratified into three tiers that are likely to pe
 
 **IDE-integrated assistants** (GitHub Copilot, Cursor, Windsurf) provide real-time suggestions and chat within the editor. These are the most widely adopted and continue to improve, with Windsurf's acquisition by Cognition in July 2025 signalling consolidation in this tier.
 
-**CLI-based agents** (Claude Code, Codex CLI, Aider) operate in the terminal with full repository access, making multi-file changes, running tests, and creating commits. As of February 2026, Claude and Codex are available as GitHub engines in public preview alongside Copilot, meaning all three major agent providers now integrate directly with GitHub's workflow infrastructure.
+**CLI-based agents** (Claude Code, Codex CLI, Aider) operate in the terminal with full repository access, making multi-file changes, running tests, and creating commits. Claude and Codex are now available as GitHub engines in public preview alongside Copilot, meaning all three major agent providers integrate directly with GitHub's workflow infrastructure.
 
 **Fully autonomous agents** (Devin) represent the frontier: agents that receive a high-level task and work through it independently over hours, handling planning, implementation, testing, and PR creation without human guidance. Cognition's $10.2 billion valuation and the growing enterprise adoption of autonomous agents suggest this tier will continue to attract investment and capability improvements.
 
@@ -99,9 +105,17 @@ As agents move into production, observability and evaluation are becoming first-
 
 **Cost attribution** is becoming more sophisticated as agent workflows involve multiple model calls, tool invocations, and sub-agent spawns. Understanding per-task cost is essential for making agents economically viable at scale.
 
+### Shared Memory and Context Spaces
+
+Another notable trend is explicit memory and shared-context products for coding assistants. GitHub Copilot's memory features and Copilot Spaces push teams toward persistent project context as a first-class artifact, not just transient prompt state. In practice, this reduces repeated instruction overhead and improves continuity, but it also raises governance questions: which memories are retained, who can inspect them, and when they should expire.
+
 ### Multimodal and Physical Agency
 
 Multimodal agents that blend text, vision, speech, and code are becoming default rather than optional. Frameworks are adding toolchains for document understanding, UI automation, and robotic control, closing the loop between digital and physical actions. This shift matters because it expands the surface area of what an agent can verify autonomously (e.g., reading dashboards, inspecting UI states, interpreting camera feeds) without human intervention.
+
+### Computer-Use Safety Loops
+
+Computer-use capabilities are maturing alongside explicit safety controls. The newest generation of computer-use tooling emphasizes user confirmation for high-impact actions, tighter scope boundaries, and stronger treatment of prompt injection from on-screen content. The direction of travel is clear: computer use is becoming practical, but only when paired with strict human-in-the-loop checkpoints and constrained execution policies.
 
 ### Governance and Safety Automation
 

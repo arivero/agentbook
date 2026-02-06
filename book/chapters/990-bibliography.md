@@ -12,6 +12,9 @@ order: 99
 - Copilot coding agent environment customization. [GitHub Docs](https://docs.github.com/en/copilot/how-tos/use-copilot-agents/coding-agent/customize-the-agent-environment). Accessed: 2026-02-05.
 - Model Context Protocol (MCP). <https://modelcontextprotocol.io/>. Accessed: 2026-02-05.
 - MCP Apps announcement. <http://blog.modelcontextprotocol.io/posts/2026-01-26-mcp-apps/>. Accessed: 2026-02-06.
+- MCP specification changelog (2025-06-18). <https://modelcontextprotocol.io/specification/2025-06-18/changelog>. Accessed: 2026-02-06.
+- MCP Registry overview. <https://modelcontextprotocol.io/docs/learn/mcp-registry>. Accessed: 2026-02-06.
+- MCP Registry about page. <https://modelcontextprotocol.io/registry/about>. Accessed: 2026-02-06.
 - Agent Skills specification. <https://agentskills.io/specification>. Accessed: 2026-02-06.
 - Agent Skills overview. <https://agentskills.io/home>. Accessed: 2026-02-06.
 - Skills Protocol documentation. <https://skillsprotocol.com/>. Accessed: 2026-02-05.
@@ -24,10 +27,17 @@ order: 99
 - OpenAI Codex overview. <https://openai.com/index/introducing-codex/>. Accessed: 2026-02-05.
 - OpenAI Codex documentation. <https://developers.openai.com/codex>. Accessed: 2026-02-06.
 - OpenAI GPT-5.3-Codex announcement. <https://openai.com/index/introducing-gpt-5-3-codex/>. Accessed: 2026-02-06.
+- OpenAI Responses API: new tools and features. <https://openai.com/index/new-tools-and-features-in-the-responses-api/>. Accessed: 2026-02-06.
+- OpenAI Responses API built-in tools guide. <https://platform.openai.com/docs/guides/tools?api-mode=responses>. Accessed: 2026-02-06.
+- OpenAI Responses API remote MCP guide. <https://platform.openai.com/docs/guides/tools-remote-mcp?api-mode=responses>. Accessed: 2026-02-06.
+- OpenAI Responses API computer-use guide. <https://platform.openai.com/docs/guides/tools-computer-use?api-mode=responses>. Accessed: 2026-02-06.
 - OpenAI Agents SDK (Python). <https://openai.github.io/openai-agents-python/>. Accessed: 2026-02-06.
 - OpenAI Agents SDK (TypeScript). <https://openai.github.io/openai-agents-js/>. Accessed: 2026-02-06.
 - Claude Code documentation. <https://code.claude.com/docs>. Accessed: 2026-02-05.
 - Claude and Codex available on GitHub (public preview). <https://github.blog/changelog/2026-02-04-claude-and-codex-are-now-available-in-public-preview-on-github/>. Accessed: 2026-02-06.
+- GitHub Copilot Memory. <https://docs.github.com/copilot/how-tos/context/copilot-memory>. Accessed: 2026-02-06.
+- GitHub Copilot Spaces. <https://docs.github.com/copilot/how-tos/context/copilot-spaces>. Accessed: 2026-02-06.
+- Anthropic computer use documentation. <https://docs.anthropic.com/en/docs/agents-and-tools/computer-use>. Accessed: 2026-02-06.
 - Cursor editor. <https://www.cursor.com/>. Accessed: 2026-02-05.
 - CodeGPT. <https://codegpt.co/>. Accessed: 2026-02-05.
 - Aider: AI pair programming in your terminal. <https://aider.chat/>. Accessed: 2026-02-06.

@@ -798,13 +798,15 @@ Google ADK (<https://google.github.io/adk-docs/>) is an open-source framework in
 
 ## MCP: Modern Tooling and Adoption
 
-The **Model Context Protocol (MCP)** (<https://modelcontextprotocol.io/>) has become a practical standard for connecting agents to tools and data sources. In December 2025, Anthropic donated MCP governance to the **Agentic AI Foundation (AAIF)** under the Linux Foundation, signalling its transition from a single-vendor project to a true industry standard. As of early 2026, the ecosystem reports over 97 million monthly SDK downloads and more than 10,000 active MCP servers. In January 2026, **MCP Apps** launched as the first official extension, enabling interactive UIs (charts, forms, dashboards) to render directly inside MCP clients. Today, MCP is less about novel capability and more about **reliable interoperability**: the same tool server can be used by multiple agent clients with consistent schemas, permissions, and response formats.
+The **Model Context Protocol (MCP)** (<https://modelcontextprotocol.io/>) has become a practical standard for connecting agents to tools and data sources. In December 2025, Anthropic donated MCP governance to the **Agentic AI Foundation (AAIF)** under the Linux Foundation, signalling its transition from a single-vendor project to a true industry standard. The ecosystem reports over 97 million monthly SDK downloads and more than 10,000 active MCP servers. **MCP Apps** launched as the first official extension, enabling interactive UIs (charts, forms, dashboards) to render directly inside MCP clients. Today, MCP is less about novel capability and more about **reliable interoperability**: the same tool server can be used by multiple agent clients with consistent schemas, permissions, and response formats.
 
 ### What MCP Brings to Tools
 
 - **Portable tool definitions**: JSON schemas and well-known server metadata make tools discoverable across clients.
 - **Safer tool execution**: capability-scoped permissions, explicit parameters, and auditable tool calls.
 - **Composable context**: servers can enrich model context with structured resources (files, APIs, or databases) without bespoke glue code.
+
+Recent MCP revisions also strengthen production readiness: streamable HTTP transport, standardized OAuth 2.1-based authorization discovery, and clearer user-input elicitation flows. These changes matter because they reduce client/server edge-case handling and make policy enforcement more uniform across implementations.
 
 ### Common Usage Patterns
 
@@ -822,6 +824,10 @@ The **Model Context Protocol (MCP)** (<https://modelcontextprotocol.io/>) has be
 
 4. **Fallback-first reliability**
    - Clients maintain fallbacks when a server is down (cached data, read-only mirrors, or alternative tool servers).
+
+5. **Registry-backed discovery**
+   - Teams publish approved servers to an internal or public registry for discoverability.
+   - Activation still happens through local policy, so discovery does not imply execution permission.
 
 ### Acceptance Across Major Clients
 
