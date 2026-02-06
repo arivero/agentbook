@@ -9,9 +9,20 @@ permissions:
   issues: read
 tools:
   github:
-    toolsets: [issues]
-  web-search:
-  web-fetch:
+    toolsets: [issues, search]
+  playwright:
+    allowed_domains: [defaults, github]
+mcp-servers:
+  tavily:
+    command: npx
+    args: ["-y", "@tavily/mcp-server"]
+    env:
+      TAVILY_API_KEY: "${{ secrets.TAVILY_API_KEY }}"
+    allowed: ["search"]
+network:
+  allowed:
+    - defaults
+    - "*.tavily.com"
 safe-outputs:
   add-comment:
     max: 1
@@ -31,6 +42,9 @@ You are the research agent for issues labeled for research.
 
 - Read issue #${{ github.event.issue.number }} and comments.
 - If `triaged-for-research` is not present, exit with no action.
+- Research the topic using available tools:
+  - Use **Tavily search** (preferred) or **Playwright** to find relevant web sources.
+  - Use the **GitHub search** toolset to find related issues, discussions, or code across GitHub.
 - Produce a short research comment with sources and implementation implications.
 - Add label `researched-waiting-opinions`.
 - If the issue should be declined after research:
