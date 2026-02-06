@@ -88,6 +88,7 @@ Chapters live in `book/chapters/` and are numbered with a three-digit prefix for
 | `080-agents-for-coding.md` | Agents for Coding |
 | `090-agents-for-math-physics.md` | Agents for Math & Physics |
 | `100-failure-modes-testing-fixes.md` | Failure Modes, Testing, and Fixes |
+| `800-future-developments.md` | Future Developments |
 | `990-bibliography.md` | Bibliography |
 
 ## Critical rules

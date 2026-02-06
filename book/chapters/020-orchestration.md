@@ -120,7 +120,7 @@ jobs:
 ```
 
 ### LangChain
-LangChain (<https://python.langchain.com/>) is a Python framework for LLM applications:
+LangChain (<https://docs.langchain.com>) is a Python framework for LLM applications:
 
 > **Snippet status:** Runnable example pattern (validated against LangChain v1 docs, Feb 2026; verify exact signature in your installed version).
 

@@ -402,11 +402,27 @@ jobs:
 
 ### Claude Code
 
-Claude Code (<https://code.claude.com/docs>) provides multi-agent orchestration for complex development tasks. Its **subagent architecture** allows you to spawn specialised agents for different concerns, each focused on a particular aspect of the problem. **Swarms mode** enables parallel execution of independent tasks, reducing total time to completion. **Extended context** handles large codebases through intelligent context management, summarising and prioritising information to fit within token limits.
+Claude Code (<https://code.claude.com/docs>) provides multi-agent orchestration for complex development tasks. As of February 2026, Claude is available as a GitHub engine in public preview alongside Copilot and Codex. Its **subagent architecture** allows you to spawn specialised agents for different concerns, each focused on a particular aspect of the problem. **Swarms mode** enables parallel execution of independent tasks, reducing total time to completion. **Extended context** handles large codebases through intelligent context management, summarising and prioritising information to fit within token limits. Claude Code can be used from the browser at `claude.ai/code` or from the terminal as a CLI tool.
 
 ### Cursor AI
 
 Cursor (<https://www.cursor.com/>) is an AI-first code editor designed around agent workflows. It provides **project-wide understanding** by indexing the entire codebase for context, ensuring suggestions fit the project's patterns. **Multi-file generation** creates and modifies multiple files in one operation, handling cross-cutting changes that span components. **Framework integration** gives the editor deep understanding of popular frameworks, improving suggestion quality for framework-specific code.
+
+### OpenAI Codex CLI
+
+OpenAI Codex (<https://developers.openai.com/codex>) has evolved from an API-only model into a full coding agent platform available as a CLI, IDE extension, web interface, and macOS app. The latest model, GPT-5.3-Codex (released February 2026), is described as the most capable agentic coding model to date. Codex supports skills packaged with `SKILL.md` for progressive disclosure, and its CLI enables agentic workflows directly from the terminal. The macOS app serves as a command centre for managing multiple coding agents in parallel.
+
+### Aider
+
+Aider (<https://aider.chat/>) is an open-source, Git-first CLI coding agent for AI pair programming in the terminal. It works best with Claude 3.7 Sonnet, DeepSeek R1, and GPT-4o, but can connect to almost any LLM including local models. Aider makes coordinated changes across multiple files with automatic Git commits, builds a map of entire repositories for effective refactoring, and integrates automatic linting and testing. It represents the shift from suggestion-based assistance to truly agentic terminal workflows.
+
+### Devin
+
+Devin (<https://devin.ai/>) by Cognition is an autonomous coding agent designed to handle tasks equivalent to four to eight hours of junior engineer work. Cognition's valuation reached $10.2 billion following a $400M Series C in late 2025. In July 2025, Cognition acquired Windsurf, merging IDE and agent approaches. Devin excels at tasks with clear requirements and verifiable outcomes: migrations, vulnerability fixes, unit test generation, and small tickets. It is infinitely parallelisable and works asynchronously.
+
+### Windsurf
+
+Windsurf (<https://windsurf.com/>), formerly Codeium, is an AI-native IDE now owned by Cognition (acquired July 2025). It is a feature-rich fork of VS Code with seamless import of existing settings and extensions. Its **Cascade** feature is an agentic assistant that plans multi-step edits, calls tools, and uses deep repository context. Windsurf offers a permanently free individual plan with unlimited autocomplete and chat, making it accessible for individual developers.
 
 ### CodeGPT and Agent Marketplaces
 
@@ -628,7 +644,7 @@ class SecureCodingEnvironment:
 
 ## Key Takeaways
 
-**Coding agents** have evolved from autocomplete to autonomous development assistants, progressing through phases of increasing capability and independence.
+**Coding agents** have evolved from autocomplete to autonomous development assistants, progressing through phases of increasing capability and independence. The landscape now includes IDE-integrated assistants (Copilot, Cursor, Windsurf), CLI-based agents (Claude Code, Codex CLI, Aider), and fully autonomous agents (Devin).
 
 **Multi-agent architectures** mirror development teams, with specialised agents for architecture, implementation, testing, and review, each contributing expertise to the overall workflow.
 
