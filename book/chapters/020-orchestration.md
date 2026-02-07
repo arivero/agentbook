@@ -153,9 +153,9 @@ class AgentOrchestrator:
 
 ## Real-World Example: Self-Updating Documentation
 
-This book uses agent orchestration to keep its content current. The workflow involves seven coordinated agents, driven by a label-based lifecycle.
+This book uses agent orchestration to keep its content current. The operational pattern is hybrid: a standard intake ACK workflow handles first contact, and GH-AW agents handle routing, research, opinions, and assignment through staged labels.
 
-The **ACK Agent** acknowledges new issue suggestions and validates that they follow the expected format. The **Research Agent** analyses novelty and relevance, determining whether a suggestion fits the book's scope. The **Claude Agent** and the **Copilot Agent** provide independent perspectives—safety and clarity from one, developer experience from the other. The **Workflow Agent** defines the issue-management lifecycle and maps each stage to GH-AW workflow files. The **Writer Agent** drafts new content based on the consensus. The **Completion Agent** finalises and closes issues once changes are merged. Building and publishing are handled by separate standard workflows (`build-pdf.yml` and `pages.yml`), not by agents.
+The **Intake ACK workflow** (standard GitHub Actions YAML) acknowledges new issues and dispatches the routing workflow. The **Routing Agent** decides fast-track versus research. The **Research Agent** analyses novelty and relevance for slow-track requests. Two opinion agents (**Copilot Strategy** and **Copilot Delivery**) provide independent recommendations. The **Assignment Agent** closes slow-track issues once both opinion labels are present. The fast-track agent can implement and close low-risk requests directly. Building and publishing remain separate standard workflows (`build-pdf.yml` and `pages.yml`), not agent stages.
 
 All of these agents are coordinated through GitHub Actions workflows using GH-AW, demonstrating how event-driven orchestration can maintain a living document.
 

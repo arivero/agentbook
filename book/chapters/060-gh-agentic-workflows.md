@@ -316,6 +316,8 @@ The agent generates structured output that downstream steps apply, keeping repos
 
 When using `add-labels`, keep the `allowed` list in sync with labels that already exist in the repository; missing labels cause runtime output failures when the safe-output job applies them.
 
+For label-triggered workflow chains, writes from the default `GITHUB_TOKEN` may not emit downstream workflow-triggering events. In those cases, configure `safe-outputs.github-token` to use a dedicated repository-scoped user token (for this repository, `GH_AW_GITHUB_TOKEN`).
+
 ### Safe Inputs
 
 You can define safe inputs to structure what the agent receives. This is a good place to validate schema-like data for tools or commands.
@@ -356,13 +358,17 @@ This pattern maps well to this book: use scheduled research to discover new agen
 
 ## Applying GH-AW to This Repository
 
-This repository uses a label-driven lifecycle documented in [WORKFLOW_PLAYBOOK.md](../../WORKFLOW_PLAYBOOK.md).
+This repository uses a hybrid lifecycle documented in [WORKFLOW_PLAYBOOK.md](../../WORKFLOW_PLAYBOOK.md): a standard intake ACK workflow followed by GH-AW routing and label-driven downstream stages.
 
-**Intake + triage.** When an issue is opened, the intake workflow acknowledges it and routes it to either `triaged-fast-track` or `triaged-for-research`.
+**Intake ACK + dispatch.** When an issue is opened, a standard workflow (`issue-intake-ack.yml`) posts acknowledgment, adds `acknowledged`, and dispatches `issue-routing-decision.lock.yml` with the issue number.
+
+**Routing decision.** The GH-AW routing workflow runs on `workflow_dispatch`, verifies `acknowledged`, and adds either `triaged-fast-track` or `triaged-for-research` (or rejects). Its concurrency key is scoped by issue number so concurrent intake events do not cancel each other.
 
 **Fast-track lane.** Issues labeled `triaged-fast-track` are implemented directly by the fast-track workflow, which opens a PR, adds `assigned`, and closes the issue.
 
 **Research lane.** Issues labeled `triaged-for-research` move to `researched-waiting-opinions`, receive both opinion labels (`opinion-copilot-strategy-posted` and `opinion-copilot-delivery-posted`), then the assignment workflow adds `assigned` and closes the issue.
+
+**Token boundary.** Downstream label-triggered stages rely on safe-outputs writes that use a PAT-backed token (`GH_AW_GITHUB_TOKEN`) so label events trigger subsequent workflows.
 
 **Rejection path.** At any stage, an agent can add `rejected` with rationale and close the issue.
 
