@@ -20,7 +20,7 @@
 # For more information: https://github.com/github/gh-aw/blob/main/.github/aw/github-agentic-workflows.md
 #
 #
-# frontmatter-hash: 7708c9a9fb2ba680b12063722a2106b81bf2e73a0809c21aa2722df9b8341b58
+# frontmatter-hash: 2daa8fc7b64c242e9684e2b329729d34a8e0a130ac34accaa449babd3c8478ff
 
 name: "GH-AW Issue Routing Decision"
 "on":
@@ -34,7 +34,7 @@ name: "GH-AW Issue Routing Decision"
 permissions: {}
 
 concurrency:
-  group: "gh-aw-${{ github.workflow }}"
+  group: gh-aw-${{ github.workflow }}-${{ github.event.inputs.issue_number }}
 
 run-name: "GH-AW Issue Routing Decision"
 

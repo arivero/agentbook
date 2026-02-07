@@ -7,6 +7,8 @@ on:
         description: Issue number to route
         required: true
         type: string
+concurrency:
+  group: gh-aw-${{ github.workflow }}-${{ github.event.inputs.issue_number }}
 permissions:
   contents: read
   issues: read
