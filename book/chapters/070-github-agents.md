@@ -403,6 +403,16 @@ When multiple AI agents work with your repository, you face a coordination chall
 
 Each platform has slightly different expectations, but the core information they need is similar: project structure, coding conventions, build commands, and constraints.
 
+### Three Automation Paths to Distinguish
+
+In GitHub repositories, "Claude/Codex automation" usually appears in three distinct forms:
+
+1. Third-party agent interactions in issues/PRs (thread-level collaboration).
+2. Standard GitHub Actions wrappers (for example vendor actions in YAML).
+3. GH-AW engine execution (`engine: copilot|claude|codex`) in compiled agentic workflows.
+
+Treat these as complementary, not interchangeable. They have different trigger models, permission boundaries, and audit trails. For detailed workflow-level tradeoffs, see [GitHub Agentic Workflows (GH-AW)](060-gh-agentic-workflows.md).
+
 ### Repository Documentation as Agent Configuration
 
 Your repository's documentation files serve dual purposes—they guide human contributors AND configure AI agents. Key files include:

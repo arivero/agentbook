@@ -293,6 +293,20 @@ GH-AW workflows are designed for safety by default. Agents run with minimal acce
 
 Tools are capabilities the agent can use. The **edit** tool allows the agent to modify files in the workspace. The **bash** tool runs shell commands, with safe commands enabled by default. The **web-fetch** and **web-search** tools allow the agent to fetch or search web content. The **github** tool operates on issues, pull requests, discussions, and projects. The **playwright** tool provides browser automation for UI checks.
 
+### Integration Surfaces on GitHub
+
+When teams say "use Claude or Codex on GitHub," they often mean different integration surfaces. Keep these separate in architecture decisions:
+
+| Surface | Typical trigger | Configuration locus | Best fit |
+|---|---|---|---|
+| Third-party agent in issues/PRs | Issue/PR interaction (agent UI, assignment, or agent-specific mention flow) | GitHub agent integration setup + repo permissions | Conversational analysis and iterative collaboration on a thread |
+| Standard GitHub Action | Normal workflow events (`pull_request`, `issues`, `workflow_dispatch`, schedules) | YAML `uses:` steps (for example Claude/Codex actions) + secrets | Deterministic CI/CD automation with explicit step sequencing |
+| GH-AW engine | GH-AW workflow trigger (`issues`, `workflow_dispatch`, etc.) | GH-AW frontmatter (`engine: copilot|claude|codex`) + compile pipeline | Multi-stage agentic workflows with guardrails (`safe-outputs`, tool controls, imports) |
+
+Related but separate: GitHub's first-party coding-agent assignment path (for example assigning to `copilot-swe-agent`) is neither a third-party action wrapper nor GH-AW engine selection.
+
+A practical pattern is hybrid orchestration: use standard workflows for intake and dispatch, GH-AW for routed autonomous stages, and issue/PR agent interactions when humans want direct thread-level collaboration.
+
 ### Safe Outputs
 
 Write actions (creating issues, comments, commits) can be routed through safe outputs to sanitize what the agent writes. This keeps the core job read-only and limits accidental changes.
