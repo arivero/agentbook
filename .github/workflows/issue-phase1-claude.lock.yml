@@ -24,7 +24,7 @@
 #   Imports:
 #     - ../agents/phase1.md
 #
-# frontmatter-hash: 41120ac29e07203c7e4dfacd0e5115eaa845e6fe28ef16daacd4a243f77c7649
+# frontmatter-hash: 91c0c54f306b64b69288256b5449d631eb16d337cd7b25b7241dbc5eaaae4bed
 
 name: "GH-AW Issue Phase 1 (Claude)"
 "on":
@@ -171,12 +171,12 @@ jobs:
           mkdir -p /tmp/gh-aw/safeoutputs
           mkdir -p /tmp/gh-aw/mcp-logs/safeoutputs
           cat > /opt/gh-aw/safeoutputs/config.json << 'EOF'
-          {"add_comment":{"max":1},"add_labels":{"allowed":["phase-1-complete","rejected"],"max":2},"close_issue":{"max":1},"missing_data":{},"missing_tool":{},"noop":{"max":1}}
+          {"add_comment":{"max":1,"target":"*"},"add_labels":{"allowed":["phase-1-complete","rejected"],"max":2},"close_issue":{"max":1},"missing_data":{},"missing_tool":{},"noop":{"max":1}}
           EOF
           cat > /opt/gh-aw/safeoutputs/tools.json << 'EOF'
           [
             {
-              "description": "Close a GitHub issue with a closing comment. Use this when work is complete, the issue is no longer relevant, or it's a duplicate. The closing comment should explain the resolution or reason for closing. CONSTRAINTS: Maximum 1 issue(s) can be closed.",
+              "description": "Close a GitHub issue with a closing comment. Use this when work is complete, the issue is no longer relevant, or it's a duplicate. The closing comment should explain the resolution or reason for closing. CONSTRAINTS: Maximum 1 issue(s) can be closed. Target: *.",
               "inputSchema": {
                 "additionalProperties": false,
                 "properties": {
@@ -200,7 +200,7 @@ jobs:
               "name": "close_issue"
             },
             {
-              "description": "Add a comment to an existing GitHub issue, pull request, or discussion. Use this to provide feedback, answer questions, or add information to an existing conversation. For creating new items, use create_issue, create_discussion, or create_pull_request instead. CONSTRAINTS: Maximum 1 comment(s) can be added.",
+              "description": "Add a comment to an existing GitHub issue, pull request, or discussion. Use this to provide feedback, answer questions, or add information to an existing conversation. For creating new items, use create_issue, create_discussion, or create_pull_request instead. CONSTRAINTS: Maximum 1 comment(s) can be added. Target: *.",
               "inputSchema": {
                 "additionalProperties": false,
                 "properties": {
@@ -221,7 +221,7 @@ jobs:
               "name": "add_comment"
             },
             {
-              "description": "Add labels to an existing GitHub issue or pull request for categorization and filtering. Labels must already exist in the repository. For creating new issues with labels, use create_issue with the labels property instead. CONSTRAINTS: Maximum 2 label(s) can be added. Only these labels are allowed: [phase-1-complete rejected].",
+              "description": "Add labels to an existing GitHub issue or pull request for categorization and filtering. Labels must already exist in the repository. For creating new issues with labels, use create_issue with the labels property instead. CONSTRAINTS: Maximum 2 label(s) can be added. Only these labels are allowed: [phase-1-complete rejected]. Target: *.",
               "inputSchema": {
                 "additionalProperties": false,
                 "properties": {
@@ -614,9 +614,10 @@ jobs:
           - Read issue #__GH_AW_GITHUB_EVENT_INPUTS_ISSUE_NUMBER__ and all comments.
           - Continue only when the issue is open and has label `researched-waiting-opinions`.
           - If label `phase-1-complete` is already present, exit with no action.
-          - Produce one concise phase 1 analysis comment:
+          - Produce one detailed phase 1 analysis comment:
             - prioritize architecture, risk boundaries, and sequencing.
             - cite tradeoffs and likely failure modes.
+            - include concrete source URLs (GitHub links and any relevant known external URLs).
           - Add label `phase-1-complete`.
           - If the issue should be declined:
             - explain why,
@@ -634,6 +635,7 @@ jobs:
           - Problem framing
           - Risks and constraints
           - Recommended direction
+          - Source URLs (at least 2 links)
           
           ### Rejection (only if applicable)
           - Why this is being rejected and closed
@@ -1151,7 +1153,7 @@ jobs:
         uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
         env:
           GH_AW_AGENT_OUTPUT: ${{ env.GH_AW_AGENT_OUTPUT }}
-          GH_AW_SAFE_OUTPUTS_HANDLER_CONFIG: "{\"add_comment\":{\"max\":1},\"add_labels\":{\"allowed\":[\"phase-1-complete\",\"rejected\"],\"max\":2},\"close_issue\":{\"max\":1},\"missing_data\":{},\"missing_tool\":{}}"
+          GH_AW_SAFE_OUTPUTS_HANDLER_CONFIG: "{\"add_comment\":{\"max\":1,\"target\":\"*\"},\"add_labels\":{\"allowed\":[\"phase-1-complete\",\"rejected\"],\"max\":2,\"target\":\"*\"},\"close_issue\":{\"max\":1,\"target\":\"*\"},\"missing_data\":{},\"missing_tool\":{}}"
         with:
           github-token: ${{ secrets.GH_AW_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           script: |
