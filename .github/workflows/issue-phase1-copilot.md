@@ -19,11 +19,14 @@ safe-outputs:
   github-token: ${{ secrets.GH_AW_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
   add-comment:
     max: 1
+    target: "*"
   add-labels:
     allowed: [phase-1-complete, rejected]
     max: 2
+    target: "*"
   close-issue:
     max: 1
+    target: "*"
 engine: copilot
 ---
 
