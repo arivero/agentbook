@@ -374,6 +374,20 @@ This repository uses a hybrid lifecycle documented in [WORKFLOW_PLAYBOOK.md](../
 
 Publishing and validation remain separate automation concerns. `pages.yml` deploys the site and `build-pdf.yml` maintains the generated PDF. `check-links.yml` and `check-external-links.yml` validate internal and external links. `compile-workflows.yml` verifies that `.lock.yml` files stay in sync with their markdown sources. `copilot-setup-steps.yml` configures the coding agent environment.
 
+## Operational Lessons from Production Runs
+
+Running the workflows in real issue traffic surfaced several practical lessons.
+
+**Token identity is part of the control plane.** When safe-outputs uses a PAT-backed token, workflow-created comments, labels, issues, and pull requests are attributed to that token owner instead of `github-actions[bot]`. This affects audit trails and reviewer expectations.
+
+**Label-trigger chains require explicit token strategy.** In this repository, default-token label writes were not consistently sufficient to trigger downstream workflows. A robust pattern is to use `workflow_dispatch` for critical handoffs and reserve PAT-backed label writes for stage transitions that must emit label-trigger events.
+
+**Concurrency should be keyed by business entity.** Routing initially used a shared concurrency group, which caused cancellations during burst issue intake. Scoping concurrency by issue identifier avoids cross-issue cancellation and preserves throughput under concurrent events.
+
+**Failure tracking can generate meta-issues.** GH-AW failure-handling workflows may create tracker issues for failed runs. Treat these as operations artifacts, not content suggestions, and route/exclude them accordingly.
+
+**Test sequencing matters.** Validate each lifecycle path sequentially first (reject, fast-track, slow-track), then run burst/concurrency tests. This separates logic correctness from race-condition debugging.
+
 ## Key Takeaways
 
 GH-AW turns markdown instructions into reproducible GitHub Actions workflows, combining the readability of documentation with the reliability of automation. Frontmatter defines triggers, permissions, tools, and models, giving you fine-grained control over what the agent can do. Imports enable composable, reusable workflow building blocks that reduce duplication across repositories. Safe inputs and outputs combined with least-privilege permissions reduce the risk of unintended changes. The ResearchPlanAssign pattern provides a practical loop for continuous, agent-powered improvement with human oversight at key decision points.

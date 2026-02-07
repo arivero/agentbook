@@ -196,6 +196,8 @@ For this repository, a minimal operational checklist is:
 - Preserve least-privilege + `safe-outputs` patterns in GH-AW workflow frontmatter.
 - Use a repository-scoped user token for safe-outputs writes when label events must trigger downstream workflows.
 - Scope dispatch-workflow concurrency by issue identifier to prevent burst-trigger cancellations.
+- Treat workflow-generated failure tracker issues as operations artifacts, not content suggestions.
+- Validate lifecycle paths sequentially before burst/concurrency tests.
 - Treat failed Pages/PDF runs as release blockers for documentation changes.
 
 For orchestration context, see [Agent Orchestration](020-orchestration.md). For infrastructure boundaries, see [Agentic Scaffolding](030-scaffolding.md).
