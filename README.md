@@ -27,12 +27,13 @@ The book covers practical patterns for agentic workflows, safe orchestration, sk
 ## 🚀 How It Works
 
 1. **Community Input**: Open an issue with a suggestion
-2. **Automated Analysis**: Workflows triage and classify the suggestion
-3. **Agent Processing**:
+2. **Automated Intake**: A standard workflow posts an acknowledgment and applies `acknowledged`
+3. **Agentic Routing**: A GH-AW routing workflow classifies the suggestion
+4. **Agent Processing**:
    - **`triaged-fast-track`** for small low-risk fixes
    - **`triaged-for-research`** then **`researched-waiting-opinions`** for larger/ambiguous updates
-4. **Automatic Build**: PDF build and site deployment workflows run
-5. **Publishing**: Changes deploy to GitHub Pages
+5. **Automatic Build**: PDF build and site deployment workflows run
+6. **Publishing**: Changes deploy to GitHub Pages
 
 ## 🤝 Contributing
 
@@ -103,13 +104,26 @@ These are code/content validation checks in practice:
 
 `check-external-links.yml` can open issues for broken links and is always considered **fast-track scope** when those issues are handled.
 
-### GH-AW issue processing workflows (`.lock.yml` files)
-- `issue-intake-triage.lock.yml`: Acknowledges new issues and routes to fast-track or research
+### Issue processing workflows
+- `issue-intake-ack.yml`: Standard intake ACK workflow (`issues.opened`) that adds `acknowledged` and dispatches routing
+- `issue-routing-decision.lock.yml`: Agentic routing decision workflow (`workflow_dispatch`) that applies `triaged-fast-track` or `triaged-for-research`
 - `issue-fast-track-close.lock.yml`: Fast-track implementation + PR + issue closure
 - `issue-research-pass.lock.yml`: Researches `triaged-for-research` issues and applies `researched-waiting-opinions`
 - `issue-opinion-copilot-strategy.lock.yml`: Posts the Copilot strategy-model slow-track opinion and applies `opinion-copilot-strategy-posted`
 - `issue-opinion-copilot-delivery.lock.yml`: Posts the Copilot delivery-model slow-track opinion and applies `opinion-copilot-delivery-posted`
 - `issue-assignment-close.lock.yml`: Adds `assigned` and closes when both opinion labels are present
+
+For label-triggered stage handoffs, configure `GH_AW_GITHUB_TOKEN` so safe-outputs writes are attributed to a user token (not the default workflow token), which allows downstream workflows to trigger.
+
+Recommended token setup:
+- Use a **fine-grained PAT** restricted to this repository only.
+- Repository permissions:
+  - `Issues`: `Read and write`
+  - `Pull requests`: `Read and write`
+  - `Contents`: `Read and write` (needed for fast-track PR creation)
+- Do not grant org-wide or all-repository access.
+
+Classic PAT fallback (if needed): use `repo` scope and restrict token usage to this repo in your secret-management policy.
 
 See [WORKFLOW_PLAYBOOK.md](WORKFLOW_PLAYBOOK.md) for the canonical lifecycle and label matrix.
 

@@ -14,43 +14,27 @@ jobs:
     if: ${{ github.event.issue.pull_request == null }}
     runs-on: ubuntu-latest
     steps:
-      - name: Acknowledge issue and apply intake label
-        uses: actions/github-script@v8
-        with:
-          github-token: ${{ github.token }}
-          script: |
-            const issueNumber = context.issue.number;
-            const { owner, repo } = context.repo;
+      - name: Acknowledge issue
+        run: |
+          gh issue comment "${{ github.event.issue.number }}" \
+            --repo "${{ github.repository }}" \
+            --body "Thanks for opening this suggestion. It has been acknowledged and is now queued for agentic routing."
+        env:
+          GH_TOKEN: ${{ github.token }}
 
-            await github.rest.issues.createComment({
-              owner,
-              repo,
-              issue_number: issueNumber,
-              body: "Thanks for opening this suggestion. It has been acknowledged and is now queued for agentic routing.",
-            });
-
-            await github.rest.issues.addLabels({
-              owner,
-              repo,
-              issue_number: issueNumber,
-              labels: ["acknowledged"],
-            });
+      - name: Apply intake label
+        run: |
+          gh issue edit "${{ github.event.issue.number }}" \
+            --repo "${{ github.repository }}" \
+            --add-label "acknowledged"
+        env:
+          GH_TOKEN: ${{ github.token }}
 
       - name: Dispatch routing workflow
-        uses: actions/github-script@v8
-        with:
-          github-token: ${{ github.token }}
-          script: |
-            const issueNumber = context.issue.number;
-            const { owner, repo } = context.repo;
-            const ref = context.payload.repository.default_branch;
-
-            await github.rest.actions.createWorkflowDispatch({
-              owner,
-              repo,
-              workflow_id: "issue-routing-decision.lock.yml",
-              ref,
-              inputs: {
-                issue_number: String(issueNumber),
-              },
-            });
+        run: |
+          gh workflow run "issue-routing-decision.lock.yml" \
+            --repo "${{ github.repository }}" \
+            --ref "${{ github.event.repository.default_branch }}" \
+            -f issue_number="${{ github.event.issue.number }}"
+        env:
+          GH_TOKEN: ${{ github.token }}

@@ -184,7 +184,7 @@ gh aw version
 
 Issues progress through these labels in order (unless rejected/closed early):
 
-1. `acknowledged` — intake triage has run
+1. `acknowledged` — intake ACK has run
 2. `triaged-fast-track` **or** `triaged-for-research` — routing decision
 3. `researched-waiting-opinions` — research pass complete
 4. `opinion-copilot-strategy-posted` **and** `opinion-copilot-delivery-posted` — dual opinions posted
@@ -201,7 +201,8 @@ Any agent may reject at any stage by posting rationale, adding `rejected`, and c
 | `check-links.yml` | Changes to `book/**/*.md` or `scripts/check-links.py` | Internal link validation |
 | `check-external-links.yml` | Schedule (bimonthly), manual | External URL validation |
 | `compile-workflows.yml` | Changes to `.github/workflows/*.md` | Verify GH-AW lock files are current |
-| `issue-intake-triage.lock.yml` | `issues.opened` | Acknowledge and route new issues |
+| `issue-intake-ack.yml` | `issues.opened` | Acknowledge issue and dispatch routing workflow |
+| `issue-routing-decision.lock.yml` | `workflow_dispatch` | Agentic routing decision (`triaged-fast-track` or `triaged-for-research`) |
 | `issue-fast-track-close.lock.yml` | Label `triaged-fast-track` | Implement small changes via PR |
 | `issue-research-pass.lock.yml` | Label `triaged-for-research` | Research and analyze suggestions |
 | `issue-opinion-copilot-strategy.lock.yml` | Label `researched-waiting-opinions` | Copilot strategy analysis |

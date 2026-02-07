@@ -40,23 +40,44 @@ For the `main` branch:
 - **Note**: On tagged releases, PDF is attached to the release
 
 ### 3. Process Issue Suggestions (GH-AW workflows)
-- **Trigger**: New issues opened or labeled
+- **Trigger**:
+  - `issues.opened` for standard intake ACK
+  - `workflow_dispatch` for agentic routing
+  - `issues.labeled` for downstream GH-AW stages
 - **Purpose**: Agentic issue processing using GH-AW compiled workflows
 - **Features**:
-  - Automated triage and acknowledgment
+  - Standard acknowledgment plus agentic routing
   - Research synthesis and recommendations
   - Fast-track path for small changes
   - Human review checkpoints before merge
+
+### Required Secret for Label-Triggered Handoffs
+
+Set `GH_AW_GITHUB_TOKEN` in repository secrets.
+This token is used by safe-outputs writes so label-based stage triggers can launch downstream workflows.
+
+Recommended:
+- Fine-grained PAT restricted to this repository only
+- Repository permissions:
+  - `Issues`: `Read and write`
+  - `Pull requests`: `Read and write`
+  - `Contents`: `Read and write`
+
+Classic PAT fallback:
+- `repo` scope (only if fine-grained PAT cannot be used)
 
 ## Labels
 
 The following labels are used by the automated workflows:
 
-- `suggestion`: Applied to all new issues by default
-- `needs-review`: Applied to issues awaiting review
-- `relevant`: Applied when suggestion matches book topics
-- `ready-for-agent`: Marks issues ready for AI processing
-- `out-of-scope`: Applied to irrelevant suggestions
+- `acknowledged`
+- `triaged-fast-track`
+- `triaged-for-research`
+- `researched-waiting-opinions`
+- `opinion-copilot-strategy-posted`
+- `opinion-copilot-delivery-posted`
+- `assigned`
+- `rejected`
 
 ## Testing the Setup
 
@@ -77,10 +98,10 @@ The following labels are used by the automated workflows:
 ### Test Issue Processing
 
 1. Create a new issue with content related to agentic workflows
-2. The workflow should automatically:
-   - Add labels
-   - Post a welcome comment
-   - Determine relevance
+2. Intake should automatically:
+   - Post an acknowledgment comment
+   - Add `acknowledged`
+   - Dispatch the routing workflow
 3. Check the issue for automated responses
 
 ## Manual Workflow Triggers

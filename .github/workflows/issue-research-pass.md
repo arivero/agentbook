@@ -24,6 +24,7 @@ network:
     - defaults
     - "*.tavily.com"
 safe-outputs:
+  github-token: ${{ secrets.GH_AW_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
   add-comment:
     max: 1
   add-labels:
