@@ -51,6 +51,8 @@ OpenClaw-like runtime designs (as described later) are useful when you need a mu
 
 Most teams think first about temperature and max token settings, but in agentic workflows the higher-impact controls are often budget and scheduling controls: timeout ceilings, retry policies, concurrency limits, and explicit tool-use constraints. These controls usually reduce failure cost more than aggressive sampling tuning.
 
+Token ceilings only work if you measure them consistently. Providers differ on whether they count tool-call arguments, schema definitions, and long system prompts, and open-model hosts sometimes ship newer tokenizers than the model was trained with. Prefer provider-reported usage for billing, run the same tokenizer as the serving stack for local/open hosts, and leave headroom for retries and tool-call payloads so planner/executor chains do not hit context errors mid-run.
+
 Batch mode exists in several forms and should be interpreted carefully. Some providers offer true asynchronous batch APIs for large offline workloads. Some frameworks provide logical batching by grouping prompts in one process even when requests are still executed as standard calls. And in GitHub workflow contexts, "batch" often means matrix or queue-based orchestration around many agent invocations rather than a single native LLM batch job.
 
 The practical guidance for this book's framework set is straightforward: use provider-native batch only for high-volume, latency-insensitive jobs; use framework-level parallelism for repository-scale fan-out tasks; and keep online review/merge loops on low-latency interactive paths.
