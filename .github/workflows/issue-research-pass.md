@@ -3,7 +3,7 @@ name: GH-AW Issue Research Pass
 on:
   issues:
     types: [labeled]
-    names: [triaged-for-research]
+    names: [triaged-for-research, allow-internet-research]
 permissions:
   contents: read
   issues: read
@@ -43,9 +43,11 @@ You are the research agent for issues labeled for research.
 
 - Read issue #${{ github.event.issue.number }} and comments.
 - If `triaged-for-research` is not present, exit with no action.
+- If `researched-waiting-opinions` is already present, exit with no action.
 - Research the topic using available tools:
-  - Use **Tavily search** (preferred) or **Playwright** to find relevant web sources.
-  - Use the **GitHub search** toolset to find related issues, discussions, or code across GitHub.
+  - Always use the **GitHub search** toolset to find related issues, discussions, or code across GitHub.
+  - Use **Tavily search** or **Playwright** for external sources only when the label `allow-internet-research` is present.
+  - When `allow-internet-research` is not present, keep research GitHub-only and do not use Tavily or Playwright.
 - Produce a short research comment with sources and implementation implications.
 - Add label `researched-waiting-opinions`.
 - If the issue should be declined after research:

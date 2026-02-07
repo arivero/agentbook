@@ -69,6 +69,22 @@ Recommended:
 Classic PAT fallback:
 - `repo` scope (only if fine-grained PAT cannot be used)
 
+### Optional Secret for Web Research
+
+Set `TAVILY_API_KEY` only if you want the research workflow to use Tavily for external web search.
+If this secret is not set, the research workflow can still operate in GitHub-only mode.
+
+### Internet Research Gate (`allow-internet-research`)
+
+The research workflow is internet-gated by policy:
+- Default behavior is GitHub-only research.
+- External web research (Tavily/Playwright) is allowed only when issue label `allow-internet-research` is present.
+
+Operator procedure:
+1. Let routing add `triaged-for-research`.
+2. Add `allow-internet-research` only when external sources are necessary and acceptable.
+3. Confirm `TAVILY_API_KEY` is configured if Tavily search is expected.
+
 ### How to Create `GH_AW_GITHUB_TOKEN` (Fine-Grained PAT)
 
 1. In GitHub, open:
@@ -95,11 +111,20 @@ The following labels are used by the automated workflows:
 - `acknowledged`
 - `triaged-fast-track`
 - `triaged-for-research`
+- `allow-internet-research` (optional gate for external web research)
 - `researched-waiting-opinions`
 - `opinion-copilot-strategy-posted`
 - `opinion-copilot-delivery-posted`
 - `assigned`
 - `rejected`
+
+## Optional Model Configuration
+
+GH-AW compiled workflows support repository variables for model selection:
+- `GH_AW_MODEL_AGENT_COPILOT`: model override for main agent runs
+- `GH_AW_MODEL_DETECTION_COPILOT`: model override for threat-detection runs
+
+If these variables are unset, workflows use GH-AW defaults.
 
 ## Testing the Setup
 
