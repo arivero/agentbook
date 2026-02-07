@@ -3,7 +3,7 @@ name: GH-AW Issue Assignment + Close
 on:
   issues:
     types: [labeled]
-    names: [opinion-copilot-strategy-posted, opinion-copilot-delivery-posted]
+    names: [phase-2-complete]
 permissions:
   contents: read
   issues: read
@@ -22,18 +22,15 @@ safe-outputs:
 engine: copilot
 ---
 
-# Close slow-track issue after two Copilot opinions
+# Close slow-track issue after two long-task phases
 
 You are the assignment agent.
 
 ## Instructions
 
 - Read issue #${{ github.event.issue.number }} and all labels.
-- Continue only when **both** labels are present:
-  - `opinion-copilot-strategy-posted`
-  - `opinion-copilot-delivery-posted`
-- If either label is missing, exit with no action.
-- Post an assignment summary comment that cites both opinions.
+- Continue only when `phase-2-complete` is present.
+- Post an assignment summary comment that cites the phase outputs.
 - Add label `assigned`.
 - Close the issue.
 - If the issue should be declined instead:

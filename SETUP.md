@@ -74,11 +74,22 @@ Classic PAT fallback:
 Set `TAVILY_API_KEY` only if you want the research workflow to use Tavily for external web search.
 If this secret is not set, the research workflow can still operate in GitHub-only mode.
 
+### Optional Secrets for Multi-Engine Slow-Track Phases
+
+Set these if you want phase dispatch workflows to select Codex or Claude before falling back to Copilot:
+- `OPENAI_API_KEY` for Codex engine runs
+- `ANTHROPIC_API_KEY` for Claude engine runs
+
+If either key is missing or invalid at runtime, dispatch falls through to the next engine in the configured order.
+Each phase dispatcher posts a token-health comment on the issue so operators can verify which credentials are still valid.
+
 ### Internet Research Gate (`allow-internet-research`)
 
 The research workflow is internet-gated by policy:
 - Default behavior is GitHub-only research.
 - External web research (Tavily/Playwright) is allowed only when issue label `allow-internet-research` is present.
+- GitHub-only research still permits GitHub-native discovery (for example GitHub search/toolsets).
+- If a concrete URL is already known, the agent may still fetch allowed-domain content through default MCP/browser capabilities; what is gated is open web discovery/search.
 
 Operator procedure:
 1. Let routing add `triaged-for-research`.
@@ -104,6 +115,24 @@ Operator procedure:
    - Name: `GH_AW_GITHUB_TOKEN`
    - Value: paste the PAT
 
+### How to Create `OPENAI_API_KEY`
+
+1. Open OpenAI API keys page: <https://platform.openai.com/api-keys>
+2. Create a new secret key in your OpenAI account.
+3. In the repository, open:
+   - `Settings` -> `Secrets and variables` -> `Actions` -> `New repository secret`
+   - Name: `OPENAI_API_KEY`
+   - Value: paste the key
+
+### How to Create `ANTHROPIC_API_KEY`
+
+1. Open Anthropic Console keys page: <https://console.anthropic.com/settings/keys>
+2. Create a new API key in your Anthropic account.
+3. In the repository, open:
+   - `Settings` -> `Secrets and variables` -> `Actions` -> `New repository secret`
+   - Name: `ANTHROPIC_API_KEY`
+   - Value: paste the key
+
 ## Labels
 
 The following labels are used by the automated workflows:
@@ -113,8 +142,8 @@ The following labels are used by the automated workflows:
 - `triaged-for-research`
 - `allow-internet-research` (optional gate for external web research)
 - `researched-waiting-opinions`
-- `opinion-copilot-strategy-posted`
-- `opinion-copilot-delivery-posted`
+- `phase-1-complete`
+- `phase-2-complete`
 - `assigned`
 - `rejected`
 

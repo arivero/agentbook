@@ -187,7 +187,7 @@ Issues progress through these labels in order (unless rejected/closed early):
 1. `acknowledged` — intake ACK has run
 2. `triaged-fast-track` **or** `triaged-for-research` — routing decision
 3. `researched-waiting-opinions` — research pass complete
-4. `opinion-copilot-strategy-posted` **and** `opinion-copilot-delivery-posted` — dual opinions posted
+4. `phase-1-complete` then `phase-2-complete` — long-task phases complete
 5. `assigned` — final assignment and closure
 
 Any agent may reject at any stage by posting rationale, adding `rejected`, and closing the issue.
@@ -205,9 +205,11 @@ Any agent may reject at any stage by posting rationale, adding `rejected`, and c
 | `issue-routing-decision.lock.yml` | `workflow_dispatch` | Agentic routing decision (`triaged-fast-track` or `triaged-for-research`) |
 | `issue-fast-track-close.lock.yml` | Label `triaged-fast-track` | Implement small changes via PR |
 | `issue-research-pass.lock.yml` | Label `triaged-for-research` | Research and analyze suggestions |
-| `issue-opinion-copilot-strategy.lock.yml` | Label `researched-waiting-opinions` | Copilot strategy analysis |
-| `issue-opinion-copilot-delivery.lock.yml` | Label `researched-waiting-opinions` | Copilot delivery analysis |
-| `issue-assignment-close.lock.yml` | `opinion-*-posted` labels | Final assignment and closure |
+| `issue-phase1-dispatch.yml` | Label `researched-waiting-opinions` | Select phase 1 engine and dispatch run |
+| `issue-phase2-dispatch.yml` | Label `phase-1-complete` | Select phase 2 engine and dispatch run |
+| `issue-phase1-*.lock.yml` | `workflow_dispatch` | Post phase 1 long-task analysis |
+| `issue-phase2-*.lock.yml` | `workflow_dispatch` | Post phase 2 long-task delivery plan |
+| `issue-assignment-close.lock.yml` | Label `phase-2-complete` | Final assignment and closure |
 
 ## Coding conventions
 

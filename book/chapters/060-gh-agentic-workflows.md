@@ -293,6 +293,8 @@ GH-AW workflows are designed for safety by default. Agents run with minimal acce
 
 Tools are capabilities the agent can use. The **edit** tool allows the agent to modify files in the workspace. The **bash** tool runs shell commands, with safe commands enabled by default. The **web-fetch** and **web-search** tools allow the agent to fetch or search web content. The **github** tool operates on issues, pull requests, discussions, and projects. The **playwright** tool provides browser automation for UI checks.
 
+In production policy discussions, distinguish **open discovery** from **targeted retrieval**. A workflow can disable broad internet search while still allowing GitHub-native search and retrieval of explicitly provided URLs on allowed domains through default MCP/browser capabilities.
+
 ### Integration Surfaces on GitHub
 
 When teams say "use Claude or Codex on GitHub," they often mean different integration surfaces. Keep these separate in architecture decisions:
@@ -380,7 +382,7 @@ This repository uses a hybrid lifecycle documented in [WORKFLOW_PLAYBOOK.md](../
 
 **Fast-track lane.** Issues labeled `triaged-fast-track` are implemented directly by the fast-track workflow, which opens a PR, adds `assigned`, and closes the issue.
 
-**Research lane.** Issues labeled `triaged-for-research` move to `researched-waiting-opinions`, receive both opinion labels (`opinion-copilot-strategy-posted` and `opinion-copilot-delivery-posted`), then the assignment workflow adds `assigned` and closes the issue.
+**Research lane.** Issues labeled `triaged-for-research` move to `researched-waiting-opinions`, then run two long-task phases in sequence (`phase-1-complete` then `phase-2-complete`) selected by engine-fallback dispatchers. After phase 2 completes, the assignment workflow adds `assigned` and closes the issue.
 
 **Token boundary.** Downstream label-triggered stages rely on safe-outputs writes that use a PAT-backed token (`GH_AW_GITHUB_TOKEN`) so label events trigger subsequent workflows.
 

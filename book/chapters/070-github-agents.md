@@ -387,7 +387,7 @@ This very book uses GitHub Agents for self-maintenance:
 
 ### Configuration
 
-The workflow is defined using GitHub Agentic Workflows (GH-AW). The repository includes GH-AW workflows in `.github/workflows/issue-*.lock.yml` and agent definitions in `.github/agents/*.md`.
+The workflow is defined using GitHub Agentic Workflows (GH-AW). The repository includes GH-AW workflows in `.github/workflows/issue-*.lock.yml` and shared phase prompts in `.github/agents/phase1.md` and `.github/agents/phase2.md`.
 
 For a detailed explanation of the workflow architecture and why GH-AW is the canonical approach, see the repository's [README workflow section](../../README.md#workflows) and [WORKFLOW_PLAYBOOK.md](../../WORKFLOW_PLAYBOOK.md).
 

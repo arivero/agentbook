@@ -18,6 +18,7 @@
   - `acknowledged`
   - `triaged-fast-track` **or** `triaged-for-research`
   - `researched-waiting-opinions`
-  - `opinion-copilot-strategy-posted` and `opinion-copilot-delivery-posted`
+  - `phase-1-complete`
+  - `phase-2-complete`
   - `assigned`
 - Any agent may reject at any stage by posting rationale, adding `rejected`, and closing the issue.

@@ -20,29 +20,30 @@
 # For more information: https://github.com/github/gh-aw/blob/main/.github/aw/github-agentic-workflows.md
 #
 #
-# frontmatter-hash: e68599c6791ed651a11fa800b19b2f1b482fb5caf2d1822c1679e49120beaca4
+# Resolved workflow manifest:
+#   Imports:
+#     - ../agents/phase1.md
+#
+# frontmatter-hash: 512966995b0e0f70bee7eeac88eed59c097ed4716190e29fd550b85d5762d503
 
-name: "GH-AW Issue Assignment + Close"
+name: "GH-AW Issue Phase 1 (Copilot)"
 "on":
-  issues:
-    # names: # Label filtering applied via job conditions
-    # - phase-2-complete # Label filtering applied via job conditions
-    types:
-    - labeled
+  workflow_dispatch:
+    inputs:
+      issue_number:
+        description: Issue number to process
+        required: true
+        type: string
 
 permissions: {}
 
 concurrency:
-  group: "gh-aw-${{ github.workflow }}-${{ github.event.issue.number }}"
+  group: gh-aw-${{ github.workflow }}-${{ github.event.inputs.issue_number }}
 
-run-name: "GH-AW Issue Assignment + Close"
+run-name: "GH-AW Issue Phase 1 (Copilot)"
 
 jobs:
   activation:
-    needs: pre_activation
-    if: >
-      (needs.pre_activation.outputs.activated == 'true') && ((github.event_name != 'issues') || ((github.event.action != 'labeled') ||
-      (github.event.label.name == 'phase-2-complete')))
     runs-on: ubuntu-slim
     permissions:
       contents: read
@@ -57,7 +58,7 @@ jobs:
       - name: Check workflow file timestamps
         uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
         env:
-          GH_AW_WORKFLOW_FILE: "issue-assignment-close.lock.yml"
+          GH_AW_WORKFLOW_FILE: "issue-phase1-copilot.lock.yml"
         with:
           script: |
             const { setupGlobals } = require('/opt/gh-aw/actions/setup_globals.cjs');
@@ -71,6 +72,9 @@ jobs:
     permissions:
       contents: read
       issues: read
+      pull-requests: read
+    concurrency:
+      group: "gh-aw-copilot-${{ github.workflow }}"
     env:
       DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
       GH_AW_ASSETS_ALLOWED_EXTS: ""
@@ -92,14 +96,21 @@ jobs:
         uses: github/gh-aw/actions/setup@v0.42.13
         with:
           destination: /opt/gh-aw/actions
-      - name: Checkout .github and .agents folders
+      - name: Checkout repository
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
         with:
-          sparse-checkout: |
-            .github
-            .agents
-          depth: 1
           persist-credentials: false
+      - name: Merge remote .github folder
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
+        env:
+          GH_AW_AGENT_FILE: ".github/agents/phase1.md"
+          GH_AW_AGENT_IMPORT_SPEC: "../agents/phase1.md"
+        with:
+          script: |
+            const { setupGlobals } = require('/opt/gh-aw/actions/setup_globals.cjs');
+            setupGlobals(core, github, context, exec, io);
+            const { main } = require('/opt/gh-aw/actions/merge_remote_agent_github_folder.cjs');
+            await main();
       - name: Create gh-aw temp directory
         run: bash /opt/gh-aw/actions/create_gh_aw_tmp_dir.sh
       - name: Configure Git credentials
@@ -154,7 +165,7 @@ jobs:
           mkdir -p /tmp/gh-aw/safeoutputs
           mkdir -p /tmp/gh-aw/mcp-logs/safeoutputs
           cat > /opt/gh-aw/safeoutputs/config.json << 'EOF'
-          {"add_comment":{"max":1},"add_labels":{"allowed":["assigned","rejected"],"max":2},"close_issue":{"max":1},"missing_data":{},"missing_tool":{},"noop":{"max":1}}
+          {"add_comment":{"max":1},"add_labels":{"allowed":["phase-1-complete","rejected"],"max":2},"close_issue":{"max":1},"missing_data":{},"missing_tool":{},"noop":{"max":1}}
           EOF
           cat > /opt/gh-aw/safeoutputs/tools.json << 'EOF'
           [
@@ -204,7 +215,7 @@ jobs:
               "name": "add_comment"
             },
             {
-              "description": "Add labels to an existing GitHub issue or pull request for categorization and filtering. Labels must already exist in the repository. For creating new issues with labels, use create_issue with the labels property instead. CONSTRAINTS: Maximum 2 label(s) can be added. Only these labels are allowed: [assigned rejected].",
+              "description": "Add labels to an existing GitHub issue or pull request for categorization and filtering. Labels must already exist in the repository. For creating new issues with labels, use create_issue with the labels property instead. CONSTRAINTS: Maximum 2 label(s) can be added. Only these labels are allowed: [phase-1-complete rejected].",
               "inputSchema": {
                 "additionalProperties": false,
                 "properties": {
@@ -451,7 +462,7 @@ jobs:
                   "GITHUB_LOCKDOWN_MODE": "$GITHUB_MCP_LOCKDOWN",
                   "GITHUB_PERSONAL_ACCESS_TOKEN": "\${GITHUB_MCP_SERVER_TOKEN}",
                   "GITHUB_READ_ONLY": "1",
-                  "GITHUB_TOOLSETS": "issues"
+                  "GITHUB_TOOLSETS": "context,repos,issues,pull_requests"
                 }
               },
               "safeoutputs": {
@@ -484,7 +495,7 @@ jobs:
               version: "",
               agent_version: "0.0.405",
               cli_version: "v0.42.13",
-              workflow_name: "GH-AW Issue Assignment + Close",
+              workflow_name: "GH-AW Issue Phase 1 (Copilot)",
               experimental: false,
               supports_tools_allowlist: true,
               supports_http_transport: true,
@@ -528,6 +539,7 @@ jobs:
           GH_AW_GITHUB_ACTOR: ${{ github.actor }}
           GH_AW_GITHUB_EVENT_COMMENT_ID: ${{ github.event.comment.id }}
           GH_AW_GITHUB_EVENT_DISCUSSION_NUMBER: ${{ github.event.discussion.number }}
+          GH_AW_GITHUB_EVENT_INPUTS_ISSUE_NUMBER: ${{ github.event.inputs.issue_number }}
           GH_AW_GITHUB_EVENT_ISSUE_NUMBER: ${{ github.event.issue.number }}
           GH_AW_GITHUB_EVENT_PULL_REQUEST_NUMBER: ${{ github.event.pull_request.number }}
           GH_AW_GITHUB_REPOSITORY: ${{ github.repository }}
@@ -589,7 +601,43 @@ jobs:
           </system>
           PROMPT_EOF
           cat << 'PROMPT_EOF' >> "$GH_AW_PROMPT"
-          {{#runtime-import .github/workflows/issue-assignment-close.md}}
+          # Long-Task Phase 1
+          
+          You are the phase 1 agent for slow-track issues in the Agentbook repository.
+          
+          ## Instructions
+          
+          - Read issue #__GH_AW_GITHUB_EVENT_INPUTS_ISSUE_NUMBER__ and all comments.
+          - Continue only when the issue is open and has label `researched-waiting-opinions`.
+          - If label `phase-1-complete` is already present, exit with no action.
+          - Produce one concise phase 1 analysis comment:
+            - prioritize architecture, risk boundaries, and sequencing.
+            - cite tradeoffs and likely failure modes.
+          - Add label `phase-1-complete`.
+          - If the issue should be declined:
+            - explain why,
+            - add `rejected`,
+            - close the issue.
+          
+          ## Safe outputs
+          
+          - Use safe outputs for comments, labels, and issue closure.
+          - Do not call GitHub write tools directly.
+          
+          ## Response format
+          
+          ### Phase 1 analysis
+          - Problem framing
+          - Risks and constraints
+          - Recommended direction
+          
+          ### Rejection (only if applicable)
+          - Why this is being rejected and closed
+          
+          
+          PROMPT_EOF
+          cat << 'PROMPT_EOF' >> "$GH_AW_PROMPT"
+          {{#runtime-import .github/workflows/issue-phase1-copilot.md}}
           PROMPT_EOF
       - name: Substitute placeholders
         uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
@@ -598,6 +646,7 @@ jobs:
           GH_AW_GITHUB_ACTOR: ${{ github.actor }}
           GH_AW_GITHUB_EVENT_COMMENT_ID: ${{ github.event.comment.id }}
           GH_AW_GITHUB_EVENT_DISCUSSION_NUMBER: ${{ github.event.discussion.number }}
+          GH_AW_GITHUB_EVENT_INPUTS_ISSUE_NUMBER: ${{ github.event.inputs.issue_number }}
           GH_AW_GITHUB_EVENT_ISSUE_NUMBER: ${{ github.event.issue.number }}
           GH_AW_GITHUB_EVENT_PULL_REQUEST_NUMBER: ${{ github.event.pull_request.number }}
           GH_AW_GITHUB_REPOSITORY: ${{ github.repository }}
@@ -614,6 +663,7 @@ jobs:
                 GH_AW_GITHUB_ACTOR: process.env.GH_AW_GITHUB_ACTOR,
                 GH_AW_GITHUB_EVENT_COMMENT_ID: process.env.GH_AW_GITHUB_EVENT_COMMENT_ID,
                 GH_AW_GITHUB_EVENT_DISCUSSION_NUMBER: process.env.GH_AW_GITHUB_EVENT_DISCUSSION_NUMBER,
+                GH_AW_GITHUB_EVENT_INPUTS_ISSUE_NUMBER: process.env.GH_AW_GITHUB_EVENT_INPUTS_ISSUE_NUMBER,
                 GH_AW_GITHUB_EVENT_ISSUE_NUMBER: process.env.GH_AW_GITHUB_EVENT_ISSUE_NUMBER,
                 GH_AW_GITHUB_EVENT_PULL_REQUEST_NUMBER: process.env.GH_AW_GITHUB_EVENT_PULL_REQUEST_NUMBER,
                 GH_AW_GITHUB_REPOSITORY: process.env.GH_AW_GITHUB_REPOSITORY,
@@ -625,7 +675,7 @@ jobs:
         uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
         env:
           GH_AW_PROMPT: /tmp/gh-aw/aw-prompts/prompt.txt
-          GH_AW_GITHUB_EVENT_ISSUE_NUMBER: ${{ github.event.issue.number }}
+          GH_AW_GITHUB_EVENT_INPUTS_ISSUE_NUMBER: ${{ github.event.inputs.issue_number }}
         with:
           script: |
             const { setupGlobals } = require('/opt/gh-aw/actions/setup_globals.cjs');
@@ -833,7 +883,7 @@ jobs:
         env:
           GH_AW_AGENT_OUTPUT: ${{ env.GH_AW_AGENT_OUTPUT }}
           GH_AW_NOOP_MAX: 1
-          GH_AW_WORKFLOW_NAME: "GH-AW Issue Assignment + Close"
+          GH_AW_WORKFLOW_NAME: "GH-AW Issue Phase 1 (Copilot)"
         with:
           github-token: ${{ secrets.GH_AW_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           script: |
@@ -846,7 +896,7 @@ jobs:
         uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
         env:
           GH_AW_AGENT_OUTPUT: ${{ env.GH_AW_AGENT_OUTPUT }}
-          GH_AW_WORKFLOW_NAME: "GH-AW Issue Assignment + Close"
+          GH_AW_WORKFLOW_NAME: "GH-AW Issue Phase 1 (Copilot)"
         with:
           github-token: ${{ secrets.GH_AW_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           script: |
@@ -859,7 +909,7 @@ jobs:
         uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
         env:
           GH_AW_AGENT_OUTPUT: ${{ env.GH_AW_AGENT_OUTPUT }}
-          GH_AW_WORKFLOW_NAME: "GH-AW Issue Assignment + Close"
+          GH_AW_WORKFLOW_NAME: "GH-AW Issue Phase 1 (Copilot)"
           GH_AW_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
           GH_AW_AGENT_CONCLUSION: ${{ needs.agent.result }}
           GH_AW_SECRET_VERIFICATION_RESULT: ${{ needs.agent.outputs.secret_verification_result }}
@@ -879,7 +929,7 @@ jobs:
           GH_AW_COMMENT_ID: ${{ needs.activation.outputs.comment_id }}
           GH_AW_COMMENT_REPO: ${{ needs.activation.outputs.comment_repo }}
           GH_AW_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-          GH_AW_WORKFLOW_NAME: "GH-AW Issue Assignment + Close"
+          GH_AW_WORKFLOW_NAME: "GH-AW Issue Phase 1 (Copilot)"
           GH_AW_AGENT_CONCLUSION: ${{ needs.agent.result }}
           GH_AW_DETECTION_CONCLUSION: ${{ needs.detection.result }}
         with:
@@ -895,6 +945,8 @@ jobs:
     if: needs.agent.outputs.output_types != '' || needs.agent.outputs.has_patch == 'true'
     runs-on: ubuntu-latest
     permissions: {}
+    concurrency:
+      group: "gh-aw-copilot-${{ github.workflow }}"
     timeout-minutes: 10
     outputs:
       success: ${{ steps.parse_results.outputs.success }}
@@ -923,7 +975,7 @@ jobs:
       - name: Setup threat detection
         uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
         env:
-          WORKFLOW_NAME: "GH-AW Issue Assignment + Close"
+          WORKFLOW_NAME: "GH-AW Issue Phase 1 (Copilot)"
           WORKFLOW_DESCRIPTION: "No description provided"
           HAS_PATCH: ${{ needs.agent.outputs.has_patch }}
         with:
@@ -989,30 +1041,6 @@ jobs:
           path: /tmp/gh-aw/threat-detection/detection.log
           if-no-files-found: ignore
 
-  pre_activation:
-    if: >
-      (github.event_name != 'issues') || ((github.event.action != 'labeled') || (github.event.label.name == 'phase-2-complete'))
-    runs-on: ubuntu-slim
-    outputs:
-      activated: ${{ steps.check_membership.outputs.is_team_member == 'true' }}
-    steps:
-      - name: Setup Scripts
-        uses: github/gh-aw/actions/setup@v0.42.13
-        with:
-          destination: /opt/gh-aw/actions
-      - name: Check team membership for workflow
-        id: check_membership
-        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
-        env:
-          GH_AW_REQUIRED_ROLES: admin,maintainer,write
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const { setupGlobals } = require('/opt/gh-aw/actions/setup_globals.cjs');
-            setupGlobals(core, github, context, exec, io);
-            const { main } = require('/opt/gh-aw/actions/check_membership.cjs');
-            await main();
-
   safe_outputs:
     needs:
       - agent
@@ -1027,8 +1055,8 @@ jobs:
     timeout-minutes: 15
     env:
       GH_AW_ENGINE_ID: "copilot"
-      GH_AW_WORKFLOW_ID: "issue-assignment-close"
-      GH_AW_WORKFLOW_NAME: "GH-AW Issue Assignment + Close"
+      GH_AW_WORKFLOW_ID: "issue-phase1-copilot"
+      GH_AW_WORKFLOW_NAME: "GH-AW Issue Phase 1 (Copilot)"
     outputs:
       create_discussion_error_count: ${{ steps.process_safe_outputs.outputs.create_discussion_error_count }}
       create_discussion_errors: ${{ steps.process_safe_outputs.outputs.create_discussion_errors }}
@@ -1055,7 +1083,7 @@ jobs:
         uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
         env:
           GH_AW_AGENT_OUTPUT: ${{ env.GH_AW_AGENT_OUTPUT }}
-          GH_AW_SAFE_OUTPUTS_HANDLER_CONFIG: "{\"add_comment\":{\"max\":1},\"add_labels\":{\"allowed\":[\"assigned\",\"rejected\"],\"max\":2},\"close_issue\":{\"max\":1},\"missing_data\":{},\"missing_tool\":{}}"
+          GH_AW_SAFE_OUTPUTS_HANDLER_CONFIG: "{\"add_comment\":{\"max\":1},\"add_labels\":{\"allowed\":[\"phase-1-complete\",\"rejected\"],\"max\":2},\"close_issue\":{\"max\":1},\"missing_data\":{},\"missing_tool\":{}}"
         with:
           github-token: ${{ secrets.GH_AW_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           script: |

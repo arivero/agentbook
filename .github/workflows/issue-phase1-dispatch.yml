@@ -1,0 +1,110 @@
+name: Issue Phase 1 Dispatch
+
+on:
+  issues:
+    types: [labeled]
+
+permissions:
+  actions: write
+  contents: read
+  issues: write
+
+concurrency:
+  group: issue-phase1-dispatch-${{ github.event.issue.number }}
+  cancel-in-progress: false
+
+jobs:
+  dispatch:
+    if: ${{ github.event.issue.pull_request == null && github.event.label.name == 'researched-waiting-opinions' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Select phase 1 engine by token health
+        id: select
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          COPILOT_GITHUB_TOKEN: ${{ secrets.COPILOT_GITHUB_TOKEN }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+        run: |
+          set -euo pipefail
+
+          openai_status="missing"
+          anthropic_status="missing"
+          copilot_status="missing"
+          selected_engine=""
+          selected_workflow=""
+
+          if [ -n "${OPENAI_API_KEY:-}" ]; then
+            openai_code="$(curl -sS -o /tmp/openai-models.json -w "%{http_code}" https://api.openai.com/v1/models -H "Authorization: Bearer ${OPENAI_API_KEY}" || true)"
+            if [ "${openai_code}" = "200" ]; then
+              openai_status="valid"
+            else
+              openai_status="invalid (${openai_code})"
+            fi
+          fi
+
+          if [ -n "${ANTHROPIC_API_KEY:-}" ]; then
+            anthropic_code="$(curl -sS -o /tmp/anthropic-models.json -w "%{http_code}" https://api.anthropic.com/v1/models -H "x-api-key: ${ANTHROPIC_API_KEY}" -H "anthropic-version: 2023-06-01" || true)"
+            if [ "${anthropic_code}" = "200" ]; then
+              anthropic_status="valid"
+            else
+              anthropic_status="invalid (${anthropic_code})"
+            fi
+          fi
+
+          if [ -n "${COPILOT_GITHUB_TOKEN:-}" ]; then
+            if GH_TOKEN="${COPILOT_GITHUB_TOKEN}" gh api user >/dev/null 2>&1; then
+              copilot_status="valid"
+            else
+              copilot_status="invalid"
+            fi
+          fi
+
+          # Phase 1 fallback order: Codex -> Claude -> Copilot
+          if [ "${openai_status}" = "valid" ]; then
+            selected_engine="codex"
+            selected_workflow="issue-phase1-codex.lock.yml"
+          elif [ "${anthropic_status}" = "valid" ]; then
+            selected_engine="claude"
+            selected_workflow="issue-phase1-claude.lock.yml"
+          elif [ "${copilot_status}" = "valid" ]; then
+            selected_engine="copilot"
+            selected_workflow="issue-phase1-copilot.lock.yml"
+          fi
+
+          {
+            echo "selected_engine=${selected_engine}"
+            echo "selected_workflow=${selected_workflow}"
+            echo "openai_status=${openai_status}"
+            echo "anthropic_status=${anthropic_status}"
+            echo "copilot_status=${copilot_status}"
+          } >> "${GITHUB_OUTPUT}"
+
+      - name: Dispatch selected phase 1 workflow
+        if: ${{ steps.select.outputs.selected_workflow != '' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh workflow run "${{ steps.select.outputs.selected_workflow }}" \
+            --repo "${{ github.repository }}" \
+            --ref "${{ github.event.repository.default_branch }}" \
+            -f issue_number="${{ github.event.issue.number }}"
+
+      - name: Post phase 1 selection comment
+        env:
+          GH_TOKEN: ${{ secrets.GH_AW_GITHUB_TOKEN || github.token }}
+        run: |
+          if [ -n "${{ steps.select.outputs.selected_workflow }}" ]; then
+            status_line="Selected engine: \`${{ steps.select.outputs.selected_engine }}\`."
+          else
+            status_line="No valid engine token found for phase 1 dispatch. Manual follow-up required."
+          fi
+
+          gh issue comment "${{ github.event.issue.number }}" \
+            --repo "${{ github.repository }}" \
+            --body "Phase 1 dispatch token check:
+          - OPENAI_API_KEY: ${{ steps.select.outputs.openai_status }}
+          - ANTHROPIC_API_KEY: ${{ steps.select.outputs.anthropic_status }}
+          - COPILOT_GITHUB_TOKEN: ${{ steps.select.outputs.copilot_status }}
+
+          ${status_line}"

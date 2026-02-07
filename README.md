@@ -45,11 +45,11 @@ The primary way to contribute is by **opening an issue** with your suggestion:
 
 1. **[Open an issue](https://github.com/arivero/agentbook/issues/new/choose)** using our Content Suggestion template
 2. **Automated Processing**: Our GitHub Agentic Workflows (GH-AW) will analyze your suggestion
-3. **Follow Updates**: The issue moves through labels: `acknowledged` → `triaged-fast-track` or `triaged-for-research` → `researched-waiting-opinions` → (`opinion-copilot-strategy-posted` + `opinion-copilot-delivery-posted`) → `assigned`
+3. **Follow Updates**: The issue moves through labels: `acknowledged` → `triaged-fast-track` or `triaged-for-research` → `researched-waiting-opinions` → `phase-1-complete` → `phase-2-complete` → `assigned`
 
 **What happens to suggestions:**
 - ✅ **Accepted (fast-track)**: Routed with `triaged-fast-track`, implemented by Copilot, PR opened, and issue closed
-- ✅ **Accepted (research lane)**: Routed with `triaged-for-research`, researched, receives two suggestions, marked `assigned`, then closed
+- ✅ **Accepted (research lane)**: Routed with `triaged-for-research`, researched, receives phase 1 and phase 2 outputs, marked `assigned`, then closed
 - ❌ **Rejected/Out of Scope**: Any agent can reject with rationale and close at any stage
 
 All suggestions related to agentic workflows, orchestration, scaffolding, skills/tools, or GitHub agents are welcome.

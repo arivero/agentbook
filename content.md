@@ -12,7 +12,7 @@ Use this document when you are configuring or operating the automation stack. Do
 
 ## Minimum Operator Responsibilities
 
-1. Keep required secrets configured and valid (`COPILOT_GITHUB_TOKEN`, `GH_AW_GITHUB_TOKEN`, and any research-provider secrets).
+1. Keep required secrets configured and valid (`COPILOT_GITHUB_TOKEN`, `GH_AW_GITHUB_TOKEN`, plus optional provider keys such as `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, and `TAVILY_API_KEY` when those lanes are enabled).
 2. Keep `.github/workflows/*.md` and `.github/workflows/*.lock.yml` in sync using `gh aw compile`.
 3. Monitor issue-processing workflow runs and remediate token/permission failures.
 4. Preserve least-privilege token scope and repository-only access for automation secrets.
