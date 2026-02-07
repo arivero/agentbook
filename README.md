@@ -91,7 +91,7 @@ agentbook/
 
 ## 🔧 Automation
 
-This repository uses GitHub Actions and GH-AW workflows for publishing, validation, and issue-processing.
+This repository uses GitHub Actions and GH-AW workflows for publishing, validation, and issue-processing. The intake ACK workflow dispatches the routing workflow via `workflow_dispatch` after acknowledging new issues.
 
 For workflow lifecycle details, see [WORKFLOW_PLAYBOOK.md](WORKFLOW_PLAYBOOK.md).
 For required operator setup (tokens, permissions, and operating checklist), use [content.md](content.md). This is the guide for the required human operator.
