@@ -316,6 +316,8 @@ In this repository, the scaffolding is implemented in concrete files:
 - GH-AW source workflows: `.github/workflows/issue-*.md`
 - Compiled GH-AW lock files: `.github/workflows/issue-*.lock.yml`
 - Publishing workflows: `.github/workflows/pages.yml` and `.github/workflows/build-pdf.yml`
+- CI validation: `.github/workflows/check-links.yml`, `.github/workflows/check-external-links.yml`, and `.github/workflows/compile-workflows.yml`
+- Coding agent environment: `.github/workflows/copilot-setup-steps.yml`
 - Lifecycle policy: `WORKFLOW_PLAYBOOK.md`
 
 For workflow semantics, see [GitHub Agentic Workflows (GH-AW)](060-gh-agentic-workflows.md). For failure handling and validation strategy, see [Common Failure Modes, Testing, and Fixes](100-failure-modes-testing-fixes.md).
