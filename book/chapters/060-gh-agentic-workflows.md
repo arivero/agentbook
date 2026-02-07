@@ -366,7 +366,7 @@ This repository uses a label-driven lifecycle documented in [WORKFLOW_PLAYBOOK.m
 
 **Rejection path.** At any stage, an agent can add `rejected` with rationale and close the issue.
 
-Publishing and validation remain separate automation concerns: `pages.yml` deploys the site, `build-pdf.yml` maintains the generated PDF, `check-links.yml` and `check-external-links.yml` validate internal and external links, `compile-workflows.yml` verifies that `.lock.yml` files are up to date, and `copilot-setup-steps.yml` configures the coding agent environment.
+Publishing and validation remain separate automation concerns. `pages.yml` deploys the site and `build-pdf.yml` maintains the generated PDF. `check-links.yml` and `check-external-links.yml` validate internal and external links. `compile-workflows.yml` verifies that `.lock.yml` files stay in sync with their markdown sources. `copilot-setup-steps.yml` configures the coding agent environment.
 
 ## Key Takeaways
 
