@@ -2,6 +2,8 @@
 
 This document explains how to enable the self-maintaining features of this book.
 
+If you need the operator runbook pointer, start with `content.md`.
+
 ## GitHub Pages Setup
 
 1. Go to your repository Settings
@@ -62,9 +64,29 @@ Recommended:
   - `Issues`: `Read and write`
   - `Pull requests`: `Read and write`
   - `Contents`: `Read and write`
+  - `Actions`: `Read and write` (only if you use PAT-based workflow dispatch fallback)
 
 Classic PAT fallback:
 - `repo` scope (only if fine-grained PAT cannot be used)
+
+### How to Create `GH_AW_GITHUB_TOKEN` (Fine-Grained PAT)
+
+1. In GitHub, open:
+   - Profile menu (top-right) -> `Settings`
+   - `Developer settings` -> `Personal access tokens` -> `Fine-grained tokens`
+   - Click `Generate new token`
+2. Configure the token:
+   - Resource owner: your user/account
+   - Repository access: `Only select repositories` -> select `arivero/agentbook`
+   - Repository permissions:
+     - `Issues`: `Read and write`
+     - `Pull requests`: `Read and write`
+     - `Contents`: `Read and write`
+3. Generate the token and copy it once.
+4. In the repository, open:
+   - `Settings` -> `Secrets and variables` -> `Actions` -> `New repository secret`
+   - Name: `GH_AW_GITHUB_TOKEN`
+   - Value: paste the PAT
 
 ## Labels
 

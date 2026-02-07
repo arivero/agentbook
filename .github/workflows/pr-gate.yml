@@ -1,0 +1,178 @@
+name: PR Gate (Policy + Optional Auto-Approval)
+
+on:
+  pull_request_target:
+    types: [opened, reopened, synchronize, ready_for_review]
+
+permissions:
+  checks: read
+  contents: read
+  issues: write
+  pull-requests: write
+  statuses: read
+
+jobs:
+  gate:
+    if: ${{ github.event.pull_request.state == 'open' && github.event.pull_request.draft == false }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Evaluate risk policy and maintain labels
+        id: policy
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const pr = context.payload.pull_request;
+            const issue_number = pr.number;
+
+            const allowedPaths = [
+              /^book\//,
+              /^blog\//,
+              /^_posts\//,
+              /^README\.md$/,
+              /^SETUP\.md$/,
+              /^WORKFLOW_PLAYBOOK\.md$/,
+              /^content\.md$/,
+              /^index\.md$/,
+              /^_config\.yml$/,
+            ];
+
+            const blockedPaths = [
+              /^\.github\/workflows\//,
+              /^\.github\/actions\//,
+              /^scripts\//,
+            ];
+
+            async function listAllFiles() {
+              const files = [];
+              let page = 1;
+              while (true) {
+                const res = await github.rest.pulls.listFiles({
+                  owner,
+                  repo,
+                  pull_number: issue_number,
+                  per_page: 100,
+                  page,
+                });
+                files.push(...res.data);
+                if (res.data.length < 100) break;
+                page += 1;
+              }
+              return files;
+            }
+
+            async function ensureLabel(name, color, description) {
+              try {
+                await github.rest.issues.getLabel({ owner, repo, name });
+              } catch (e) {
+                if (e.status === 404) {
+                  await github.rest.issues.createLabel({ owner, repo, name, color, description });
+                } else {
+                  throw e;
+                }
+              }
+            }
+
+            async function addLabel(name) {
+              await github.rest.issues.addLabels({
+                owner,
+                repo,
+                issue_number,
+                labels: [name],
+              });
+            }
+
+            async function removeLabelIfPresent(name) {
+              try {
+                await github.rest.issues.removeLabel({
+                  owner,
+                  repo,
+                  issue_number,
+                  name,
+                });
+              } catch (e) {
+                if (e.status !== 404) throw e;
+              }
+            }
+
+            const files = await listAllFiles();
+            const filePaths = files.map((f) => f.filename);
+            const changedFiles = pr.changed_files;
+            const totalLineDelta = pr.additions + pr.deletions;
+
+            const hasBlockedPath = filePaths.some((p) => blockedPaths.some((r) => r.test(p)));
+            const hasOutsideAllowedPath = filePaths.some((p) => !allowedPaths.some((r) => r.test(p)));
+
+            const lowRiskBySize = changedFiles <= 10 && totalLineDelta <= 400;
+            const lowRisk = !hasBlockedPath && !hasOutsideAllowedPath && lowRiskBySize;
+
+            await ensureLabel(
+              "auto-approve-candidate",
+              "0e8a16",
+              "Policy gate marked this PR as eligible for optional automated approval."
+            );
+
+            if (lowRisk) {
+              await addLabel("auto-approve-candidate");
+            } else {
+              await removeLabelIfPresent("auto-approve-candidate");
+            }
+
+            core.setOutput("low_risk", lowRisk ? "true" : "false");
+            core.setOutput("changed_files", String(changedFiles));
+            core.setOutput("total_line_delta", String(totalLineDelta));
+            core.setOutput("has_blocked_path", hasBlockedPath ? "true" : "false");
+            core.setOutput("has_outside_allowed_path", hasOutsideAllowedPath ? "true" : "false");
+
+      - name: Optional bot approval for low-risk PRs
+        if: ${{ steps.policy.outputs.low_risk == 'true' && secrets.PR_APPROVER_TOKEN != '' }}
+        uses: actions/github-script@v8
+        with:
+          github-token: ${{ secrets.PR_APPROVER_TOKEN }}
+          script: |
+            const { owner, repo } = context.repo;
+            const pull_number = context.payload.pull_request.number;
+
+            const me = await github.rest.users.getAuthenticated();
+            const approverLogin = me.data.login;
+            const prAuthor = context.payload.pull_request.user.login;
+
+            if (approverLogin === prAuthor) {
+              core.info(`Skipping approval because approver (${approverLogin}) is the PR author.`);
+              return;
+            }
+
+            const reviews = await github.rest.pulls.listReviews({
+              owner,
+              repo,
+              pull_number,
+              per_page: 100,
+            });
+
+            const alreadyApproved = reviews.data.some((r) =>
+              r.user && r.user.login === approverLogin && r.state === "APPROVED"
+            );
+
+            if (alreadyApproved) {
+              core.info(`Approval already exists from ${approverLogin}.`);
+              return;
+            }
+
+            await github.rest.pulls.createReview({
+              owner,
+              repo,
+              pull_number,
+              event: "APPROVE",
+              body: "Auto-approved by PR policy gate (low-risk change set).",
+            });
+
+      - name: Write workflow summary
+        run: |
+          {
+            echo "## PR gate decision"
+            echo "- low risk: \`${{ steps.policy.outputs.low_risk }}\`"
+            echo "- changed files: \`${{ steps.policy.outputs.changed_files }}\`"
+            echo "- total line delta: \`${{ steps.policy.outputs.total_line_delta }}\`"
+            echo "- has blocked path: \`${{ steps.policy.outputs.has_blocked_path }}\`"
+            echo "- has outside allowed path: \`${{ steps.policy.outputs.has_outside_allowed_path }}\`"
+          } >> "$GITHUB_STEP_SUMMARY"
