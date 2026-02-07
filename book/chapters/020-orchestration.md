@@ -153,11 +153,11 @@ class AgentOrchestrator:
 
 ## Real-World Example: Self-Updating Documentation
 
-This book uses agent orchestration to keep its content current. The workflow involves six coordinated agents.
+This book uses agent orchestration to keep its content current. The workflow involves seven coordinated agents, driven by a label-based lifecycle.
 
-The **Issue Monitor Agent** watches for new issues containing suggestions and validates that they follow the expected format. The **Analysis Agent** determines whether a suggestion fits the book's scope and assesses its novelty and value. The **Content Agent** writes or updates content based on approved suggestions. The **Build Agent** generates markdown and PDF versions of the updated book. The **Publishing Agent** updates GitHub Pages with the new content. The **Blog Agent** creates a blog post summarising the update.
+The **ACK Agent** acknowledges new issue suggestions and validates that they follow the expected format. The **Research Agent** analyses novelty and relevance, determining whether a suggestion fits the book's scope. The **Claude Agent** and the **Copilot Agent** provide independent perspectives—safety and clarity from one, developer experience from the other. The **Workflow Agent** defines the issue-management lifecycle and maps each stage to GH-AW workflow files. The **Writer Agent** drafts new content based on the consensus. The **Completion Agent** finalises and closes issues once changes are merged. Building and publishing are handled by separate standard workflows (`build-pdf.yml` and `pages.yml`), not by agents.
 
-All of these agents are coordinated through GitHub Actions workflows, demonstrating how event-driven orchestration can maintain a living document.
+All of these agents are coordinated through GitHub Actions workflows using GH-AW, demonstrating how event-driven orchestration can maintain a living document.
 
 ## AI Backrooms: Unsupervised Multi-Agent Conversation
 

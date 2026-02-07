@@ -360,8 +360,9 @@ This very book uses GitHub Agents for self-maintenance:
 2. **Research Agent**: Analyzes novelty and relevance
 3. **Claude Agent**: Provides safety and clarity perspective
 4. **Copilot Agent**: Provides developer experience perspective
-5. **Writer Agent**: Drafts new content
-6. **Completion Agent**: Finalizes and closes issues
+5. **Workflow Agent**: Defines the issue-management lifecycle and maps each stage to GH-AW workflow files
+6. **Writer Agent**: Drafts new content
+7. **Completion Agent**: Finalizes and closes issues
 
 ### How It Works
 
