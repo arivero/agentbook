@@ -59,6 +59,14 @@ Use this taxonomy to classify incidents quickly and choose the right fix path.
 
 **Fast fixes.** Enforce allow and deny lists at the tool gateway level to prevent prohibited operations. Require policy checks in CI so violations are caught before merge. Route high-risk actions through human approval to ensure oversight.
 
+### Execution Environment Containment
+
+**Symptoms.** Generated code accesses hosts or files that should be unreachable, or persists secrets in plain text during runs. A single compromised run poisons caches or state for later tasks.
+
+**Typical causes.** Agents run directly on the host or in shared containers with permissive networking. Secrets are injected as environment variables or mounted files that land inside the sandbox. No cleanup between runs allows residue to accumulate.
+
+**Fast fixes.** Move high-risk tasks into disposable sandboxes with default-deny egress. MicroVM sandboxes (for example, Firecracker-based tools like Matchlock) provide VM-grade isolation with near-container startup times; use them when generated code executes or when secrets must stay outside the guest. Combine per-run copy-on-write disks, explicit network allowlists, and proxy-side secret injection so credentials never cross the trust boundary. Treat every run as untrusted and tear down the environment even on success.
+
 ### 5) Collaboration and Workflow Failures
 
 **Symptoms.** Multiple agents make conflicting changes, overwriting each other's work. PRs churn with contradictory edits as agents undo each other's modifications. Work stalls due to unclear ownership, with no agent taking responsibility.

@@ -93,6 +93,28 @@ USER agent
 ENTRYPOINT ["python", "agent_runner.py"]
 ```
 
+### Secure Execution Environments
+Isolation and safety controls determine how much damage an agent can do if it misbehaves. Choose the lightest mechanism that still contains the blast radius.
+
+#### The Isolation Spectrum
+- **Process sandboxing:** Lowest overhead, weakest boundary; relies on POSIX permissions and careful tool design.
+- **Containers (Docker/Podman):** Fast startup and good ergonomics, but share a kernel; strengthen with seccomp/AppArmor and rootless mode.
+- **Virtual machines:** Strong isolation with dedicated kernels; slower to boot and heavier to snapshot.
+- **MicroVMs (Firecracker, Cloud Hypervisor):** VM-grade isolation with sub-second boots and small footprints; ideal when container boundaries feel too thin.
+
+#### Secret Management Patterns
+- **Environment variables and files:** Simple but leak-prone; scrub logs and disable shell history.
+- **Secret stores and mounts:** Vault/KMS-backed mounts reduce exposure, but secrets still land on disk.
+- **Network-layer injection:** A host-side proxy swaps placeholder tokens for real credentials on egress. Agents never see the secret, and rotation happens centrally. Pair with per-host allowlists so only intended APIs receive injected tokens.
+
+#### Network Security for Agent Workflows
+- Default to **deny-all egress**, then allowlist domains the task needs.
+- Terminate TLS at a trusted proxy to inject credentials or record audits when policy allows.
+- Log outbound destinations and rates; alert on unexpected hosts or protocols.
+
+#### Case Study: MicroVM Sandboxing (Matchlock)
+Matchlock runs agents inside ephemeral microVMs (Firecracker on Linux, Virtualization.framework on macOS) with a **default-deny network policy** and explicit host allowlists. Secrets never enter the VM; a transparent MITM proxy replaces placeholder tokens on outbound requests. Workspaces mount via vsock/FUSE on copy-on-write disks so each run starts clean. Startup times stay below a second, making isolation practical for iterative agent loops. The trade-off: slightly higher overhead than containers but far stronger defense if generated code attempts privilege escalation or broad network scans.
+
 ### Communication Protocol
 Standardize how agents communicate.
 
