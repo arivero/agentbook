@@ -183,6 +183,68 @@ As a result, backrooms conversations gravitate toward domains where language alo
 
 The gap between backrooms-style free conversation and productive multi-agent orchestration can be bridged by adding the components this chapter describes. Give the agents tools (proof assistants, simulators, search APIs) and they can verify claims rather than just generating them. Add a supervisor or planner and the conversation becomes directed toward a goal. Introduce shared state (a knowledge base, a codebase, a formal proof) and the agents can build on each other's work rather than drifting through associative chains. The Google Agent2Agent protocol (A2A) and Anthropic's Model Context Protocol (MCP), both released in 2025, provide infrastructure for exactly this kind of structured multi-agent communication. The evolution from backrooms to production multi-agent systems mirrors the broader evolution of the field from impressive demonstrations to reliable engineering.
 
+## Claude Agent Teams: Native Multi-Agent Coordination
+
+Anthropic's **Agent Teams** feature, released alongside Opus 4.6 in February 2026, turns Claude's earlier subagent workarounds into a first-class orchestration primitive. Instead of hand-rolling task queues with the Task tool or polling loops, a single **team lead** agent can now spawn specialised **teammates** via the TeammateTool API, assign work, and gather results with built-in coordination signals. This shifts Claude from "one agent with a bag of tools" to "a coordinator with native teammates," reducing boilerplate while preserving deterministic control.
+
+Agent Teams formalise several long-standing patterns:
+
+- **Team lead + specialists.** A lead agent owns the goal, decomposes it, and spawns teammates with targeted roles such as "write tests," "refactor," or "summarise context." Teammates inherit the project context and can request clarifications from the lead rather than calling the main model recursively.
+- **Shared task queues.** Tasks live in a queue that any teammate can claim. Dependencies are expressed by pushing follow-up tasks when upstream work completes, avoiding brittle manual sequencing.
+- **Idle notifications.** Teammates emit ready/idle signals so the lead can keep the queue populated without tight polling loops. This reduces latency and cost while increasing parallelism.
+- **Mixed parallelism.** Independent tasks execute concurrently, while dependent tasks block until prerequisites finish. The runtime, not ad hoc Python control flow, enforces ordering.
+
+The following pseudo-code shows the pattern. It is illustrative rather than an exact SDK surface; consult Claude Code documentation for the latest signatures.
+
+```python
+class TeamLead:
+    def __init__(self, teammate_tool):
+        self.teammate_tool = teammate_tool
+        self.teammates = []
+
+    def build_team(self):
+        self.teammates = [
+            self.teammate_tool.spawn(role="planner", skills=["decompose"]),
+            self.teammate_tool.spawn(role="coder", skills=["edit", "test"]),
+            self.teammate_tool.spawn(role="reviewer", skills=["lint", "qa"]),
+        ]
+
+    def dispatch(self, goal):
+        queue = [{"task": f"plan: {goal}", "depends_on": None}]
+        self.build_team()
+
+        while queue or any(t.is_busy() for t in self.teammates):
+            idle = [t for t in self.teammates if t.is_idle()]
+            for teammate in idle:
+                next_task = self._pop_ready_task(queue)
+                if next_task:
+                    teammate.claim(next_task)
+                else:
+                    teammate.notify_idle()
+
+            for teammate in self.teammates:
+                if teammate.has_result():
+                    result = teammate.result()
+                    queue.extend(self._followups(result))
+
+    def _pop_ready_task(self, queue):
+        for idx, item in enumerate(queue):
+            if item["depends_on"] is None:
+                return queue.pop(idx)
+        return None
+
+    def _followups(self, result):
+        if result.get("type") == "plan":
+            return [{"task": step, "depends_on": None} for step in result["steps"]]
+        if result.get("type") == "code_change":
+            return [{"task": "review change", "depends_on": None}]
+        return []
+```
+
+Compared with pre-2026 workaround patterns (Task tool parallelism, manual fan-out/fan-in loops, or nested "assistant-calls-assistant" prompts), Agent Teams provide native lifecycle hooks, idle handling, and result aggregation. The lead retains control over task boundaries and can mix synchronous checkpoints (e.g., "wait for tests before deploy") with opportunistic parallelism. Community adopters report simpler orchestrators, fewer race conditions, and clearer logs because the framework surfaces which teammate owned each task.
+
+Agent Teams also align with other orchestration flows in this book. Chapter 6 shows how GH-AW can target Claude as an engine; Agent Teams make that engine multi-agent by default. Chapter 8 (Claude Code) describes the subagent architecture used inside coding workflows—Agent Teams now supply the primitives behind that experience. Treat the feature as an evolving capability in public preview, and revisit interface details as Anthropic hardens the API.
+
 ## Challenges and Solutions
 
 **Challenge: Agent Conflicts.** When multiple agents modify the same resources, they can overwrite each other's changes or create inconsistent state. The **solution** is to use locks, transactions, or coordinator patterns that ensure only one agent modifies a resource at a time.
