@@ -183,7 +183,7 @@ Not all uncertainty can be eliminated through interaction. Understanding the dis
 - Environmental unknowns: The agent can probe the system state through observations
 
 **Irreducible uncertainty** is fundamental to the problem domain:
-- Inherent randomness in the environment (weather, user behaviour, network latency)
+- Inherent randomness in the environment (weather, user behavior, network latency)
 - Incomplete information that no tool can provide (future events, hidden state)
 - Computational intractability (NP-hard problems without approximation guarantees)
 - Model limitations (knowledge cutoff dates, training data gaps)
@@ -197,8 +197,11 @@ class UQAgent:
     """Agent with uncertainty-aware decision gates"""
     
     def __init__(self, threshold_low=0.3, threshold_high=0.7):
-        self.threshold_low = threshold_low    # Below this: definitely escalate
-        self.threshold_high = threshold_high  # Above this: act autonomously
+        # Thresholds should be calibrated based on task domain and impact
+        # Default values: 0.3 = definitely escalate, 0.7 = can act autonomously
+        # Adjust based on empirical success rates for your specific use case
+        self.threshold_low = threshold_low
+        self.threshold_high = threshold_high
     
     async def execute_task(self, task, max_reduction_steps=3):
         confidence = await self.estimate_confidence(task)
