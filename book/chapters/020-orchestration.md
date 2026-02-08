@@ -183,6 +183,87 @@ As a result, backrooms conversations gravitate toward domains where language alo
 
 The gap between backrooms-style free conversation and productive multi-agent orchestration can be bridged by adding the components this chapter describes. Give the agents tools (proof assistants, simulators, search APIs) and they can verify claims rather than just generating them. Add a supervisor or planner and the conversation becomes directed toward a goal. Introduce shared state (a knowledge base, a codebase, a formal proof) and the agents can build on each other's work rather than drifting through associative chains. The Google Agent2Agent protocol (A2A) and Anthropic's Model Context Protocol (MCP), both released in 2025, provide infrastructure for exactly this kind of structured multi-agent communication. The evolution from backrooms to production multi-agent systems mirrors the broader evolution of the field from impressive demonstrations to reliable engineering.
 
+## Claude Agent Teams: Native Multi-Agent Coordination
+
+Anthropic's Agent Teams feature, introduced in public preview in February 2026 with Claude Opus 4.6, provides native multi-agent coordination primitives that replace workaround patterns developers previously used to orchestrate multiple Claude instances. Before Agent Teams, developers relied on manual polling loops, the Task tool for parallel execution, and custom state management to coordinate multiple agents. Agent Teams offers a cleaner, more reliable approach through first-class APIs designed specifically for multi-agent workflows.
+
+### Architecture and Coordination Primitives
+
+The Agent Teams architecture centres on the **Team Lead pattern**, where a primary agent spawns specialised teammates to handle different aspects of a complex task. The native **TeammateTool API** provides the coordination mechanism, enabling the Team Lead to create agents with specific capabilities, distribute work through shared task queues, and manage dependencies between tasks.
+
+Coordination happens through several key mechanisms. **Idle notifications** allow agents to signal when they are ready for new work, eliminating the need for manual polling loops that check agent status repeatedly. **Shared task queues** enable distributed work across team members, with agents claiming tasks from the queue as they become available. **Dependency management** ensures tasks execute in the correct order, supporting both sequential workflows where one task must complete before another begins and parallel execution where independent tasks run simultaneously.
+
+This native coordination infrastructure removes much of the complexity that developers previously had to implement themselves. Instead of writing custom code to track agent state, manage task distribution, and handle synchronisation, developers can rely on the built-in coordination primitives that Agent Teams provides.
+
+### Implementation Pattern
+
+The following pseudo-code illustrates the Agent Teams pattern for coordinating multiple specialised agents:
+
+```python
+# This is pseudo-code demonstrating the Agent Teams pattern.
+# Refer to Claude Code documentation for exact API signatures.
+
+class TeamLead:
+    """Team Lead agent coordinates specialized teammates"""
+    
+    def __init__(self, task_description):
+        self.task = task_description
+        self.teammates = []
+        self.task_queue = SharedTaskQueue()
+    
+    async def execute(self):
+        """Execute task using Agent Teams coordination"""
+        
+        # 1. Analyse task and spawn specialised teammates
+        subtasks = await self.decompose_task(self.task)
+        
+        for subtask in subtasks:
+            teammate = await self.spawn_teammate(
+                role=subtask.required_expertise,
+                context=subtask.context,
+                tools=subtask.required_tools
+            )
+            self.teammates.append(teammate)
+            self.task_queue.add(subtask)
+        
+        # 2. Coordinate execution via shared queue
+        results = []
+        while not self.task_queue.empty():
+            # Agents claim tasks when idle (native notification)
+            ready_agents = await self.get_idle_agents()
+            
+            for agent in ready_agents:
+                if agent.can_handle(self.task_queue.peek()):
+                    task = self.task_queue.claim()
+                    result = await agent.execute(task)
+                    results.append(result)
+        
+        # 3. Aggregate results from all teammates
+        return self.synthesize_results(results)
+    
+    async def spawn_teammate(self, role, context, tools):
+        """Spawn specialised teammate using TeammateTool API"""
+        # Native API call replaces manual agent instantiation
+        return await TeammateTool.create(
+            specialization=role,
+            initial_context=context,
+            available_tools=tools,
+            team_lead=self
+        )
+```
+
+The pattern demonstrates three phases: task decomposition and teammate spawning, coordinated execution through the shared queue, and result aggregation. The native idle notifications eliminate polling loops, and the TeammateTool API handles the complexity of agent lifecycle management.
+
+### Comparison with Workaround Patterns
+
+Before Agent Teams, developers coordinated multiple Claude instances through workaround patterns. The Task tool provided basic parallel execution but required manual state management and offered no native coordination primitives. Developers wrote polling loops to check whether agents had completed their work, manually tracked dependencies between tasks, and implemented custom queue management for work distribution. These workarounds were functional but added complexity, required careful testing, and could become unreliable when scaling to larger agent teams.
+
+Agent Teams replaces these workarounds with native APIs designed for multi-agent coordination. The idle notification system eliminates polling, the shared task queue removes custom queue management, and built-in dependency tracking ensures correct execution order. The result is cleaner code, improved reliability, and better scalability when coordinating multiple agents. Community evidence shows rapid adoption, with developers migrating from Task tool workarounds to Agent Teams for complex orchestration workflows.
+
+### Integration with Broader Ecosystem
+
+Agent Teams integrates with the GitHub Agentic Workflows ecosystem through the `engine: claude` configuration option (see [GitHub Agentic Workflows](060-gh-agentic-workflows.md) for details). For coding-specific applications of Agent Teams, including how Claude Code uses the native API to implement its subagent architecture, see [Agents for Coding](080-agents-for-coding.md). The Team Lead pattern demonstrated here can also be found in discussions of future multi-agent trends in [Future Developments](800-future-developments.md).
+
 ## Challenges and Solutions
 
 **Challenge: Agent Conflicts.** When multiple agents modify the same resources, they can overwrite each other's changes or create inconsistent state. The **solution** is to use locks, transactions, or coordinator patterns that ensure only one agent modifies a resource at a time.
