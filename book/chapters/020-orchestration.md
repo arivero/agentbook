@@ -185,7 +185,7 @@ The gap between backrooms-style free conversation and productive multi-agent orc
 
 ## Claude Agent Teams: Native Multi-Agent Coordination
 
-In February 2026, Anthropic introduced **Agent Teams** with the release of Opus 4.6, providing native multi-agent coordination primitives that replace workaround patterns developers had been using. This feature represents a significant architectural evolution in how agents can collaborate on complex tasks.
+Anthropic introduced **Agent Teams** with the release of Opus 4.6, providing native multi-agent coordination primitives that replace workaround patterns developers had been using. This feature represents a significant architectural evolution in how agents can collaborate on complex tasks.
 
 Before Agent Teams, developers coordinated multiple Claude instances through manual patterns: using the Task tool to spawn parallel work, implementing custom polling loops to check agent status, and managing state synchronisation by hand. These workarounds were functional but fragile, requiring significant boilerplate code and careful state management.
 
