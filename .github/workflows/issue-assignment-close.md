@@ -40,6 +40,10 @@ You are the assignment agent.
 - Continue only when the issue is open and has label `triaged-for-research`.
 - Continue only when a phase 2 delivery comment exists.
 - If label `assigned` is already present, exit with no action.
+- This workflow is `workflow_dispatch`-driven. For every safe-output tool call, include explicit numeric targets:
+  - `add_comment`: include `item_number: ${{ github.event.inputs.issue_number }}`.
+  - `add_labels`: include `item_number: ${{ github.event.inputs.issue_number }}`.
+  - `close_issue`: include `issue_number: ${{ github.event.inputs.issue_number }}`.
 - Post an assignment summary comment that cites the phase outputs.
 - Add label `assigned`.
 - Close the issue.
