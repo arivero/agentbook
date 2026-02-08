@@ -68,6 +68,7 @@ order: 99
 - Lean documentation. <https://lean-lang.org/learn/>. Accessed: 2026-02-05.
 - Coq. <https://coq.inria.fr/>. Accessed: 2026-02-05.
 - Isabelle. <https://isabelle.in.tum.de/>. Accessed: 2026-02-05.
+- Oh, C., Park, S., Kim, T. E., Li, J., Li, W., Yeh, S., Du, X., Hassani, H., Bogdan, P., Song, D., & Li, S. (2026). Towards Reducible Uncertainty Modeling for Reliable Large Language Model Agents. arXiv:2602.05073. <https://arxiv.org/abs/2602.05073>. Accessed: 2026-02-08.
 
 <!-- Edit notes:
 Sections expanded: None (bibliography entries are an actual enumerable reference list that must remain as individual items)

@@ -97,6 +97,10 @@ Tracking agent performance is essential for identifying bottlenecks and improvin
 
 Keeping agents independent reduces the blast radius of failures and simplifies testing. Minimise shared dependencies so that a problem with one library does not affect all agents. Use clear interfaces between agents so they can evolve separately. Version agent capabilities explicitly so consumers know what to expect. Test agents independently before integrating them into larger workflows.
 
+### Uncertainty Propagation in Multi-Agent Systems
+
+When agents pass intermediate results to each other in a workflow, uncertainty can compound across stages. A planner agent that makes decisions with 20% uncertainty may pass those decisions to an executor that introduces another 15% uncertainty, resulting in cascading doubt about the final outcome. Coordinator agents should track cumulative uncertainty across the workflow and use it as a decision signal: continue autonomous execution when aggregate uncertainty stays low, but request human review when uncertainty accumulates beyond acceptable thresholds. For detailed treatment of uncertainty quantification in agent reliability, see [Common Failure Modes, Testing, and Fixes](100-failure-modes-testing-fixes.md#uncertainty-quantification-for-agent-reliability).
+
 > **Note:** Orchestration should surface a clear audit trail: who decided, who executed, and who approved. Capture this early so later chapters can build on it.
 
 ## Orchestration Frameworks

@@ -160,6 +160,114 @@ Use a lightweight runbook so teams respond consistently. The sequence proceeds t
 
 **Learn.** Add a regression test and update documentation to prevent recurrence.
 
+## Uncertainty Quantification for Agent Reliability
+
+Traditional uncertainty quantification (UQ) research has focused on single-turn question-answering scenarios, where an LLM produces one response and uncertainty is measured on that output alone. This approach treats uncertainty as static—something to be estimated after the fact. But agentic workflows operate fundamentally differently: agents interact with tools, query external systems, and engage in multi-turn dialogue where each action can reduce uncertainty by gathering new information.
+
+### Single-Turn vs. Multi-Turn Uncertainty
+
+In single-turn settings, uncertainty quantification measures how confident a model is in its answer to a standalone question. The model has access only to its training data and the immediate prompt context. Uncertainty accumulates from model limitations, ambiguous phrasing, and missing information.
+
+Agentic workflows change this dynamic. When an agent encounters uncertainty, it can take action: call a search API to retrieve missing facts, invoke a calculator to verify a computation, or ask a clarifying question in a multi-turn conversation. Each interaction potentially reduces uncertainty by adding information the agent lacked before.
+
+Recent work by Oh et al. (2026) introduces a framework that models this as **conditional uncertainty reduction** rather than accumulation. The key insight is that uncertainty in multi-turn settings is conditional on the agent's history of actions and observations. An agent facing an ambiguous requirement should have high uncertainty initially, but after asking a clarifying question and receiving a response, uncertainty should decrease for that specific aspect of the task.
+
+This perspective shifts how we think about agent reliability: instead of asking "how certain is the model?" we ask "how much can the agent reduce uncertainty through interaction?" Systems designed with this view can route high-uncertainty tasks through additional verification steps while allowing low-uncertainty tasks to proceed autonomously.
+
+### Reducible and Irreducible Uncertainty
+
+Not all uncertainty can be resolved through interaction. Understanding the distinction between **reducible** and **irreducible** uncertainty is essential for designing reliable agent systems.
+
+**Reducible uncertainty** can be addressed through agent actions:
+- **Missing data**: An agent writing a bug report realizes it does not know the software version. It can call a tool to retrieve this information.
+- **Ambiguous requirements**: An agent implementing a feature is unsure whether "fast" means sub-100ms or sub-1s latency. It can ask a clarifying question.
+- **Incomplete context**: An agent reviewing code notices a function call but cannot find the function definition in the files provided. It can search the repository for the missing definition.
+
+**Irreducible uncertainty** is fundamental to the problem domain:
+- **Inherent randomness**: Predicting whether a specific user will click an ad involves genuine randomness in human behaviour that no amount of data can fully eliminate.
+- **Unavailable information**: An agent asked to predict a merger outcome cannot access private board discussions or confidential financial data.
+- **Computational intractability**: Some questions require solving NP-hard problems where even perfect information would not yield efficient exact solutions.
+
+Mathematically, we can frame this distinction as comparing conditional probabilities: reducible uncertainty is the gap between P(correct | current\_information) and P(correct | optimal\_information), where "optimal" means all information the agent could acquire through tool use and interaction. Irreducible uncertainty is the remaining gap between P(correct | optimal\_information) and certainty.
+
+For practical agent design, this distinction matters because reducible uncertainty calls for better tool integration and interaction design, while irreducible uncertainty calls for escalation policies and conservative decision thresholds. An agent should not waste resources trying to reduce irreducible uncertainty, and it should not proceed confidently when reducible uncertainty remains high.
+
+> **Snippet status:** Runnable example pattern (demonstrates UQ-based decision gates).
+
+```python
+class UncertaintyAwareAgent:
+    """Agent that uses uncertainty thresholds to make decisions"""
+
+    def __init__(self, uncertainty_threshold=0.3, max_reduction_attempts=3):
+        self.uncertainty_threshold = uncertainty_threshold
+        self.max_reduction_attempts = max_reduction_attempts
+
+    async def execute_task(self, task):
+        """Execute task with uncertainty-based decision gates"""
+        result = await self.initial_attempt(task)
+        uncertainty = await self.estimate_uncertainty(result, task)
+
+        # Try to reduce uncertainty through interaction
+        attempts = 0
+        while uncertainty > self.uncertainty_threshold and attempts < self.max_reduction_attempts:
+            # Identify what information would reduce uncertainty
+            missing_info = await self.identify_uncertainty_source(result, task)
+
+            # Take action to acquire that information
+            new_info = await self.acquire_information(missing_info)
+
+            # Recompute with additional context
+            result = await self.refine_with_context(result, new_info)
+            uncertainty = await self.estimate_uncertainty(result, task)
+            attempts += 1
+
+        # Decision gate based on final uncertainty
+        if uncertainty > self.uncertainty_threshold:
+            return {'action': 'escalate', 'reason': 'irreducible_uncertainty',
+                    'uncertainty': uncertainty, 'result': result}
+        else:
+            return {'action': 'proceed', 'uncertainty': uncertainty, 'result': result}
+
+    async def estimate_uncertainty(self, result, task):
+        """Estimate uncertainty in current result"""
+        # Placeholder: real implementation would use model confidence scores,
+        # semantic consistency checks, or ensemble disagreement
+        return 0.2
+
+    async def identify_uncertainty_source(self, result, task):
+        """Identify what information is missing"""
+        # Placeholder: real implementation would analyze result gaps
+        return "version_info"
+
+    async def acquire_information(self, info_type):
+        """Use tools to acquire missing information"""
+        # Placeholder: real implementation would call tools/APIs
+        return {"version": "2.1.3"}
+```
+
+### Designing Safety Guardrails with UQ
+
+Uncertainty quantification provides a principled foundation for safety guardrails. Rather than relying solely on heuristics like "block all access to /etc" or "require approval for PRs over 500 lines," UQ-based guardrails can adapt to task context.
+
+**Integration with Progressive Autonomy** (Pattern B, earlier in this chapter): Start agents in suggest-only mode when uncertainty is high. As the agent successfully reduces uncertainty on similar tasks, graduate to autonomous execution. This pattern works because it directly tracks the reducible uncertainty: tasks where the agent consistently achieves low uncertainty become candidates for increased autonomy.
+
+**Integration with Human-in-the-Loop Escalation** (Pattern E, earlier in this chapter): Define escalation triggers based on uncertainty thresholds rather than task properties alone. For example:
+- If `uncertainty > 0.5` **and** `task_impact = "high"` → escalate to human review
+- If `uncertainty < 0.2` → proceed autonomously even for high-impact tasks (the agent has demonstrated it can reduce uncertainty)
+- If `attempts >= max_reduction_attempts` **and** `uncertainty > threshold` → escalate with "irreducible uncertainty" rationale
+
+**Practical implementation**: Track uncertainty across multiple dimensions:
+1. **Output correctness**: How confident is the model that its answer is correct?
+2. **Task interpretation**: How certain is the agent that it has understood the requirement correctly?
+3. **Tool reliability**: How confident is the agent that tool outputs are valid?
+4. **Environmental assumptions**: How certain is the agent about the state of external systems?
+
+When any dimension exceeds a threshold, route the task for additional verification. When all dimensions are below threshold, proceed with execution.
+
+This approach moves beyond fixed rules to adaptive guardrails that respond to the specific characteristics of each task. It combines the model's intrinsic uncertainty signals with the agent's demonstrated ability to reduce uncertainty through interaction, producing more reliable and maintainable safety boundaries.
+
+For more on multi-agent uncertainty propagation, see [Agent Orchestration](020-orchestration.md#uncertainty-propagation-in-multi-agent-systems).
+
 ## Metrics That Actually Matter
 
 Track these metrics to evaluate reliability improvements over time.
