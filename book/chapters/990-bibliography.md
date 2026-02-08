@@ -68,6 +68,7 @@ order: 99
 - Lean documentation. <https://lean-lang.org/learn/>. Accessed: 2026-02-05.
 - Coq. <https://coq.inria.fr/>. Accessed: 2026-02-05.
 - Isabelle. <https://isabelle.in.tum.de/>. Accessed: 2026-02-05.
+- AYNIG (All You Need Is Git): Git-native orchestration tool. <https://github.com/hacknlove/all-you-need-is-git>. Accessed: 2026-02-08. Note: Work-in-progress experimental implementation.
 
 <!-- Edit notes:
 Sections expanded: None (bibliography entries are an actual enumerable reference list that must remain as individual items)
