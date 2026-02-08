@@ -23,10 +23,15 @@ At any stage, any agent may reject by explaining the reason, adding `rejected`, 
 | Phase 1 execution (selected engine) | `workflow_dispatch` | `.github/workflows/issue-phase1-*.lock.yml` | `triaged-for-research` | _(none by default)_ | Posts phase 1 long-task analysis |
 | Phase 2 dispatcher | `issue_comment.created` (phase 1 completion comment) | `.github/workflows/issue-phase2-dispatch.yml` | `triaged-for-research` | _(dispatch only)_ | Selects engine in order Claude -> Codex -> Copilot |
 | Phase 2 execution (selected engine) | `workflow_dispatch` | `.github/workflows/issue-phase2-*.lock.yml` | `triaged-for-research` | _(none by default)_ | Posts phase 2 long-task delivery plan |
-| Assignment dispatcher | `issue_comment.created` (phase 2 completion comment) | `.github/workflows/issue-assignment-dispatch.yml` | `triaged-for-research` | _(dispatch only)_ | Dispatches assignment workflow |
+| Assignment dispatcher | `issue_comment.created` (phase 2 completion comment) | `.github/workflows/issue-assignment-dispatch.yml` | `triaged-for-research` | _(dispatch only)_ | Dispatches assignment workflow, then assigns and mentions all available coding agents for phase-3 handoff |
 | Assignment + close | `workflow_dispatch` | `.github/workflows/issue-assignment-close.lock.yml` | `triaged-for-research` | `assigned` | Posts assignment summary and closes issue |
 
 Slow-track downstream handoffs are comment-driven and dispatcher-based, so they do not depend on intermediate status labels. Configure `GH_AW_GITHUB_TOKEN` as a fine-grained PAT restricted to this repository with `Issues`, `Pull requests`, and `Contents` set to `Read and write`.
+
+Phase-3 implementation handoff policy:
+- Assignment dispatcher queries repository `suggestedActors` and determines availability of `openai-code-agent`, `anthropic-code-agent`, and `copilot-swe-agent`.
+- Dispatcher assigns all available coding agents and mentions them together in the phase-3 handoff comment.
+- Human maintainers choose which resulting PR path to continue with.
 
 Internet research policy:
 - External web tools in the research pass are enabled by default.

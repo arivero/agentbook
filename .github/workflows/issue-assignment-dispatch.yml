@@ -104,32 +104,46 @@ jobs:
             return 1
           }
 
-          mention_targets=()
+          available_agents=()
           if has_bot "copilot-swe-agent"; then
-            mention_targets+=("@copilot-swe-agent")
+            available_agents+=("copilot-swe-agent")
           fi
           if has_bot "openai-code-agent"; then
-            mention_targets+=("@openai-code-agent")
+            available_agents+=("openai-code-agent")
           fi
           if has_bot "anthropic-code-agent"; then
-            mention_targets+=("@anthropic-code-agent")
+            available_agents+=("anthropic-code-agent")
           fi
 
-          # Assign Copilot coding agent when available so it can pick up PR work.
-          if has_bot "copilot-swe-agent"; then
-            has_copilot_assignee="$(
-              gh issue view "${ISSUE_NUMBER}" \
-                --repo "${{ github.repository }}" \
-                --json assignees \
-                --jq 'any(.assignees[].login; . == "copilot-swe-agent")'
-            )"
-            if [ "${has_copilot_assignee}" != "true" ]; then
+          mapfile -t assignee_logins < <(
+            gh issue view "${ISSUE_NUMBER}" \
+              --repo "${{ github.repository }}" \
+              --json assignees \
+              --jq '.assignees[].login' \
+              || true
+          )
+
+          has_assignee() {
+            local target="$1"
+            local login
+            for login in "${assignee_logins[@]}"; do
+              if [ "${login}" = "${target}" ]; then
+                return 0
+              fi
+            done
+            return 1
+          }
+
+          mention_targets=()
+          for agent in "${available_agents[@]}"; do
+            mention_targets+=("@${agent}")
+            if ! has_assignee "${agent}"; then
               gh issue edit "${ISSUE_NUMBER}" \
                 --repo "${{ github.repository }}" \
-                --add-assignee "copilot-swe-agent" \
+                --add-assignee "${agent}" \
                 || true
             fi
-          fi
+          done
 
           mention_line="${mention_targets[*]}"
           if [ -z "${mention_line}" ]; then
@@ -138,4 +152,4 @@ jobs:
 
           gh issue comment "${ISSUE_NUMBER}" \
             --repo "${{ github.repository }}" \
-            --body "[GH-AW phase-3 handoff] ${mention_line} please take implementation ownership and open a pull request for this issue using the phase 1 and phase 2 outputs as the implementation plan."
+            --body "[GH-AW phase-3 handoff] ${mention_line} please take implementation ownership and open a pull request for this issue using the phase 1 and phase 2 outputs as the implementation plan. (assignment-policy: all-available)"
