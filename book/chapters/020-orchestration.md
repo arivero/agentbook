@@ -99,7 +99,8 @@ class MultiTurnSearchAgent:
             if self.is_sufficient(context):
                 return context
             
-        # Continue multi-turn reasoning...
+        # If no single location suffices, synthesize or continue searching
+        return self.synthesize_answer(query)
 ```
 
 This represents an emerging research direction in structure-aware agent reasoning. For the underlying tool design principles—single responsibility, clear interfaces, error handling—see [Skills and Tools Management](040-skills-tools.md). Future expansions of that chapter may include deeper coverage of complementary tool design patterns as the field matures.
