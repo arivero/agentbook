@@ -24,7 +24,7 @@
 #   Imports:
 #     - ../agents/phase2.md
 #
-# frontmatter-hash: e8061effb84c4c517d3edc0e673cad7c7eff582ebce282a95e78d370c80b8f43
+# frontmatter-hash: a849ca5138d0fba679ed437d1d614d155de6b354b8bbea097b8e0d4765493130
 
 name: "GH-AW Issue Phase 2 (Codex)"
 "on":
@@ -171,7 +171,7 @@ jobs:
           mkdir -p /tmp/gh-aw/safeoutputs
           mkdir -p /tmp/gh-aw/mcp-logs/safeoutputs
           cat > /opt/gh-aw/safeoutputs/config.json << 'EOF'
-          {"add_comment":{"max":1,"target":"*"},"add_labels":{"allowed":["phase-2-complete","rejected"],"max":2},"close_issue":{"max":1},"missing_data":{},"missing_tool":{},"noop":{"max":1}}
+          {"add_comment":{"max":1,"target":"*"},"add_labels":{"allowed":["rejected"],"max":1},"close_issue":{"max":1},"missing_data":{},"missing_tool":{},"noop":{"max":1}}
           EOF
           cat > /opt/gh-aw/safeoutputs/tools.json << 'EOF'
           [
@@ -221,7 +221,7 @@ jobs:
               "name": "add_comment"
             },
             {
-              "description": "Add labels to an existing GitHub issue or pull request for categorization and filtering. Labels must already exist in the repository. For creating new issues with labels, use create_issue with the labels property instead. CONSTRAINTS: Maximum 2 label(s) can be added. Only these labels are allowed: [phase-2-complete rejected]. Target: *.",
+              "description": "Add labels to an existing GitHub issue or pull request for categorization and filtering. Labels must already exist in the repository. For creating new issues with labels, use create_issue with the labels property instead. CONSTRAINTS: Maximum 1 label(s) can be added. Only these labels are allowed: [rejected]. Target: *.",
               "inputSchema": {
                 "additionalProperties": false,
                 "properties": {
@@ -637,13 +637,13 @@ jobs:
           ## Instructions
           
           - Read issue #__GH_AW_GITHUB_EVENT_INPUTS_ISSUE_NUMBER__ and all comments.
-          - Continue only when the issue is open and has label `phase-1-complete`.
-          - If label `phase-2-complete` is already present, exit with no action.
+          - Continue only when the issue is open and has label `triaged-for-research`.
+          - Continue only when a phase 1 analysis comment exists.
+          - If a prior phase 2 delivery comment already exists, exit with no action.
           - Produce one detailed phase 2 delivery comment:
             - provide implementation plan, milestones, and validation checklist.
             - call out developer-experience and rollout concerns.
             - include concrete source URLs (GitHub links and any relevant known external URLs).
-          - Add label `phase-2-complete`.
           - If the issue should be declined:
             - explain why,
             - add `rejected`,
@@ -1086,7 +1086,7 @@ jobs:
         uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
         env:
           GH_AW_AGENT_OUTPUT: ${{ env.GH_AW_AGENT_OUTPUT }}
-          GH_AW_SAFE_OUTPUTS_HANDLER_CONFIG: "{\"add_comment\":{\"max\":1,\"target\":\"*\"},\"add_labels\":{\"allowed\":[\"phase-2-complete\",\"rejected\"],\"max\":2,\"target\":\"*\"},\"close_issue\":{\"max\":1,\"target\":\"*\"},\"missing_data\":{},\"missing_tool\":{}}"
+          GH_AW_SAFE_OUTPUTS_HANDLER_CONFIG: "{\"add_comment\":{\"max\":1,\"target\":\"*\"},\"add_labels\":{\"allowed\":[\"rejected\"],\"max\":1,\"target\":\"*\"},\"close_issue\":{\"max\":1,\"target\":\"*\"},\"missing_data\":{},\"missing_tool\":{}}"
         with:
           github-token: ${{ secrets.GH_AW_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           script: |

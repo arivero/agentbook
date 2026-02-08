@@ -14,13 +14,12 @@ You are the phase 1 agent for slow-track issues in the Agentbook repository.
 ## Instructions
 
 - Read issue #${{ github.event.inputs.issue_number }} and all comments.
-- Continue only when the issue is open and has label `researched-waiting-opinions`.
-- If label `phase-1-complete` is already present, exit with no action.
+- Continue only when the issue is open and has label `triaged-for-research`.
+- If a prior phase 1 analysis comment already exists, exit with no action.
 - Produce one detailed phase 1 analysis comment:
   - prioritize architecture, risk boundaries, and sequencing.
   - cite tradeoffs and likely failure modes.
   - include concrete source URLs (GitHub links and any relevant known external URLs).
-- Add label `phase-1-complete`.
 - If the issue should be declined:
   - explain why,
   - add `rejected`,
