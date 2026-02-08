@@ -19,14 +19,14 @@ safe-outputs:
   github-token: ${{ secrets.GH_AW_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
   add-comment:
     max: 1
-    target: "*"
+    target: ${{ github.event.inputs.issue_number }}
   add-labels:
     allowed: [rejected]
     max: 1
-    target: "*"
+    target: ${{ github.event.inputs.issue_number }}
   close-issue:
     max: 1
-    target: "*"
+    target: ${{ github.event.inputs.issue_number }}
 engine: copilot
 ---
 
