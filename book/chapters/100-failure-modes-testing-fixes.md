@@ -160,6 +160,42 @@ Use a lightweight runbook so teams respond consistently. The sequence proceeds t
 
 **Learn.** Add a regression test and update documentation to prevent recurrence.
 
+## Uncertainty Quantification for Agent Reliability
+
+Interactive agents reduce and expose uncertainty across turns rather than accumulating it monotonically. Recent work on reducible uncertainty for reliable LLM agents (<https://arxiv.org/abs/2602.05073>) reframes uncertainty as something to actively shrink through information-seeking actions (tool calls, clarifying questions) and to acknowledge when it is irreducible.
+
+### Single-Turn vs. Multi-Turn Uncertainty
+
+Single-turn UQ assumes a fixed information set: confidence reflects how likely the model is correct given the current prompt. Multi-turn agents change that information set. Tool use fetches missing data, and dialogue uncovers constraints, so uncertainty should decrease when the agent acquires high-signal evidence—and increase when evidence is weak or contradictory. Treat uncertainty as conditional on the full trajectory so you can measure whether the agent is actually learning versus merely progressing through steps.
+
+### Reducible and Irreducible Uncertainty
+
+**Reducible uncertainty** is variability the agent can shrink by asking, looking up, or simulating. A planner that notices missing acceptance criteria should ask a clarifying question; a coding agent that lacks API details should retrieve docs before proceeding. Mathematically, you are improving estimates of \(P(\text{correct} \mid \text{history}, \text{actions})\) by conditioning on new observations. **Irreducible uncertainty** is baked into the domain: stochastic systems, incomplete external data, or ambiguity that cannot be resolved with available tools. Guardrails should differentiate the two: keep acting to reduce uncertainty when it is reducible, but escalate or contain when the remaining uncertainty is irreducible or high-impact.
+
+### Designing Safety Guardrails with UQ
+
+Use uncertainty signals to decide whether to seek more information, continue autonomously, or escalate. Pair thresholds with impact to avoid overconfidence on sensitive tasks.
+
+> **Snippet status:** Runnable shape (simplified for clarity).
+
+```python
+from enum import Enum
+
+class Impact(Enum):
+    LOW = "low"
+    HIGH = "high"
+
+
+def next_step(uncertainty: float, impact: Impact) -> str:
+    if uncertainty > 0.6 or (impact is Impact.HIGH and uncertainty > 0.4):
+        return "escalate_to_human"
+    if uncertainty > 0.3:
+        return "gather_more_context"  # ask a question or call a tool
+    return "proceed_autonomously"
+```
+
+Operationalise this by logging uncertainty alongside decisions, using higher thresholds for high-impact paths, and routing to Pattern E (Human-in-the-Loop Escalation) when irreducible uncertainty remains. In multi-agent flows, propagate uncertainty to coordinator agents so aggregate uncertainty informs whether to continue or pause; see [Agent Orchestration](020-orchestration.md#uncertainty-propagation-in-multi-agent-systems).
+
 ## Metrics That Actually Matter
 
 Track these metrics to evaluate reliability improvements over time.

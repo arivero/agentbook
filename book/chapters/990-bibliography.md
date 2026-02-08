@@ -9,6 +9,7 @@ order: 99
 - GitHub Agentic Workflows repository. <https://github.com/github/gh-aw>. Accessed: 2026-02-05.
 - GitHub Copilot documentation. <https://docs.github.com/en/copilot>. Accessed: 2026-02-05.
 - GitHub Copilot coding agent. [GitHub Docs](https://docs.github.com/en/copilot/how-tos/use-copilot-agents/coding-agent). Accessed: 2026-02-05.
+- Changdae Oh, Seongheon Park, To Eun Kim, Jiatong Li, Wendi Li, Samuel Yeh, Xuefeng Du, Hamed Hassani, Paul Bogdan, Dawn Song, Sharon Li. "Towards Reducible Uncertainty Modeling for Reliable Large Language Model Agents." arXiv:2602.05073, 2026-02-07. <https://arxiv.org/abs/2602.05073>. Accessed: 2026-02-08.
 - Copilot coding agent environment customization. [GitHub Docs](https://docs.github.com/en/copilot/how-tos/use-copilot-agents/coding-agent/customize-the-agent-environment). Accessed: 2026-02-05.
 - Model Context Protocol (MCP). <https://modelcontextprotocol.io/>. Accessed: 2026-02-05.
 - MCP Apps announcement. <http://blog.modelcontextprotocol.io/posts/2026-01-26-mcp-apps/>. Accessed: 2026-02-06.

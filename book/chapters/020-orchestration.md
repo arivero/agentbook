@@ -99,6 +99,10 @@ Keeping agents independent reduces the blast radius of failures and simplifies t
 
 > **Note:** Orchestration should surface a clear audit trail: who decided, who executed, and who approved. Capture this early so later chapters can build on it.
 
+### Uncertainty Propagation in Multi-Agent Systems
+
+Uncertainty compounds when agents hand work to each other. Supervisors and coordinators should track the confidence of each handoff, downgrade overall confidence when upstream evidence is weak, and ask agents to gather more context before continuing. For high-impact tasks, propagate an aggregate uncertainty score alongside artifacts so you can halt, route to a human, or change plans when confidence stalls; see [Common Failure Modes, Testing, and Fixes](100-failure-modes-testing-fixes.md#uncertainty-quantification-for-agent-reliability) for guardrail patterns.
+
 ## Orchestration Frameworks
 
 ### GitHub Actions
