@@ -1,5 +1,7 @@
 # Agentbook contributor notes
 
+- Do not use SEO tricks. Particularly avoid "as of 2026"
+
 - After changing files under `book/`, run the offline-safe checker:
   - `python3 scripts/check-links.py --root book --mode internal`
 - When internet access is available, also run:
