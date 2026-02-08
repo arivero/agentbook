@@ -70,6 +70,29 @@ Agents can also coordinate through shared data stores. These may include databas
 
 In some architectures, agents directly call other agents through function calls within a single process, API requests across network boundaries, or workflow triggers that start new agent executions. Direct invocation provides tight coupling and fast communication but can make the system harder to scale and debug.
 
+### Tool Coordination Within Agent Reasoning Loops
+
+Orchestration is not limited to agent-to-agent coordination. Single agents can run multi-turn loops that coordinate complementary tools, especially when answers depend on exploring a long document or dataset. Instead of issuing a single retrieval call and hoping the right snippet appears, the agent alternates between locating evidence and reading targeted context, making a go/no-go decision after each turn to stay within budget.
+
+The DeepRead pattern (Li et al., 2026; arXiv:2602.05014) illustrates this locate-then-read design. The source PDF is converted to structure-preserving Markdown that keeps headings, paragraphs, and coordinates. A **Retrieve** tool proposes candidate regions by semantic similarity, and a **ReadSection** tool returns contiguous context around a chosen coordinate so the agent can confirm or redirect. Each turn asks, “Is this enough to answer?” before requesting more, which reduces over-fetching and respects document boundaries.
+
+This coordination applies beyond document QA. Pair a coarse pointer tool with a focused context reader for log triage (find error spans, then read surrounding lines), notebook navigation (locate a symbol, then read the surrounding cell), or standards/specs (jump to a clause, then read locally). Keeping the tools simple and composable lets the agent adapt its search depth based on what it learns at each turn.
+
+```python
+class MultiTurnSearchAgent:
+    """Coordinate complementary locator/reader tools."""
+
+    def answer(self, query: str, document: Document) -> str:
+        candidates = self.retrieve_tool.find_relevant(query, document)
+        for loc in candidates:
+            context = self.read_section_tool.get_context(document, loc)
+            if self.is_sufficient(context, query):
+                return self.summarize(context, query)
+        return "More evidence needed"
+```
+
+Treat this as an emerging research direction rather than a settled best practice; the DeepRead results are recent and pre-peer-review. For principles on designing tools that compose cleanly, see [Skills and Tools](040-skills-tools.md).
+
 ## Best Practices
 
 ### Clear Responsibilities
