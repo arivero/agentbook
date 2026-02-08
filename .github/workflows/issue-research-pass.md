@@ -12,9 +12,17 @@ tools:
     toolsets: [issues, search]
   playwright:
     allowed_domains: [defaults, github]
+mcp-servers:
+  tavily:
+    command: npx
+    args: ["-y", "@tavily/mcp-server"]
+    env:
+      TAVILY_API_KEY: "${{ secrets.TAVILY_API_KEY }}"
+    allowed: ["search"]
 network:
   allowed:
     - defaults
+    - "*.tavily.com"
 safe-outputs:
   github-token: ${{ secrets.GH_AW_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
   add-comment:
@@ -37,7 +45,9 @@ You are the research agent for issues labeled for research.
 - If `triaged-for-research` is not present, exit with no action.
 - Research the topic using available tools:
   - Always use the **GitHub search** toolset to find related issues, discussions, or code across GitHub.
-  - Use **Playwright** for external sources when helpful.
+  - Prefer lower-cost retrieval first: use the **Playwright headless browser MCP** for known URLs and direct page retrieval.
+  - If shell tools are available and a raw fetch is enough, use `curl` for simple retrieval on allowed domains.
+  - Use **Tavily MCP search** when broad external discovery is needed or direct retrieval is insufficient.
 - Produce a short research comment with sources and implementation implications.
 - If the issue should be declined after research:
   - explain why,

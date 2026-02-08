@@ -76,6 +76,11 @@ For the `main` branch:
   - Fast-track path for small changes
   - Human review checkpoints before merge
 
+### 4. Daily Research Updates (`daily-research-updates.lock.yml`)
+- **Trigger**: Daily schedule, manual dispatch
+- **Purpose**: Scans seed feeds (Hacker News, Reddit RSS, arXiv RSS) plus broader web/social announcement sources for book-relevant updates
+- **Output**: Opens up to 2 high-signal GitHub issues per run when meaningful new items are found, after checking open issues and issues closed in the last 7 days
+
 ### Required Secret for Label-Triggered Handoffs
 
 Set `GH_AW_GITHUB_TOKEN` in repository secrets.
@@ -94,8 +99,8 @@ Classic PAT fallback:
 
 ### Optional Secret for Web Research
 
-Set `TAVILY_API_KEY` only if you want the research workflow to use Tavily for external web search.
-If this secret is not set, the research workflow can still operate in GitHub-only mode.
+Set `TAVILY_API_KEY` to enable the Tavily MCP server for external web discovery in research workflows.
+If this secret is not set, research still runs with GitHub search plus Playwright-based retrieval.
 
 ### Optional Secrets for Multi-Engine Slow-Track Phases
 
@@ -106,18 +111,13 @@ Set these if you want phase dispatch workflows to select Codex or Claude before 
 If either key is missing or invalid at runtime, dispatch falls through to the next engine in the configured order.
 Each phase dispatcher posts a token-health comment on the issue so operators can verify which credentials are still valid.
 
-### Internet Research Gate (`allow-internet-research`)
+### Web Research Behavior
 
-The research workflow is internet-gated by policy:
-- Default behavior is GitHub-only research.
-- External web research (Tavily/Playwright) is allowed only when issue label `allow-internet-research` is present.
-- GitHub-only research still permits GitHub-native discovery (for example GitHub search/toolsets).
-- If a concrete URL is already known, the agent may still fetch allowed-domain content through default MCP/browser capabilities; what is gated is open web discovery/search.
-
-Operator procedure:
-1. Let routing add `triaged-for-research`.
-2. Add `allow-internet-research` only when external sources are necessary and acceptable.
-3. Confirm `TAVILY_API_KEY` is configured if Tavily search is expected.
+The research workflow can use external research tools by default:
+- Prefer Playwright MCP for direct retrieval of known URLs to keep API costs low.
+- If available in the runtime, `curl` may be used for simple retrieval on allowed domains.
+- Use Tavily MCP (when `TAVILY_API_KEY` is configured) for broad web discovery when direct retrieval is not enough.
+- Always pair external sources with GitHub-native context when writing recommendations.
 
 ### How to Create `GH_AW_GITHUB_TOKEN` (Fine-Grained PAT)
 
@@ -163,7 +163,6 @@ The following labels are used by the automated workflows:
 - `acknowledged`
 - `triaged-fast-track`
 - `triaged-for-research`
-- `allow-internet-research` (optional gate for external web research)
 - `researched-waiting-opinions`
 - `phase-1-complete`
 - `phase-2-complete`
