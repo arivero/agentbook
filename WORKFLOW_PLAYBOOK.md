@@ -25,6 +25,7 @@ At any stage, any agent may reject by explaining the reason, adding `rejected`, 
 | Phase 2 execution (selected engine) | `workflow_dispatch` | `.github/workflows/issue-phase2-*.lock.yml` | `triaged-for-research` | _(none by default)_ | Posts phase 2 long-task delivery plan |
 | Assignment dispatcher | `issue_comment.created` (phase 2 completion comment) | `.github/workflows/issue-assignment-dispatch.yml` | `triaged-for-research` | _(dispatch only)_ | Dispatches assignment workflow, then assigns and mentions all available coding agents for phase-3 handoff |
 | Assignment + close | `workflow_dispatch` | `.github/workflows/issue-assignment-close.lock.yml` | `triaged-for-research` | `assigned` | Posts assignment summary and closes issue |
+| Weekly editorial quality pass | `schedule`, `workflow_dispatch` | `.github/workflows/weekly-editorial-quality.lock.yml` | _(n/a)_ | _(n/a)_ | Editorial agent opens a prose-quality PR or no-ops |
 
 Slow-track downstream handoffs are comment-driven and dispatcher-based, so they do not depend on intermediate status labels. Configure `GH_AW_GITHUB_TOKEN` as a fine-grained PAT restricted to this repository with `Issues`, `Pull requests`, and `Contents` set to `Read and write`.
 

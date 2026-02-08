@@ -81,6 +81,11 @@ For the `main` branch:
 - **Purpose**: Scans seed feeds (Hacker News, Reddit RSS, arXiv RSS) plus broader web/social announcement sources for book-relevant updates
 - **Output**: Opens up to 2 high-signal GitHub issues per run when meaningful new items are found, after checking open issues and issues closed in the last 7 days
 
+### 5. Weekly Editorial Quality Pass (`weekly-editorial-quality.lock.yml`)
+- **Trigger**: Weekly schedule, manual dispatch
+- **Purpose**: Runs a dedicated editorial agent for prose quality, structure consistency, and anti-clickbait style enforcement
+- **Output**: Opens at most 1 PR with high-value editorial improvements, or no-op when there is nothing meaningful to improve
+
 ### Required Secret for Label-Triggered Handoffs
 
 Set `GH_AW_GITHUB_TOKEN` in repository secrets.
