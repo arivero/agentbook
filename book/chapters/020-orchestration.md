@@ -70,6 +70,40 @@ Agents can also coordinate through shared data stores. These may include databas
 
 In some architectures, agents directly call other agents through function calls within a single process, API requests across network boundaries, or workflow triggers that start new agent executions. Direct invocation provides tight coupling and fast communication but can make the system harder to scale and debug.
 
+### Tool Coordination Within Agent Reasoning Loops
+
+While the orchestration patterns above focus on coordinating multiple agents, coordination also occurs at a finer granularity: within a single agent's multi-turn reasoning loop, tools can be designed to work synergistically. This pattern, sometimes called **complementary tool design**, creates tools that deliberately enhance each other's effectiveness rather than operating independently.
+
+A concrete example is the "locate then read" pattern demonstrated in recent document reasoning research. Consider an agent that needs to answer questions about long documents. Rather than providing a single monolithic retrieval tool, the system offers two complementary tools:
+
+- **Retrieve tool**: Searches for relevant document sections using semantic similarity, returning coordinates or references to potentially relevant locations
+- **ReadSection tool**: Reads contiguous document sections starting from a specified coordinate, providing full context around a location
+
+This coordination transforms one-shot retrieval into decision-driven, multi-turn evidence acquisition. The Retrieve tool identifies *where* relevant information might be, and the ReadSection tool provides the *context* needed to determine whether that location actually answers the question. The agent orchestrates these tools through multiple rounds: retrieve a location, read the context, decide whether to continue searching or synthesize an answer.
+
+The pattern extends beyond document search to any domain where "locate then examine" workflows are natural—codebase navigation (find function definition, then read surrounding context), log analysis (find error timestamp, then read adjacent log entries), or structured data exploration (locate relevant records, then fetch related entities).
+
+```python
+class MultiTurnSearchAgent:
+    """Agent coordinating complementary search tools"""
+    
+    def search(self, query: str, document: Document) -> str:
+        # Step 1: Locate relevant sections
+        locations = self.retrieve_tool.find_relevant(query, document)
+        
+        # Step 2: Read context around each location
+        for loc in locations:
+            context = self.read_section_tool.get_context(document, loc)
+            
+            # Step 3: Decide next action based on context
+            if self.is_sufficient(context):
+                return context
+            
+        # Continue multi-turn reasoning...
+```
+
+This represents an emerging research direction in structure-aware agent reasoning. For the underlying tool design principles—single responsibility, clear interfaces, error handling—see [Skills and Tools Management](040-skills-tools.md). Future expansions of that chapter may include deeper coverage of complementary tool design patterns as the field matures.
+
 ## Best Practices
 
 ### Clear Responsibilities
