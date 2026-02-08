@@ -7,7 +7,7 @@ order: 2
 
 ## Chapter Preview
 
-This chapter compares common orchestration patterns—sequential, parallel, hierarchical, event-driven, and git-native—and explains when to use each, helping you choose the right approach for your specific workflow requirements. It maps orchestration concepts to the roles introduced earlier—planner, executor, and reviewer—showing how these components interact in practice. Finally, it presents practical guardrails for coordination at scale, addressing the challenges that emerge when multiple agents work together on complex tasks.
+This chapter compares common orchestration patterns—sequential, parallel, hierarchical, and event-driven—and explains when to use each, helping you choose the right approach for your specific workflow requirements. It maps orchestration concepts to the roles introduced earlier—planner, executor, and reviewer—showing how these components interact in practice. Finally, it presents practical guardrails for coordination at scale, addressing the challenges that emerge when multiple agents work together on complex tasks.
 
 ## Understanding Agent Orchestration
 
@@ -56,36 +56,6 @@ Event -> Agent A -> Event -> Agent B -> Event -> Agent C
 
 **Use cases**: CI/CD pipelines are a natural fit for event-driven orchestration because each stage—build, test, deploy—triggers naturally from the completion of the previous stage. Automated issue management, where opening an issue triggers triage, triage triggers assignment, and assignment triggers implementation, follows the same pattern. Self-updating systems like this book use events (new issues, merged PRs) to trigger documentation updates.
 
-### Git-Native Orchestration
-Agents and humans coordinate through Git commits themselves, using commit messages with structured trailers to carry state and task information.
-
-**Core concept**: Instead of external orchestration platforms, agents read commit state from Git history, execute tasks based on commit trailers (e.g., `aynig: state-name`), and respond by creating new commits. Git worktrees enable parallel agent execution, and the Git history becomes the complete audit trail.
-
-**Example commit message**:
-```
-Implement user authentication
-
-aynig: review-needed
-aynig: assigned-to: security-agent
-aynig: depends-on: abc123
-```
-
-When an agent processes this commit, it reads the trailers, executes the appropriate state script (`.aynig/review-needed`), and creates a response commit with updated state.
-
-**Use cases**:
-- Distributed teams with limited infrastructure
-- Audit-critical workflows requiring full provenance
-- Projects prioritizing minimal external dependencies
-- Scenarios where humans and agents are peer contributors
-
-**Anti-use-cases**:
-- Real-time systems requiring immediate feedback
-- Workflows needing complex external tool integration
-- State machines with many concurrent transitions
-- Projects without disciplined commit message practices
-
-**Reference implementation**: [AYNIG (All You Need Is Git)](https://github.com/hacknlove/all-you-need-is-git) demonstrates this pattern experimentally (work-in-progress).
-
 ## Coordination Mechanisms
 
 ### Message Passing
@@ -99,6 +69,23 @@ Agents can also coordinate through shared data stores. These may include databas
 ### Direct Invocation
 
 In some architectures, agents directly call other agents through function calls within a single process, API requests across network boundaries, or workflow triggers that start new agent executions. Direct invocation provides tight coupling and fast communication but can make the system harder to scale and debug.
+
+### Git as Coordination Substrate
+
+Agents can coordinate through Git itself, using commits as the communication and state management layer. In this approach, agents read commit state from Git history, process tasks based on structured commit trailers (e.g., `aynig: state-name`), and respond by creating new commits with updated state. Git worktrees enable parallel agent execution, and the Git history becomes the complete audit trail.
+
+**Example commit message**:
+```
+Implement user authentication
+
+aynig: review-needed
+aynig: assigned-to: security-agent
+aynig: depends-on: abc123
+```
+
+When an agent processes this commit, it reads the trailers, executes the appropriate state script (`.aynig/review-needed`), and creates a response commit with updated state. This mechanism suits distributed teams with limited infrastructure, audit-critical workflows requiring full provenance, and scenarios where humans and agents are peer contributors. However, it requires disciplined commit message practices and is limited to Git-hosted projects.
+
+**Reference implementation**: [AYNIG (All You Need Is Git)](https://github.com/hacknlove/all-you-need-is-git) demonstrates this coordination mechanism experimentally (work-in-progress).
 
 ## Best Practices
 
