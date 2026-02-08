@@ -59,6 +59,26 @@ Use this taxonomy to classify incidents quickly and choose the right fix path.
 
 **Fast fixes.** Enforce allow and deny lists at the tool gateway level to prevent prohibited operations. Require policy checks in CI so violations are caught before merge. Route high-risk actions through human approval to ensure oversight.
 
+#### Execution Environment Containment
+
+Agent-generated code that executes without proper isolation creates severe security risks. When agents can write and run arbitrary code, insufficient sandboxing leads to credential theft, filesystem damage, lateral movement to other systems, and data exfiltration. These failures often go undetected until an incident occurs.
+
+**Examples of security failures with insufficient isolation:**
+
+*Shared kernel vulnerabilities* occur when container-based isolation allows kernel exploits to compromise the host system. An agent exploiting a container escape vulnerability gains full host access, potentially compromising all workloads on the machine and accessing secrets from other tenants.
+
+*Credential exposure in process memory* happens when secrets are passed as environment variables or command-line arguments. Any code running in the same environment—including malicious agent-generated code—can read these credentials from `/proc` or memory dumps. Once stolen, credentials can be exfiltrated and used for unauthorized access.
+
+*Unrestricted network access* enables data exfiltration and command-and-control communication. An agent without network allowlisting can connect to arbitrary servers, uploading sensitive data or receiving instructions from attackers. Without egress filtering, detecting this activity requires analysis of network flows after the fact.
+
+**Risk assessment guidance** helps determine when sandboxing is necessary versus overkill:
+
+*Sandboxing is essential* when agents execute code from untrusted sources (user-provided scripts, LLM-generated code, third-party plugins), when agents access production systems or sensitive data (customer databases, internal APIs, financial systems), when compliance requires audit trails and containment (HIPAA, SOC 2, PCI-DSS), or when blast radius must be limited (multi-tenant platforms, shared infrastructure).
+
+*Lighter isolation may suffice* when agents run only in development environments with no access to production, when all code is human-reviewed before execution, when the agent operates in read-only mode without write capabilities, or when the entire system runs in an already-isolated environment (dedicated VM, air-gapped network).
+
+The cost of implementing proper sandboxing is almost always lower than the cost of recovering from a security incident. Start with stronger isolation and relax it only after demonstrating that threats are mitigated through other controls. For sandboxing strategies and implementation patterns, see [Agentic Scaffolding](030-scaffolding.md#secure-execution-environments).
+
 ### 5) Collaboration and Workflow Failures
 
 **Symptoms.** Multiple agents make conflicting changes, overwriting each other's work. PRs churn with contradictory edits as agents undo each other's modifications. Work stalls due to unclear ownership, with no agent taking responsibility.
