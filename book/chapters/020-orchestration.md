@@ -7,7 +7,7 @@ order: 2
 
 ## Chapter Preview
 
-This chapter compares common orchestration patterns and explains when to use each, helping you choose the right approach for your specific workflow requirements. It maps orchestration concepts to the roles introduced earlier—planner, executor, and reviewer—showing how these components interact in practice. Finally, it presents practical guardrails for coordination at scale, addressing the challenges that emerge when multiple agents work together on complex tasks.
+This chapter compares five orchestration patterns—including git-native workflows that use Git commits as the control plane—and explains when to use each, helping you choose the right approach for your specific workflow requirements. It maps orchestration concepts to the roles introduced earlier—planner, executor, and reviewer—showing how these components interact in practice. Finally, it presents practical guardrails for coordination at scale, addressing the challenges that emerge when multiple agents work together on complex tasks.
 
 ## Understanding Agent Orchestration
 
@@ -55,6 +55,26 @@ Event -> Agent A -> Event -> Agent B -> Event -> Agent C
 ```
 
 **Use cases**: CI/CD pipelines are a natural fit for event-driven orchestration because each stage—build, test, deploy—triggers naturally from the completion of the previous stage. Automated issue management, where opening an issue triggers triage, triage triggers assignment, and assignment triggers implementation, follows the same pattern. Self-updating systems like this book use events (new issues, merged PRs) to trigger documentation updates.
+
+### Git-Native Orchestration
+Agents and humans coordinate through Git commits themselves, using structured trailers in commit messages to carry state and intent.
+
+Instead of relying on an external orchestrator, agents read commit trailers (for example, `aynig: review-needed`) and execute scripts bound to that state (such as `.aynig/review-needed`). They respond by creating new commits with updated trailers, while Git worktrees provide isolation for parallel runs. The Git history becomes the audit log, and humans can inspect or override agent actions through normal Git operations, contrasting with the GitHub Actions-driven approach in [GitHub Agentic Workflows (GH-AW)](060-gh-agentic-workflows.md).
+
+**Example commit message**:
+```
+Implement user authentication
+
+aynig: review-needed
+aynig: assigned-to: security-agent
+aynig: depends-on: abc123
+```
+
+**Use cases**: Audit-critical workflows that need provenance in Git history, teams with limited infrastructure that still want automation, and mixed human/agent collaboration in a single repository.
+
+**Anti-use-cases**: Real-time workflows that cannot wait for commits, tasks that depend on heavy external tooling beyond Git, or teams without disciplined commit practices (see [Common Failure Modes, Testing, and Fixes](100-failure-modes-testing-fixes.md) for conflict-handling guidance).
+
+**Reference**: [AYNIG (All You Need Is Git)](https://github.com/hacknlove/all-you-need-is-git) demonstrates this pattern experimentally; treat it as a minimal example rather than production-ready infrastructure.
 
 ## Coordination Mechanisms
 

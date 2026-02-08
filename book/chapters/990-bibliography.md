@@ -7,6 +7,7 @@ order: 99
 
 - GitHub Agentic Workflows documentation. <https://github.github.io/gh-aw/>. Accessed: 2026-02-05.
 - GitHub Agentic Workflows repository. <https://github.com/github/gh-aw>. Accessed: 2026-02-05.
+- AYNIG (All You Need Is Git) repository (git-native orchestration, work-in-progress). <https://github.com/hacknlove/all-you-need-is-git>. Accessed: 2026-02-08.
 - GitHub Copilot documentation. <https://docs.github.com/en/copilot>. Accessed: 2026-02-05.
 - GitHub Copilot coding agent. [GitHub Docs](https://docs.github.com/en/copilot/how-tos/use-copilot-agents/coding-agent). Accessed: 2026-02-05.
 - Copilot coding agent environment customization. [GitHub Docs](https://docs.github.com/en/copilot/how-tos/use-copilot-agents/coding-agent/customize-the-agent-environment). Accessed: 2026-02-05.
