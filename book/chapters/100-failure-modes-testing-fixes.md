@@ -160,6 +160,95 @@ Use a lightweight runbook so teams respond consistently. The sequence proceeds t
 
 **Learn.** Add a regression test and update documentation to prevent recurrence.
 
+## Uncertainty Quantification for Agent Reliability
+
+Reliable agents must know when they don't know. Uncertainty quantification (UQ) provides a principled framework for agents to express confidence in their outputs and decisions, enabling safer deployment in high-stakes environments.
+
+### Single-Turn vs. Multi-Turn Uncertainty
+
+Traditional uncertainty quantification research focuses on single-turn question-answering scenarios, where an agent receives a query and produces an answer. In these settings, uncertainty accumulates: each reasoning step adds more uncertainty, and the final confidence is the compound of all intermediate uncertainties.
+
+Interactive agents work differently. Through tool use, multi-turn dialogue, and environmental feedback, agents actively reduce uncertainty as they progress. A code-writing agent may start with high uncertainty about requirements, then clarify them through conversation. A data analysis agent may begin uncertain about data quality, then validate it through sanity checks. This is a *conditional uncertainty reduction process*, where uncertainty changes based on what the agent learns through interaction.
+
+Oh et al. (2026) present the first general formulation of uncertainty quantification for interactive LLM agents, explicitly modeling how agents reduce uncertainty through action. Their framework shifts the focus from accumulation to reduction: `P(correct | history, action)` captures how each action changes the agent's epistemic state. This perspective is critical for realistic agentic workflows, where agents don't just answer questions—they explore, experiment, and adapt.
+
+### Reducible and Irreducible Uncertainty
+
+Not all uncertainty can be eliminated through interaction. Understanding the distinction between *reducible* and *irreducible* uncertainty helps agents decide when to act autonomously versus when to escalate.
+
+**Reducible uncertainty** can be addressed through interaction:
+- Missing data: An agent can call a retrieval tool or query an API to obtain the information
+- Ambiguous requirements: The agent can ask clarifying questions to resolve ambiguity
+- Unverified assumptions: The agent can run tests or simulations to validate hypotheses
+- Environmental unknowns: The agent can probe the system state through observations
+
+**Irreducible uncertainty** is fundamental to the problem domain:
+- Inherent randomness in the environment (weather, user behaviour, network latency)
+- Incomplete information that no tool can provide (future events, hidden state)
+- Computational intractability (NP-hard problems without approximation guarantees)
+- Model limitations (knowledge cutoff dates, training data gaps)
+
+This distinction has practical implications for agent design. When facing reducible uncertainty, agents should actively seek information. When facing irreducible uncertainty, agents should express confidence bounds and consider escalation.
+
+> **Snippet status:** Runnable shape (extends Chapter 90's UncertaintyAwareAgent pattern).
+
+```python
+class UQAgent:
+    """Agent with uncertainty-aware decision gates"""
+    
+    def __init__(self, threshold_low=0.3, threshold_high=0.7):
+        self.threshold_low = threshold_low    # Below this: definitely escalate
+        self.threshold_high = threshold_high  # Above this: act autonomously
+    
+    async def execute_task(self, task, max_reduction_steps=3):
+        confidence = await self.estimate_confidence(task)
+        step = 0
+        
+        while confidence < self.threshold_high and step < max_reduction_steps:
+            # Try to reduce uncertainty through interaction
+            reducible = await self.identify_reducible_uncertainty(task)
+            
+            if not reducible:
+                # Irreducible uncertainty remains
+                break
+            
+            # Take action to reduce uncertainty
+            await self.reduce_uncertainty(task, reducible)
+            confidence = await self.estimate_confidence(task)
+            step += 1
+        
+        # Decision gate based on final confidence
+        if confidence >= self.threshold_high:
+            return await self.execute_autonomously(task)
+        elif confidence <= self.threshold_low:
+            return await self.escalate_to_human(task, reason="low confidence")
+        else:
+            # Medium confidence: execute with review
+            result = await self.execute_autonomously(task)
+            return await self.request_human_review(result)
+```
+
+This pattern integrates uncertainty quantification directly into the agent's decision loop, making confidence thresholds explicit rather than implicit.
+
+### Designing Safety Guardrails with UQ
+
+Uncertainty quantification provides a principled foundation for the Human-in-the-Loop Escalation pattern (Pattern E above). Rather than relying on heuristics alone, UQ-based guardrails combine confidence metrics with task impact to determine when human oversight is required.
+
+**Escalation triggers based on uncertainty:**
+- **Low confidence + high impact**: Always escalate (e.g., deploying code to production with <50% confidence)
+- **Low confidence + low impact**: Execute with logging (e.g., updating documentation with <50% confidence)
+- **High confidence + high impact**: Execute with post-hoc review (e.g., deploying to production with >90% confidence, but flag for audit)
+- **High confidence + low impact**: Fully autonomous (e.g., fixing typos with >90% confidence)
+
+This approach extends the Progressive Autonomy pattern (Pattern B above). Agents start in "suggest-only" mode until they demonstrate reliable uncertainty estimates. Once calibrated—meaning their confidence scores match actual success rates—they can graduate to autonomous execution within defined confidence bounds.
+
+**Integration with existing patterns:**
+- **Contract Hardening (Pattern A)**: Include uncertainty bounds in tool schemas (`{"result": value, "confidence": 0.85}`)
+- **Two-Phase Execution (Pattern C)**: In the plan phase, estimate uncertainty for each proposed action; in the apply phase, execute only actions above the confidence threshold
+- **Fallback and Circuit Breakers (Pattern D)**: Trigger fallback workflows when average confidence drops below baseline
+
+By making uncertainty explicit, teams can tune guardrails based on empirical evidence rather than intuition. Track the relationship between confidence scores and actual outcomes to calibrate thresholds over time.
+
 ## Metrics That Actually Matter
 
 Track these metrics to evaluate reliability improvements over time.
