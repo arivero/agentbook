@@ -33,7 +33,25 @@ jobs:
     env:
       ISSUE_NUMBER: ${{ github.event.issue.number || github.event.inputs.issue_number }}
     steps:
+      - name: Verify issue is eligible for phase 2
+        id: gate
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+
+          state="$(gh issue view "${ISSUE_NUMBER}" --repo "${{ github.repository }}" --json state --jq '.state')"
+          has_triaged="$(gh issue view "${ISSUE_NUMBER}" --repo "${{ github.repository }}" --json labels --jq 'any(.labels[].name; . == "triaged-for-research")')"
+          has_rejected="$(gh issue view "${ISSUE_NUMBER}" --repo "${{ github.repository }}" --json labels --jq 'any(.labels[].name; . == "rejected")')"
+
+          if [ "${state}" = "OPEN" ] && [ "${has_triaged}" = "true" ] && [ "${has_rejected}" != "true" ]; then
+            echo "ready=true" >> "${GITHUB_OUTPUT}"
+          else
+            echo "ready=false" >> "${GITHUB_OUTPUT}"
+          fi
+
       - name: Select phase 2 engine by token health
+        if: ${{ steps.gate.outputs.ready == 'true' }}
         id: select
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
@@ -93,23 +111,6 @@ jobs:
             echo "anthropic_status=${anthropic_status}"
             echo "copilot_status=${copilot_status}"
           } >> "${GITHUB_OUTPUT}"
-
-      - name: Verify issue is eligible for phase 2
-        id: gate
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          set -euo pipefail
-
-          state="$(gh issue view "${ISSUE_NUMBER}" --repo "${{ github.repository }}" --json state --jq '.state')"
-          has_triaged="$(gh issue view "${ISSUE_NUMBER}" --repo "${{ github.repository }}" --json labels --jq 'any(.labels[].name; . == "triaged-for-research")')"
-          has_rejected="$(gh issue view "${ISSUE_NUMBER}" --repo "${{ github.repository }}" --json labels --jq 'any(.labels[].name; . == "rejected")')"
-
-          if [ "${state}" = "OPEN" ] && [ "${has_triaged}" = "true" ] && [ "${has_rejected}" != "true" ]; then
-            echo "ready=true" >> "${GITHUB_OUTPUT}"
-          else
-            echo "ready=false" >> "${GITHUB_OUTPUT}"
-          fi
 
       - name: Dispatch selected phase 2 workflow
         if: ${{ steps.gate.outputs.ready == 'true' && steps.select.outputs.selected_workflow != '' }}
