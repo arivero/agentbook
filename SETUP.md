@@ -161,6 +161,7 @@ The research workflow can use external research tools by default:
 The following labels are used by the automated workflows:
 
 - `acknowledged`
+- `blog-track` (optional: notable non-core items; assessment auto-routes to fast-track)
 - `triaged-fast-track`
 - `triaged-for-research`
 - `researched-waiting-opinions`

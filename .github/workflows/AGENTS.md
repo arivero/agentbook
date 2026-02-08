@@ -16,6 +16,7 @@
     - Reference: https://github.com/github/gh-aw/blob/main/.github/aw/github-agentic-workflows.md#safe-outputs
 - Issue status labels must follow this lifecycle unless explicitly rejected/closed early:
   - `acknowledged`
+  - `blog-track` (optional marker for notable non-core daily updates; routing auto-sends these to fast-track)
   - `triaged-fast-track` **or** `triaged-for-research`
   - `assigned`
 - Any agent may reject at any stage by posting rationale, adding `rejected`, and closing the issue.
