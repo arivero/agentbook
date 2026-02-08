@@ -21,8 +21,8 @@ safe-outputs:
     max: 1
     target: "*"
   add-labels:
-    allowed: [phase-2-complete, rejected]
-    max: 2
+    allowed: [rejected]
+    max: 1
     target: "*"
   close-issue:
     max: 1

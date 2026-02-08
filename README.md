@@ -31,7 +31,7 @@ The book covers practical patterns for agentic workflows, safe orchestration, sk
 3. **Agentic Routing**: A GH-AW routing workflow classifies the suggestion
 4. **Agent Processing**:
    - **`triaged-fast-track`** for small low-risk fixes
-   - **`triaged-for-research`** then **`researched-waiting-opinions`** for larger/ambiguous updates
+   - **`triaged-for-research`** for larger/ambiguous updates (then research -> phase 1 -> phase 2 -> assignment)
 5. **Automatic Build**: PDF build and site deployment workflows run
 6. **Publishing**: Changes deploy to GitHub Pages
 
@@ -45,7 +45,7 @@ The primary way to contribute is by **opening an issue** with your suggestion:
 
 1. **[Open an issue](https://github.com/arivero/agentbook/issues/new/choose)** using our Content Suggestion template
 2. **Automated Processing**: Our GitHub Agentic Workflows (GH-AW) will analyze your suggestion
-3. **Follow Updates**: The issue moves through labels: `acknowledged` → `triaged-fast-track` or `triaged-for-research` → `researched-waiting-opinions` → `phase-1-complete` → `phase-2-complete` → `assigned`
+3. **Follow Updates**: The issue moves through labels: `acknowledged` → `triaged-fast-track` or `triaged-for-research` → `assigned` (or `rejected`). Slow-track phases are tracked via agent comments.
 
 **What happens to suggestions:**
 - ✅ **Accepted (fast-track)**: Routed with `triaged-fast-track`, implemented by Copilot, PR opened, and issue closed

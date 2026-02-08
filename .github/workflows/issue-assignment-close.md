@@ -1,9 +1,14 @@
 ---
 name: GH-AW Issue Assignment + Close
 on:
-  issues:
-    types: [labeled]
-    names: [phase-2-complete]
+  workflow_dispatch:
+    inputs:
+      issue_number:
+        description: Issue number to close
+        required: true
+        type: string
+concurrency:
+  group: gh-aw-${{ github.workflow }}-${{ github.event.inputs.issue_number }}
 permissions:
   contents: read
   issues: read
@@ -14,11 +19,14 @@ safe-outputs:
   github-token: ${{ secrets.GH_AW_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
   add-comment:
     max: 1
+    target: "*"
   add-labels:
     allowed: [assigned, rejected]
     max: 2
+    target: "*"
   close-issue:
     max: 1
+    target: "*"
 engine: copilot
 ---
 
@@ -28,8 +36,10 @@ You are the assignment agent.
 
 ## Instructions
 
-- Read issue #${{ github.event.issue.number }} and all labels.
-- Continue only when `phase-2-complete` is present.
+- Read issue #${{ github.event.inputs.issue_number }} and all comments.
+- Continue only when the issue is open and has label `triaged-for-research`.
+- Continue only when a phase 2 delivery comment exists.
+- If label `assigned` is already present, exit with no action.
 - Post an assignment summary comment that cites the phase outputs.
 - Add label `assigned`.
 - Close the issue.

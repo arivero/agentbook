@@ -17,8 +17,5 @@
 - Issue status labels must follow this lifecycle unless explicitly rejected/closed early:
   - `acknowledged`
   - `triaged-fast-track` **or** `triaged-for-research`
-  - `researched-waiting-opinions`
-  - `phase-1-complete`
-  - `phase-2-complete`
   - `assigned`
 - Any agent may reject at any stage by posting rationale, adding `rejected`, and closing the issue.
