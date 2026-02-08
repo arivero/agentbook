@@ -112,6 +112,18 @@ Do not open issues for:
 - purely promotional content,
 - items already covered by an open issue or a closed issue from the last 7 days.
 
+## Impact threshold (strict)
+
+Only escalate items that are clearly high-impact for this book. Favor precision over volume.
+
+Treat an item as high-impact only when at least one is true:
+- it introduces a major capability shift (for example a significant model/tool/protocol release),
+- it changes practical implementation guidance readers would follow,
+- it materially affects reliability/safety/cost tradeoffs in production workflows,
+- it is already driving broad technical adoption or ecosystem behavior.
+
+If the day's harvest is mostly low-interest, minor, speculative, or repetitive, open **no issues**.
+
 ## Relevance framing (whole-book + chapter-specific)
 
 For each candidate update, evaluate relevance at both levels:
@@ -142,6 +154,7 @@ Only open an issue when both are true:
   - closed issues from the last 7 days (using date-qualified GitHub issue search).
 - Create at most **2** issues per run.
 - Create one issue per distinct update.
+- If fewer than 1-2 items meet the strict high-impact bar, create fewer issues (including zero).
 - Use title format: `[Daily Update] <concise headline>`.
 - Include these sections in the body:
   - `## Summary`
@@ -154,4 +167,4 @@ Only open an issue when both are true:
 
 - Use safe outputs for issue creation.
 - Do not call GitHub write tools directly.
-- If no qualifying updates are found, call `noop` with a brief status message.
+- If no high-impact qualifying updates are found, call `noop` with a brief status message explaining why no issue was opened.
