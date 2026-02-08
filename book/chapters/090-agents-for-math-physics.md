@@ -267,6 +267,130 @@ class HybridMathAgent:
         }
 ```
 
+### SageMath and Multi-CAS Fallback Patterns
+
+SageMath (<https://www.sagemath.org/>) provides a unified Python-based interface to multiple computer algebra systems (Maxima, GAP, PARI/GP, Singular, SymPy). Unlike proprietary CAS tools, SageMath's open-source nature enables deep agent integration and demonstrates a powerful architectural pattern: **multi-CAS fallback chains**.
+
+**The Multi-CAS Fallback Pattern**
+
+When one CAS cannot solve a problem (due to feature limitations, timeouts, or errors), the agent automatically tries alternative systems. This differs from the single-tool approaches common in proprietary systems:
+
+```python
+class MultiCASAgent:
+    """Agent using SageMath with multi-system fallback"""
+    
+    def __init__(self):
+        # SageMath provides unified access to multiple CAS
+        self.cas_chain = [
+            ('sympy', self._solve_with_sympy),
+            ('maxima', self._solve_with_maxima),
+            ('numerical', self._solve_numerically)
+        ]
+    
+    async def solve_differential_equation(self, equation_str: str, 
+                                          variable: str = 'x') -> dict:
+        """Solve differential equation with fallback strategy"""
+        
+        for cas_name, solver_func in self.cas_chain:
+            try:
+                result = await solver_func(equation_str, variable)
+                if result.verified:
+                    return {
+                        'solution': result.expression,
+                        'method': cas_name,
+                        'verification': result.verification_steps
+                    }
+            except (TimeoutError, NotImplementedError) as e:
+                # Log failure and try next CAS
+                self.log_fallback(cas_name, equation_str, str(e))
+                continue
+        
+        # All symbolic methods failed
+        return {
+            'solution': None,
+            'error': 'No CAS could solve this equation',
+            'attempted_methods': [name for name, _ in self.cas_chain]
+        }
+    
+    async def _solve_with_sympy(self, equation: str, var: str):
+        """Fast, pure-Python symbolic solving"""
+        from sage.symbolic.expression import Expression
+        from sage.calculus.desolvers import desolve
+        
+        expr = Expression(equation)
+        solution = desolve(expr, var, algorithm='sympy')
+        
+        # Verify by substitution
+        verified = self._verify_solution(expr, solution)
+        return SolutionResult(solution, verified)
+    
+    async def _solve_with_maxima(self, equation: str, var: str):
+        """Robust CAS with broad feature coverage"""
+        # Maxima excels at integration and differential equations
+        from sage.calculus.desolvers import desolve
+        
+        expr = Expression(equation)
+        solution = desolve(expr, var, algorithm='maxima')
+        verified = self._verify_solution(expr, solution)
+        return SolutionResult(solution, verified)
+    
+    async def _solve_numerically(self, equation: str, var: str):
+        """Fallback to numerical methods when symbolic fails"""
+        from sage.calculus.ode import ode_solver
+        
+        # Numerical integration as last resort
+        solver = ode_solver()
+        solver.function = equation
+        solution = solver.solve()
+        return SolutionResult(solution, verified=False)
+```
+
+**Task-Specific Routing**
+
+Sophisticated agents route problems to the optimal CAS based on problem type:
+
+```python
+class TaskRoutingAgent:
+    """Route mathematical tasks to specialized CAS"""
+    
+    def __init__(self):
+        self.routing_table = {
+            'combinatorics': 'gap',      # Group theory, combinatorics
+            'number_theory': 'pari',     # Number theory, cryptography
+            'polynomial': 'singular',    # Commutative algebra
+            'calculus': 'maxima',        # Integration, ODEs
+            'general': 'sympy'           # Fast, broad coverage
+        }
+    
+    async def solve(self, problem: str) -> dict:
+        """Route problem to appropriate CAS"""
+        
+        # Classify problem type (could use LLM here)
+        problem_type = self.classify_problem(problem)
+        primary_cas = self.routing_table.get(problem_type, 'sympy')
+        
+        # Try primary CAS
+        try:
+            return await self.execute_in_cas(primary_cas, problem)
+        except Exception:
+            # Fall back to general-purpose solver
+            return await self.execute_in_cas('sympy', problem)
+```
+
+**Key Advantages**
+
+1. **Fault Tolerance**: If one CAS crashes or times out, others provide backup
+2. **Feature Coverage**: Different systems excel at different problem classes
+3. **Cost Efficiency**: Try fast methods first, expensive methods only when needed
+4. **Open Source**: No vendor lock-in, full control over integration
+
+This pattern is particularly valuable for research automation and educational tools where robustness matters more than raw performance. Production systems serving diverse mathematical queries benefit from routing intelligence that matches problems to specialized solvers.
+
+**References**:
+- SageMath: <https://www.sagemath.org/>
+- SageMath GitHub: <https://github.com/sagemath/sage>
+- Multi-CAS comparison: <https://github.com/Foadsf/Awesome-FLOSS-CAS>
+
 ## Physics Simulation Agents
 
 ### Computational Physics Workflows
