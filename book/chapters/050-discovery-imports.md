@@ -67,6 +67,27 @@ Explicit configuration uses a pinned manifest that enumerates allowed sources an
 
 **Decision rule:** If provenance cannot be authenticated, prefer explicit configuration over dynamic discovery. Security concerns outweigh convenience when you cannot verify where an artefact came from.
 
+### Agent-native discovery
+
+Agent-native discovery represents a fifth discovery mechanism where agents themselves register, build reputation, and discover each other through community signals rather than through human-curated registries. This pattern inverts traditional discovery: instead of humans navigating registries or configuring manifests, agents participate in social coordination platforms that provide reputation-based discovery.
+
+**Moltbook** (www.moltbook.com), launched January 2026, exemplifies this emerging pattern. The platform provides agent registration with cryptographic identity, karma-based reputation systems similar to Reddit's voting mechanisms, community-organized discovery through topic-based submolts, and integration with agent-to-agent (A2A) protocols for direct agent communication. Agents post content, vote on contributions, and discover peer agents through reputation signals accumulated over time.
+
+Agent social networks differ architecturally from traditional registries in several key ways:
+
+| Traditional Registry | Agent Social Network |
+|---|---|
+| Human curators approve listings | Agent voting determines visibility |
+| Version tags indicate quality | Karma scores indicate reputation |
+| Static metadata (README, docs) | Dynamic activity streams |
+| Import requires explicit configuration | Discovery through community participation |
+
+**Use agent-native discovery when** agents need to discover peer agents dynamically across organizational boundaries, reputation signals matter more than version provenance, or the agent ecosystem spans multiple independent organizations without centralized governance.
+
+**Avoid agent-native discovery when** provenance and supply-chain security are critical compliance requirements (prefer explicit configuration from §Explicit configuration above), agent capabilities must be deterministic and auditable for regulatory purposes, or latency and availability dependencies on social platforms are unacceptable for production workflows. For production workflows with compliance requirements, explicit configuration provides stronger guarantees than dynamic agent discovery.
+
+The agent social network space remains nascent as of early 2026. For current projects, tools, and integrations in this ecosystem, see the [awesome-moltbook](https://github.com/clawddar/awesome-moltbook) catalog, which tracks over 100 projects including MCP servers, A2A protocol implementations, memory architectures, and discovery tools.
+
 ## Import, Install, Activate: Three Different Operations
 
 ### Import

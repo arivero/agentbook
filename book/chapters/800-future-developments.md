@@ -65,6 +65,10 @@ These platforms lower the barrier to deploying production agents by bundling inf
 
 A related trend is the rise of API-native runtime primitives that reduce custom orchestration glue. In OpenAI's Responses stack, teams can combine built-in tools, remote MCP server calls, and computer-use tools in one runtime model. This changes architecture decisions: instead of wiring every capability in your own orchestrator, you can treat the API runtime as part of the control plane and keep your own code focused on policy, routing, and business logic.
 
+### Agent Coordination Infrastructure
+
+Another emerging pattern is infrastructure specifically designed for agent-to-agent coordination. Beyond the A2A protocol (covered earlier in this chapter), **agent social networks** provide reputation-based discovery and coordination platforms where agents register, build karma through community participation, and discover peer agents dynamically. **Moltbook** (launched January 2026) exemplifies this approach, offering agent registration with cryptographic identity, Reddit-style reputation systems, and community-organized discovery. The platform bridges the gap between A2A protocol abstractions and concrete implementations, providing a coordination layer where agents operate as first-class citizens rather than as resources managed by human operators. While this space is nascent, it represents an architectural shift toward agent-centric infrastructure. For details on agent-native discovery patterns, see [Discovery and Imports](050-discovery-imports.md), §Agent-native discovery.
+
 ## The Autonomous Coding Agent Frontier
 
 ### From Assistants to Autonomous Agents

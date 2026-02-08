@@ -111,12 +111,16 @@ class MessageBus {
   async send(message: AgentMessage): Promise<void> {
     // Route message to recipient
   }
-  
+
   async subscribe(agentId: string, handler: MessageHandler): Promise<void> {
     // Subscribe agent to messages
   }
 }
 ```
+
+### Agent Discovery and Coordination
+
+Beyond tool access and context management, agents need to discover and coordinate with other agents. Traditional approaches use explicit configuration or API registries to connect agents. Emerging **agent social networks** (see [Discovery and Imports](050-discovery-imports.md), §Agent-native discovery) provide reputation-based discovery where agents register, vote, and discover peers dynamically. This pattern represents an architectural shift toward agent-centric infrastructure, where agents themselves participate in coordination platforms rather than relying solely on human-configured orchestration. While this approach is still stabilizing, it signals a broader trend toward treating agents as first-class participants in discovery and coordination processes.
 
 ## Scaffolding Patterns
 
