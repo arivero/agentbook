@@ -70,6 +70,35 @@ Agents can also coordinate through shared data stores. These may include databas
 
 In some architectures, agents directly call other agents through function calls within a single process, API requests across network boundaries, or workflow triggers that start new agent executions. Direct invocation provides tight coupling and fast communication but can make the system harder to scale and debug.
 
+### Tool Coordination Within Agent Reasoning Loops
+
+While the orchestration patterns above focus on coordinating multiple agents, a related coordination challenge occurs within a single agent's multi-turn reasoning process. When agents need to gather information or solve problems over multiple steps, they benefit from tools designed to work together synergistically rather than independently.
+
+A recent example of this pattern is structure-aware document search, where complementary tools enable "locate then read" behaviour. Consider an agent equipped with two coordinated tools: a **Retrieve** tool that searches for relevant document sections using semantic similarity, and a **ReadSection** tool that reads contiguous context starting from a specific document coordinate. The Retrieve tool identifies potentially relevant locations, while the ReadSection tool provides the surrounding context needed to understand those locations fully.
+
+This tool coordination pattern extends beyond document QA to other domains requiring structured exploration. Code navigation systems can pair symbol search with definition expansion. Log analysis tools can combine pattern matching with context retrieval. The key insight is that tools deliberately designed to complement each other—one locating candidates, another providing context—enable more effective multi-turn reasoning than independent tools operating in isolation.
+
+```python
+class MultiTurnSearchAgent:
+    """Agent coordinating complementary search tools"""
+
+    def search(self, query: str, document: Document) -> str:
+        # Step 1: Locate relevant sections
+        locations = self.retrieve_tool.find_relevant(query, document)
+
+        # Step 2: Read context around each location
+        for loc in locations:
+            context = self.read_section_tool.get_context(document, loc)
+
+            # Step 3: Decide next action based on context
+            if self.is_sufficient(context):
+                return context
+
+        # Continue multi-turn reasoning...
+```
+
+This represents an emerging research direction in agent tool design, where the focus shifts from individual tool capabilities to deliberate coordination between tools within an agent's reasoning loop. For principles of tool design that enable such coordination, see Chapter 040 (Skills and Tools Management).
+
 ## Best Practices
 
 ### Clear Responsibilities
