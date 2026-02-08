@@ -740,9 +740,9 @@ PhysProver (<https://arxiv.org/abs/2601.15737>) extends automated theorem provin
 
 *Putnam 2024 score; Putnam 2025 results not reported.
 
-### Open-Source Activity Signals (February 2026)
+### Open-Source Activity Signals
 
-Recent GitHub activity highlights which public repos remain healthy and where the community is clustering:
+Collected February 2026 to show which public repos remain healthy and where the community is clustering:
 
 | Repository | Focus | Stars (Feb 2026) | Recent Activity | Impact Notes |
 |------------|-------|------------------|-----------------|--------------|
