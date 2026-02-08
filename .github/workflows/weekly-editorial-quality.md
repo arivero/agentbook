@@ -25,8 +25,23 @@ You are the editorial quality agent for this book.
 - Primary scope:
   - `book/README.md`
   - `book/chapters/*.md`
+- Required read-only context before making factual edits:
+  - `README.md`
+  - `_config.yml`
+  - `book/index.md`
+  - `.github/workflows/pages.yml`
 - Do not edit generated artifacts or automation files.
 - Preserve technical meaning and factual intent while improving prose quality.
+
+## Fact-check protocol (mandatory)
+
+- Never make factual corrections from assumption. Verify against repository sources first.
+- Canonical publication facts for this project:
+  - Online book URL: `https://arivero.github.io/agentbook`
+  - PDF URL: `https://github.com/arivero/agentbook/raw/main/book/agentic-workflows-book.pdf`
+- Treat these as source-of-truth unless `README.md`, `_config.yml`, or `book/index.md` explicitly changed.
+- Do not introduce claims that the book URL is missing, unavailable, or unknown when the canonical sources above are present.
+- For publication/accessibility claims, cross-check both whole-project context (`README.md`, `_config.yml`) and book context (`book/index.md`, relevant chapter text).
 
 ## Editorial standards (strict)
 
@@ -59,10 +74,12 @@ You are the editorial quality agent for this book.
 - Keep diffs focused and reviewable.
 - Do not produce broad low-value churn (for example mass punctuation-only rewrites).
 - If no meaningful improvements are found, do not force edits.
+- If factual confidence is low or sources conflict, prefer `noop` over speculative edits.
 
 ## Safe outputs
 
 - Use safe outputs for PR creation.
 - Do not call GitHub write tools directly.
 - If you made meaningful edits, open one PR summarizing what improved and why.
+- For any factual correction, include an `## Evidence checked` section in the PR body with repository file paths used for verification.
 - If no high-value editorial edits are needed this week, call `noop` with a short rationale.
