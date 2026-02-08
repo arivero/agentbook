@@ -740,6 +740,19 @@ PhysProver (<https://arxiv.org/abs/2601.15737>) extends automated theorem provin
 
 *Putnam 2024 score; Putnam 2025 results not reported.
 
+### Open-Source Activity Signals (February 2026)
+
+Recent GitHub activity highlights which public repos remain healthy and where the community is clustering:
+
+| Repository | Focus | Stars (Feb 2026) | Recent Activity | Impact Notes |
+|------------|-------|------------------|-----------------|--------------|
+| [google-deepmind/alphageometry](https://github.com/google-deepmind/alphageometry) | Geometry solver (AlphaGeometry) | 4.8k | Pushed 2026-01-13 | Continues to attract forks (567) and issues (139), making it the most visible open geometry stack. |
+| [deepseek-ai/DeepSeek-Prover-V2](https://github.com/deepseek-ai/DeepSeek-Prover-V2) | Lean proving with recursive subgoals | 1.2k | Pushed 2025-07-18; updated 2026-02-04 | Still the most-watched open Lean prover despite slower code churn; 94 forks sustain downstream experimentation. |
+| [Goedel-LM/Goedel-Prover-V2](https://github.com/Goedel-LM/Goedel-Prover-V2) | Verifier-guided Lean proving | 146 | Pushed 2025-08-27; updated 2026-02-07 | Lightweight (Jupyter-focused) stack with active issue traffic (6 open) and periodic tuning drops. |
+| [project-numina/numina-lean-agent](https://github.com/project-numina/numina-lean-agent) | MCP-based proving agent | 141 | Created 2026-01-20; pushed 2026-01-27 | New entrant showing fast early adoption; updates MCP workflow rather than core Lean tactics. |
+
+**What’s new:** AlphaGeometry’s open repo keeps growing after DeepMind’s competition results; DeepSeek-Prover-V2 retains the largest open-source user base; Goedel-Prover-V2 continues to ship notebook-first releases; Numina-Lean-Agent is the newest project with measurable momentum. These signals help decide which stacks to integrate or mirror when building research agents.
+
 ## Centaur Science and the Outsider Problem
 
 The term "centaur" entered AI discourse from chess, where human–computer teams outperformed both humans and computers playing alone. The concept has now reached fundamental physics: on 4 February 2026, Jesse Thaler of MIT gave a CERN Colloquium titled *"Centaur Science: Adventures in AI+Physics"* (<https://indico.cern.ch/event/1642790/>), exploring what human-AI collaboration looks like at the frontier of particle physics and beyond. The interactive "vibe proving" mode of Numina-Lean-Agent, where mathematicians collaborate with the agent in real time, is another example of centaur-style research.
