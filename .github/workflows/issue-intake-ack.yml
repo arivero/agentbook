@@ -1,4 +1,4 @@
-name: Issue Intake ACK + Route Dispatch
+name: Issue Intake ACK
 
 on:
   issues:
