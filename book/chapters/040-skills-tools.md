@@ -628,7 +628,7 @@ OpenClaw's architecture consists of several interconnected components:
 **4. Extensible Skills/Plugin Ecosystem**
 - Skills expand the agent's abilities: file automation, web scraping, email, calendar
 - Plugins are hot-reloadable and built in TypeScript
-- Community skill marketplace with 3,000+ skills as of February 2026
+- Community skill marketplace with 3,000+ skills
 
 ### Key Design Principles
 
@@ -652,7 +652,7 @@ OpenClaw is the largest project in a rapidly growing personal AI assistant categ
 
 **Letta** (<https://www.letta.com/>, formerly MemGPT) is a platform for building stateful agents with advanced memory that can learn and self-improve over time. In January 2026, Letta shipped a Conversations API for agents with shared memory across parallel user experiences, and its **Letta Code** agent ranked #1 on Terminal-Bench among model-agnostic open-source agents. Letta's architecture emphasises programmable memory management—where OpenClaw focuses on channel integration and skills, Letta focuses on making agents that remember and adapt intelligently. The **LettaBot** project (<https://github.com/letta-ai/lettabot>) brings Letta's memory capabilities to a multi-channel personal assistant supporting Telegram, Slack, Discord, WhatsApp, and Signal.
 
-**Langroid** (<https://langroid.github.io/langroid/>) is a Python multi-agent framework from CMU and UW-Madison researchers that emphasises simplicity and composability. As of early 2026, Langroid has enhanced MCP support with persistent connections, Portkey integration for unified access to 200+ LLMs, and declarative task termination patterns. Its architecture treats agents, tasks, and tools as lightweight composable objects, making it well-suited for teams that want multi-agent orchestration without heavy infrastructure.
+**Langroid** (<https://langroid.github.io/langroid/>) is a Python multi-agent framework from CMU and UW-Madison researchers that emphasises simplicity and composability. Langroid has enhanced MCP support with persistent connections, Portkey integration for unified access to 200+ LLMs, and declarative task termination patterns. Its architecture treats agents, tasks, and tools as lightweight composable objects, making it well-suited for teams that want multi-agent orchestration without heavy infrastructure.
 
 **Open Interpreter** (<https://github.com/openinterpreter/open-interpreter>) provides a natural language interface for controlling computers. Its "New Computer Update" (late 2024) was a complete rewrite supporting a standard interface between language models and computer operations. While less focused on multi-channel messaging than OpenClaw, Open Interpreter fills a complementary niche: using an LLM to drive local computer actions (file management, browser automation, system administration) through plain language.
 
@@ -666,7 +666,7 @@ Several other frameworks share architectural patterns with OpenClaw:
 
 ### LangChain and LangGraph
 
-LangChain (<https://docs.langchain.com>) provides composable building blocks for LLM applications. As of 2026, LangChain and LangGraph have both reached v1.0 milestones.
+LangChain (<https://docs.langchain.com>) provides composable building blocks for LLM applications. LangChain and LangGraph have both reached v1.0 milestones.
 
 > **Snippet status:** Runnable example pattern (validated against LangChain v1 docs, Feb 2026; `create_agent` builds a graph-based agent runtime using LangGraph under the hood).
 
@@ -724,7 +724,7 @@ crew = Crew(
 
 ### Microsoft Semantic Kernel
 
-Semantic Kernel (<https://learn.microsoft.com/semantic-kernel/>) emphasizes enterprise integration and plugin architecture. As of late 2025, Semantic Kernel is converging with AutoGen into the **Microsoft Agent Framework** (see AutoGen section below):
+Semantic Kernel (<https://learn.microsoft.com/semantic-kernel/>) emphasizes enterprise integration and plugin architecture. Semantic Kernel is converging with AutoGen into the **Microsoft Agent Framework** (see AutoGen section below):
 
 ```csharp
 var kernel = Kernel.CreateBuilder()

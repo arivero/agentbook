@@ -43,6 +43,16 @@ The **frontmatter** section configures the workflow's behaviour. The `on` field 
 
 The **markdown instructions** section contains natural language steps for the agent to follow. You can include context variables from the event payload, such as issue number, PR number, or repository name, using template syntax.
 
+### Engine Selection Snapshot
+
+GH-AW supports three practical coding-agent engine choices for GitHub-integrated workflows:
+
+- `engine: copilot` (default) with `COPILOT_GITHUB_TOKEN`
+- `engine: claude` with `ANTHROPIC_API_KEY`
+- `engine: codex` with `OPENAI_API_KEY` (many compiled workflows also accept `CODEX_API_KEY` as a fallback)
+
+In this repository, staged workflows use engine-fallback dispatchers so execution can continue when one provider token is unavailable.
+
 ## How GH-AW Runs
 
 GH-AW compiles markdown workflows into `.lock.yml` GitHub Actions workflows. The compiled file is what GitHub actually executes, but the markdown remains the authoritative source. This gives you readable automation with predictable execution.

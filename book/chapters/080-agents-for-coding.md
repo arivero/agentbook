@@ -349,7 +349,7 @@ jobs:
 
 ### Claude Code
 
-Claude Code (<https://code.claude.com/docs>) provides multi-agent orchestration for complex development tasks. As of February 2026, Claude is available as a GitHub engine in public preview alongside Copilot and Codex. Its **subagent architecture** allows you to spawn specialised agents for different concerns, each focused on a particular aspect of the problem. **Swarms mode** enables parallel execution of independent tasks, reducing total time to completion. **Extended context** handles large codebases through intelligent context management, summarising and prioritising information to fit within token limits. Claude Code can be used from the browser at `claude.ai/code` or from the terminal as a CLI tool.
+Claude Code (<https://code.claude.com/docs>) provides multi-agent orchestration for complex development tasks. Claude is available as a GitHub engine in public preview alongside Copilot and Codex. Its **subagent architecture** allows you to spawn specialised agents for different concerns, each focused on a particular aspect of the problem. **Swarms mode** enables parallel execution of independent tasks, reducing total time to completion. **Extended context** handles large codebases through intelligent context management, summarising and prioritising information to fit within token limits. Claude Code can be used from the browser at `claude.ai/code` or from the terminal as a CLI tool.
 
 ### Cursor AI
 
