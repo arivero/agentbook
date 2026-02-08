@@ -224,6 +224,74 @@ class SymbolicComputationAgent:
         return self.cas.to_latex(result)
 ```
 
+### Multi-CAS Architectures for Robustness
+
+Production symbolic computation agents often integrate multiple computer algebra systems, enabling fallback chains and cross-validation that improve reliability beyond single-tool approaches.
+
+**SageMath** (<https://www.sagemath.org/>) provides a unified Python interface to multiple CAS backends including Maxima (symbolic computation), GAP (group theory), PARI/GP (number theory), and Singular (algebraic geometry). This architecture enables domain-aware routing: group theory problems go to GAP, while general symbolic integration uses Maxima. Projects like **pymbolic** (<https://github.com/inducer/pymbolic>) demonstrate backend abstraction patterns where Python objects represent expressions but heavy symbolic computation is delegated to external CAS processes, with bidirectional parsing and error recovery.
+
+```python
+class MultiCASAgent:
+    """Agent with fallback chain across multiple CAS backends"""
+
+    def __init__(self, llm):
+        self.llm = llm
+        self.backends = {
+            'sympy': SymPyBackend(),
+            'maxima': MaximaBackend(),  # via pexpect or subprocess
+            'numerical': NumericalBackend()
+        }
+
+    async def solve_with_fallback(self, equation: str) -> dict:
+        """Try multiple CAS backends in sequence with validation"""
+
+        # Parse equation to determine appropriate backend
+        problem_type = await self.llm.classify_problem(equation)
+        backend_order = self.get_backend_order(problem_type)
+
+        for backend_name in backend_order:
+            backend = self.backends[backend_name]
+            try:
+                result = await backend.solve(equation)
+
+                # Cross-validate with numerical approximation
+                if await self.validate_result(equation, result):
+                    return {
+                        'solution': result,
+                        'method': backend_name,
+                        'validated': True
+                    }
+            except (TimeoutError, CASError) as e:
+                continue  # Try next backend
+
+        # All symbolic methods failed, use numerical fallback
+        return await self.backends['numerical'].approximate(equation)
+
+    async def validate_result(self, equation: str, symbolic_result) -> bool:
+        """Three-way validation: symbolic cross-check + numerical"""
+
+        # Try alternative symbolic engine for verification
+        alternate = await self.get_alternate_backend(symbolic_result.method)
+        symbolic_check = await alternate.verify(equation, symbolic_result)
+
+        # Numerical validation via finite differences
+        numerical_check = await self.numerical_crosscheck(
+            equation, symbolic_result
+        )
+
+        return symbolic_check and numerical_check
+```
+
+This **multi-CAS fallback pattern** differs from single-tool agents by providing:
+- **Redundancy**: If Maxima times out on an integral, SymPy can attempt it
+- **Validation**: Cross-check symbolic results between different engines
+- **Capability-aware routing**: Send problems to CAS systems optimized for that domain
+- **Graceful degradation**: Fall back to numerical approximation if symbolic methods fail
+
+**pymbolic** demonstrates process isolation, where the Maxima kernel runs in a separate process managed via pexpect, enabling error recovery without crashing the agent. **AutoCrunchCoder** (<https://github.com/ProkopHapala/AutoCrunchCoder>) shows validation patterns where analytical derivatives from Maxima or SymPy are cross-checked against numerical finite-difference approximations, quantifying agreement and flagging discrepancies.
+
+For educational and research contexts, the multi-CAS approach offers transparency: when two symbolic engines agree and match numerical validation, confidence in the result increases. When they disagree, the agent can surface the discrepancy for human review rather than silently returning a potentially incorrect answer.
+
 ### Combining Symbolic and Neural Approaches
 
 Modern agents combine symbolic precision with neural flexibility:
