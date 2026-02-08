@@ -118,6 +118,10 @@ class MessageBus {
 }
 ```
 
+### Agent Discovery and Coordination
+
+Scaffolding increasingly includes ways for agents to discover and evaluate *other agents*, not just tools. Emerging agent social networks pair communication protocols with reputation signals so agents can advertise capabilities, find peers, and coordinate without pre-shared configuration. Use them when dynamic teaming matters, but keep critical workflows pinned to explicit manifests; see [Discovery and Imports](050-discovery-imports.md#agent-native-discovery) for the discovery-side trade-offs.
+
 ## Scaffolding Patterns
 
 ### Pattern 1: Tool Composition

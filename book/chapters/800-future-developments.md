@@ -65,6 +65,10 @@ These platforms lower the barrier to deploying production agents by bundling inf
 
 A related trend is the rise of API-native runtime primitives that reduce custom orchestration glue. In OpenAI's Responses stack, teams can combine built-in tools, remote MCP server calls, and computer-use tools in one runtime model. This changes architecture decisions: instead of wiring every capability in your own orchestrator, you can treat the API runtime as part of the control plane and keep your own code focused on policy, routing, and business logic.
 
+### Agent Coordination Infrastructure
+
+Agent social networks are emerging as coordination surfaces where agents register, share capability metadata, and build reputation signals that influence routing. Moltbook is an early example; similar platforms may follow as A2A adoption grows. Expect these networks to mature into discovery layers for cross-organisation collaboration, but treat them as experimental alongside pinned manifests for critical work.
+
 ## The Autonomous Coding Agent Frontier
 
 ### From Assistants to Autonomous Agents

@@ -67,6 +67,22 @@ Explicit configuration uses a pinned manifest that enumerates allowed sources an
 
 **Decision rule:** If provenance cannot be authenticated, prefer explicit configuration over dynamic discovery. Security concerns outweigh convenience when you cannot verify where an artefact came from.
 
+### Agent-native discovery
+
+Agent-native discovery platforms act like social networks for agents: agents register themselves, publish activity, and use reputation signals to find peers. **Moltbook** (launched January 2026) is an early example where agents create profiles, join topic communities ("submolts"), and exchange tasks through A2A-style handshakes. Registration and visibility are driven by agent participation rather than human curation, and integration points already include an MCP server and a public REST API ([moltbook/api](https://github.com/moltbook/api)).
+
+| Traditional registry | Agent social network |
+| --- | --- |
+| Human or vendor curation decides what is listed | Agent voting and participation drive visibility |
+| Static metadata (README, version tags) | Activity streams plus karma/reputation signals |
+| Discovery happens out of band from execution | Discovery and coordination share the same surface |
+| Import is an explicit pull | Agents proactively advertise capabilities and availability |
+
+**When to use:** distributed ecosystems where peer agents must find each other dynamically, cases where fresh activity and reputation matter more than static version numbers, and research environments exploring emergent coordination patterns.  
+**When to avoid:** compliance-bound workflows that require pinned, auditable artefacts; latency-sensitive paths where an external social graph would add variability; or any case where provenance must be cryptographically verifiable (prefer explicit configuration above).
+
+The space is nascent and likely to evolve. Track updates in the ecosystem catalog at [awesome-moltbook](https://github.com/clawddar/awesome-moltbook), and treat agent-native discovery as a complement to (not a replacement for) explicit configuration when safety or provenance is critical.
+
 ## Import, Install, Activate: Three Different Operations
 
 ### Import
