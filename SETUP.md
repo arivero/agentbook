@@ -22,6 +22,29 @@ Ensure the following permissions are enabled in Settings → Actions → General
   - ✅ Read and write permissions
   - ✅ Allow GitHub Actions to create and approve pull requests
 
+### Coding-Agent Availability (Required for Phase-3 Handoff)
+
+In addition to tokens and workflow permissions, coding agents must be available to this repository as assignable actors.
+
+Minimum requirement:
+- `copilot-swe-agent` is available (required for assignment-based PR handoff).
+
+Optional additional agents:
+- `openai-code-agent`
+- `anthropic-code-agent`
+
+Verify from the repository root with GitHub CLI:
+
+```bash
+gh api graphql \
+  -F owner='<owner>' \
+  -F repo='<repo>' \
+  -f query='query($owner:String!, $repo:String!) { repository(owner:$owner, name:$repo) { suggestedActors(capabilities: [CAN_BE_ASSIGNED], first: 100) { nodes { __typename ... on Bot { login } } } } }' \
+  --jq '.data.repository.suggestedActors.nodes[] | select(.__typename == "Bot") | .login'
+```
+
+If the expected bots are missing, complete the GitHub coding-agent integration setup and repository access grants before testing phase dispatch handoffs.
+
 ### Branch Protection (Optional but Recommended)
 
 For the `main` branch:

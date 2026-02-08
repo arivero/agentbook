@@ -60,3 +60,82 @@ jobs:
             --repo "${{ github.repository }}" \
             --ref "${{ github.event.repository.default_branch || github.ref_name }}" \
             -f issue_number="${ISSUE_NUMBER}"
+
+      - name: Post implementation handoff mention
+        if: ${{ steps.gate.outputs.ready == 'true' }}
+        env:
+          GH_TOKEN: ${{ secrets.GH_AW_GITHUB_TOKEN || github.token }}
+        run: |
+          set -euo pipefail
+
+          already_notified="$(gh issue view "${ISSUE_NUMBER}" --repo "${{ github.repository }}" --json comments --jq 'any(.comments[].body; contains("[GH-AW phase-3 handoff]"))')"
+          if [ "${already_notified}" = "true" ]; then
+            exit 0
+          fi
+
+          query='query($owner:String!, $repo:String!) {
+            repository(owner:$owner, name:$repo) {
+              suggestedActors(capabilities: [CAN_BE_ASSIGNED], first: 100) {
+                nodes {
+                  __typename
+                  ... on Bot { login }
+                }
+              }
+            }
+          }'
+
+          mapfile -t bot_logins < <(
+            gh api graphql \
+              -F owner="${{ github.repository_owner }}" \
+              -F repo="${{ github.event.repository.name }}" \
+              -f query="${query}" \
+              --jq '.data.repository.suggestedActors.nodes[] | select(.__typename == "Bot") | .login' \
+              || true
+          )
+
+          has_bot() {
+            local target="$1"
+            local login
+            for login in "${bot_logins[@]}"; do
+              if [ "${login}" = "${target}" ]; then
+                return 0
+              fi
+            done
+            return 1
+          }
+
+          mention_targets=()
+          if has_bot "copilot-swe-agent"; then
+            mention_targets+=("@copilot-swe-agent")
+          fi
+          if has_bot "openai-code-agent"; then
+            mention_targets+=("@openai-code-agent")
+          fi
+          if has_bot "anthropic-code-agent"; then
+            mention_targets+=("@anthropic-code-agent")
+          fi
+
+          # Assign Copilot coding agent when available so it can pick up PR work.
+          if has_bot "copilot-swe-agent"; then
+            has_copilot_assignee="$(
+              gh issue view "${ISSUE_NUMBER}" \
+                --repo "${{ github.repository }}" \
+                --json assignees \
+                --jq 'any(.assignees[].login; . == "copilot-swe-agent")'
+            )"
+            if [ "${has_copilot_assignee}" != "true" ]; then
+              gh issue edit "${ISSUE_NUMBER}" \
+                --repo "${{ github.repository }}" \
+                --add-assignee "copilot-swe-agent" \
+                || true
+            fi
+          fi
+
+          mention_line="${mention_targets[*]}"
+          if [ -z "${mention_line}" ]; then
+            mention_line="@${{ github.repository_owner }}"
+          fi
+
+          gh issue comment "${ISSUE_NUMBER}" \
+            --repo "${{ github.repository }}" \
+            --body "[GH-AW phase-3 handoff] ${mention_line} please take implementation ownership and open a pull request for this issue using the phase 1 and phase 2 outputs as the implementation plan."
