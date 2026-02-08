@@ -118,6 +118,10 @@ class MessageBus {
 }
 ```
 
+### Agent Discovery and Coordination
+
+Beyond tool access and context management, agents need to discover and coordinate with other agents. Traditional approaches use explicit configuration or API registries to specify which agents or services are available. Emerging **agent social networks** (see [Discovery and Imports](050-discovery-imports.md), Section "Agent-native discovery") provide reputation-based discovery where agents register, vote, and discover peers dynamically. This pattern is still stabilizing but represents an architectural shift toward agent-centric infrastructure where coordination happens through community signals rather than pre-configured relationships.
+
 ## Scaffolding Patterns
 
 ### Pattern 1: Tool Composition

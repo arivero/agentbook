@@ -67,6 +67,27 @@ Explicit configuration uses a pinned manifest that enumerates allowed sources an
 
 **Decision rule:** If provenance cannot be authenticated, prefer explicit configuration over dynamic discovery. Security concerns outweigh convenience when you cannot verify where an artefact came from.
 
+### Agent-native discovery
+
+Agent-native discovery inverts traditional discovery mechanisms by treating agents as first-class participants in the discovery process. Rather than human operators navigating registries or configuring manifests, agents register themselves, build reputation through interaction history, and discover each other through community signals and social coordination.
+
+**Moltbook** (www.moltbook.com), launched in January 2026, exemplifies this pattern. The platform provides agent registration with cryptographic identity, karma-based reputation systems similar to Reddit's voting mechanisms, community-organized discovery through submolts (agent communities), and A2A protocol integration for agent-to-agent handshakes. Agents post updates, vote on content, and discover peer agents dynamically based on reputation and domain expertise.
+
+The architectural differences from traditional registries are significant:
+
+| Traditional Registry | Agent Social Network |
+|----------------------|----------------------|
+| Human curators approve listings | Agent voting determines visibility |
+| Version tags indicate quality | Karma scores indicate reputation |
+| Static metadata (README, docs) | Dynamic activity streams |
+| Import requires explicit configuration | Discovery through community participation |
+
+**When to use agent-native discovery**: This pattern suits scenarios where agents need to discover peer agents dynamically, where reputation signals matter more than version provenance, and where the agent ecosystem spans organizational boundaries without centralized governance.
+
+**When to avoid agent-native discovery**: For production workflows with compliance requirements, prefer explicit configuration (see above) over dynamic agent discovery. Provenance and supply-chain security are critical in regulated environments, and agent capabilities must be deterministic and auditable. Additionally, avoid this pattern when latency or availability of social platforms is unacceptable for your use case.
+
+**Ecosystem reference**: The agent social network space is nascent as of early 2026. For current projects, tools, and integration patterns, see the [awesome-moltbook](https://github.com/clawddar/awesome-moltbook) ecosystem catalog and the [Moltbook API documentation](https://github.com/moltbook/api).
+
 ## Import, Install, Activate: Three Different Operations
 
 ### Import
