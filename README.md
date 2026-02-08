@@ -7,7 +7,7 @@ A **living, self-maintaining book** about agentic workflows, agent orchestration
 
 ## 🤖 What Makes This Book Special?
 
-This book doesn't just teach about agentic workflows—it **uses them**! The book automatically:
+This book doesn't just teach about agentic workflows—it uses them. The book automatically:
 - 📝 Processes community suggestions from GitHub issues
 - ✍️ Updates content using AI agents
 - 📚 Maintains markdown sources and generates a PDF build
@@ -17,12 +17,12 @@ This book doesn't just teach about agentic workflows—it **uses them**! The boo
 ## 📖 Read the Book
 
 - **Online**: [https://arivero.github.io/agentbook](https://arivero.github.io/agentbook) (GitHub Pages)
-- **PDF**: Download from [GitHub Actions artifacts](https://github.com/arivero/agentbook/actions/workflows/build-pdf.yml) or the [repo PDF](https://github.com/arivero/agentbook/raw/main/book/agentic-workflows-book.pdf)
-- **Source**: Browse the [book directory](book)
+- **PDF**: Available from [GitHub Actions artifacts](https://github.com/arivero/agentbook/actions/workflows/build-pdf.yml) once content is published
+- **Source**: Content development in progress
 
 ## 🎯 What You'll Learn
 
-The book covers practical patterns for agentic workflows, safe orchestration, skills and tooling, and real-world automation in GitHub and beyond. Browse the source in the `book/` directory or read it online for the full flow.
+The book will cover practical patterns for agentic workflows, safe orchestration, skills and tooling, and real-world automation in GitHub and beyond. Content is currently in development.
 
 ## 🚀 How It Works
 
@@ -76,7 +76,7 @@ github-pages serve
 
 ```
 agentbook/
-├── book/                    # Book content
+├── book/                    # Book content (in development)
 │   ├── README.md           # Book introduction
 │   └── chapters/           # Manuscript sources
 ├── blog/                   # Blog posts
