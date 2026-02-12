@@ -1,8 +1,6 @@
 ---
 name: GH-AW Daily Research Updates
 on:
-  schedule:
-    - cron: "5 14 * * *"
   workflow_dispatch:
 permissions:
   contents: read
