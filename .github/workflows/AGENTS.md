@@ -3,11 +3,21 @@
 - Every agentic workflow source file (`*.md`) in this directory must be compiled into its executable lock workflow (`*.lock.yml`) using `gh aw` commands before merging.
 - **DO NOT** edit `*.lock.yml` files by hand. They are generated artifacts produced by `gh aw` from the corresponding `*.md` source. Always edit the `.md` source and recompile.
 - Keep source and compiled files in sync in the same PR.
-- If `gh extension install github/gh-aw` fails without `GH_TOKEN`, install via the script instead:
-  - `curl -sLO https://raw.githubusercontent.com/github/gh-aw/main/install-gh-aw.sh`
-  - Review the script (for example, `less install-gh-aw.sh` or `head -n 50 install-gh-aw.sh`)
-  - `bash install-gh-aw.sh`
-  - Verify with `gh aw version`
+- **Preferred installation** (does not require `GH_TOKEN` beyond repo scope):
+  1. Install `gh` CLI if not present:
+     ```bash
+     curl -sL https://github.com/cli/cli/releases/download/v2.67.0/gh_2.67.0_linux_amd64.tar.gz -o /tmp/gh.tar.gz
+     tar -xzf /tmp/gh.tar.gz -C /tmp
+     cp /tmp/gh_*/bin/gh /usr/local/bin/gh
+     ```
+  2. Install `gh-aw` via the install script (no token needed):
+     ```bash
+     curl -sLO https://raw.githubusercontent.com/github/gh-aw/main/install-gh-aw.sh
+     bash install-gh-aw.sh
+     gh aw version
+     ```
+  3. Clean up the install script after use: `rm install-gh-aw.sh`
+- If `gh extension install github/gh-aw` works in your environment, that is also fine, but it requires a valid `GH_TOKEN`.
 - Debug compilation errors with focused commands:
   - `gh aw compile <workflow-id> --json` for specific error messages
   - `gh aw compile --verbose` to see which files are being compiled
