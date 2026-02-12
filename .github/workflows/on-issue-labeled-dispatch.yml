@@ -1,0 +1,36 @@
+name: Issue Labeled Dispatcher
+
+on:
+  issues:
+    types: [labeled]
+
+permissions:
+  actions: write
+  contents: read
+
+jobs:
+  dispatch:
+    if: ${{ github.event.issue.pull_request == null }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dispatch based on label
+        env:
+          GH_TOKEN: ${{ github.token }}
+          LABEL: ${{ github.event.label.name }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+        run: |
+          set -euo pipefail
+          case "${LABEL}" in
+            triaged-for-research)
+              gh workflow run "issue-research-pass.lock.yml" \
+                --repo "${{ github.repository }}" \
+                --ref "${{ github.event.repository.default_branch }}" \
+                -f issue_number="${ISSUE_NUMBER}"
+              ;;
+            triaged-fast-track)
+              gh workflow run "issue-fast-track-close.lock.yml" \
+                --repo "${{ github.repository }}" \
+                --ref "${{ github.event.repository.default_branch }}" \
+                -f issue_number="${ISSUE_NUMBER}"
+              ;;
+          esac

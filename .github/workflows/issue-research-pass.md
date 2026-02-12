@@ -1,9 +1,12 @@
 ---
 name: GH-AW Issue Research Pass
 on:
-  issues:
-    types: [labeled]
-    names: [triaged-for-research]
+  workflow_dispatch:
+    inputs:
+      issue_number:
+        description: Issue number to research
+        required: true
+        type: string
 permissions:
   contents: read
   issues: read
@@ -41,7 +44,7 @@ You are the research agent for issues labeled for research.
 
 ## Instructions
 
-- Read issue #${{ github.event.issue.number }} and comments.
+- Read issue #${{ github.event.inputs.issue_number }} and comments.
 - If `triaged-for-research` is not present, exit with no action.
 - Research the topic using available tools:
   - Always use the **GitHub search** toolset to find related issues, discussions, or code across GitHub.

@@ -1,9 +1,12 @@
 ---
 name: GH-AW Issue Fast Track + Close
 on:
-  issues:
-    types: [labeled]
-    names: [triaged-fast-track]
+  workflow_dispatch:
+    inputs:
+      issue_number:
+        description: Issue number to fast-track
+        required: true
+        type: string
 permissions:
   contents: read
   issues: read
@@ -31,7 +34,7 @@ You are the fast-track delivery agent.
 
 ## Instructions
 
-- Read issue #${{ github.event.issue.number }} and confirm `triaged-fast-track` is present.
+- Read issue #${{ github.event.inputs.issue_number }} and confirm `triaged-fast-track` is present.
 - If missing, exit with no action.
 - Implement the smallest safe fix.
 - Open a pull request linked to the issue.

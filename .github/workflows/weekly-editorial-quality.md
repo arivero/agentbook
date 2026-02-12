@@ -1,8 +1,6 @@
 ---
 name: GH-AW Weekly Editorial Quality Pass
 on:
-  schedule:
-    - cron: "20 14 * * 1"
   workflow_dispatch:
 permissions:
   contents: read
