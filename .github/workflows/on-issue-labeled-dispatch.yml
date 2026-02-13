@@ -3,6 +3,19 @@ name: Issue Labeled Dispatcher
 on:
   issues:
     types: [labeled]
+  workflow_dispatch:
+    inputs:
+      issue_number:
+        description: 'Issue number to dispatch'
+        required: true
+        type: string
+      label:
+        description: 'Label to simulate for dispatch routing'
+        required: true
+        type: choice
+        options:
+          - triaged-for-research
+          - triaged-fast-track
 
 permissions:
   actions: write
@@ -10,27 +23,28 @@ permissions:
 
 jobs:
   dispatch:
-    if: ${{ github.event.issue.pull_request == null }}
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.issue.pull_request == null }}
     runs-on: ubuntu-latest
     steps:
       - name: Dispatch based on label
         env:
           GH_TOKEN: ${{ github.token }}
-          LABEL: ${{ github.event.label.name }}
-          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          LABEL: ${{ inputs.label || github.event.label.name }}
+          ISSUE_NUMBER: ${{ inputs.issue_number || github.event.issue.number }}
+          REF: ${{ github.event.repository.default_branch || github.ref_name }}
         run: |
           set -euo pipefail
           case "${LABEL}" in
             triaged-for-research)
               gh workflow run "issue-research-pass.lock.yml" \
                 --repo "${{ github.repository }}" \
-                --ref "${{ github.event.repository.default_branch }}" \
+                --ref "${REF}" \
                 -f issue_number="${ISSUE_NUMBER}"
               ;;
             triaged-fast-track)
               gh workflow run "issue-fast-track-close.lock.yml" \
                 --repo "${{ github.repository }}" \
-                --ref "${{ github.event.repository.default_branch }}" \
+                --ref "${REF}" \
                 -f issue_number="${ISSUE_NUMBER}"
               ;;
           esac

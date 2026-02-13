@@ -3,6 +3,13 @@ name: Push Dispatcher
 on:
   push:
     branches: [main]
+  workflow_dispatch:
+    inputs:
+      dispatch_all:
+        description: 'Dispatch all downstream workflows (ignores path detection)'
+        required: false
+        type: boolean
+        default: true
 
 permissions:
   actions: write
@@ -21,6 +28,15 @@ jobs:
         id: paths
         run: |
           set -euo pipefail
+
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ "${{ inputs.dispatch_all }}" = "true" ]; then
+            {
+              echo "has_book=true"
+              echo "has_check_links_script=true"
+              echo "has_workflows_md=true"
+            } >> "${GITHUB_OUTPUT}"
+            exit 0
+          fi
 
           if git rev-parse HEAD~1 >/dev/null 2>&1; then
             changed="$(git diff --name-only HEAD~1 HEAD)"

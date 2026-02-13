@@ -6,6 +6,7 @@ on:
       - 'book/**/*.md'
       - 'scripts/check-links.py'
       - '.github/workflows/*.md'
+  workflow_dispatch:
 
 permissions:
   contents: read
