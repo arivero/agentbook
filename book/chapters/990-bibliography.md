@@ -88,6 +88,16 @@ order: 99
 - Jesse Thaler. "Centaur Science: Adventures in AI+Physics." CERN Colloquium, 4 February 2026. <https://indico.cern.ch/event/1642790/>. Accessed: 2026-02-13.
 - Matchlock: microVM sandbox for agent execution. <https://github.com/jingkaihe/matchlock>. Accessed: 2026-02-13.
 - Microsandbox. <https://github.com/zerocore-ai/microsandbox>. Accessed: 2026-02-13.
+- OpenAI. Introducing GPT-5.3-Codex-Spark. <https://openai.com/index/introducing-gpt-5-3-codex-spark/>. Accessed: 2026-02-13.
+- Cerebras. Introducing OpenAI GPT-5.3-Codex-Spark Powered by Cerebras. <https://www.cerebras.ai/blog/openai-codexspark>. Accessed: 2026-02-13.
+- Apple. Xcode 26.3 unlocks the power of agentic coding. <https://www.apple.com/newsroom/2026/02/xcode-26-point-3-unlocks-the-power-of-agentic-coding/>. Accessed: 2026-02-13.
+- GitHub. Agent HQ: Claude and Codex now available in public preview on GitHub. <https://github.blog/changelog/2026-02-04-claude-and-codex-are-now-available-in-public-preview-on-github/>. Accessed: 2026-02-13.
+- Agent Trace specification. <https://agent-trace.dev/>. Accessed: 2026-02-13.
+- Agent Trace GitHub repository. <https://github.com/cursor/agent-trace>. Accessed: 2026-02-13.
+- OWASP MCP Top 10. <https://owasp.org/www-project-mcp-top-10/>. Accessed: 2026-02-13.
+- OWASP Top 10 for Agentic Applications (2026). <https://genai.owasp.org/resource/owasp-top-10-for-agentic-applications-for-2026/>. Accessed: 2026-02-13.
+- VirusTotal. From Automation to Infection: How OpenClaw AI Agent Skills Are Being Weaponized. <https://blog.virustotal.com/2026/02/from-automation-to-infection-how.html>. Accessed: 2026-02-13.
+- Cognition. Agent Trace: Capturing the Context Graph of Code. <https://cognition.ai/blog/agent-trace>. Accessed: 2026-02-13.
 
 <!-- Edit notes:
 Sections expanded: None (bibliography entries are an actual enumerable reference list that must remain as individual items)

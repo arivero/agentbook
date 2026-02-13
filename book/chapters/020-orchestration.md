@@ -300,7 +300,11 @@ class DevelopmentTeamLead:
 
 The shift from workaround patterns to native Agent Teams demonstrates tangible improvements in code quality and reliability. Before Agent Teams, coordinating multiple agents required manual state management, complex polling loops, and brittle synchronisation logic that made multi-agent systems difficult to maintain. With Agent Teams, coordination happens through built-in APIs that handle state management automatically, idle notification replaces polling loops, and reliability improves through tested infrastructure rather than custom code.
 
-Community adoption has been rapid, with developers migrating existing multi-agent systems to the native APIs. GitHub repositories show migrations from Task tool parallelism to TeammateTool, demonstrating the clear value of first-class coordination support.
+Community adoption has been rapid, with developers migrating existing multi-agent systems to the native APIs. GitHub repositories show migrations from Task tool parallelism to TeammateTool, demonstrating the clear value of first-class coordination support. Early adopters report that the Team Lead naturally assigns non-overlapping file sets to teammates, producing zero merge conflicts in parallel sessions—though the feature uses substantially more tokens than sequential workflows and the terminal-based UX (with session switching via `Shift+↑`) remains challenging for complex orchestrations.
+
+### Multi-Agent Patterns Across Platforms
+
+Agent Teams is not the only multi-agent coordination primitive shipping in early 2026. **GitHub Copilot CLI** (February 7, 2026) added four specialised agents that can run in parallel with auto-compaction at 95% token limit and persistent memory for Pro users—transforming sequential 90-second agent handoffs into 30-second parallel analysis. **GitHub Agent HQ** (February 4, 2026) takes a different approach: instead of parallel agents within one tool, it lets developers assign the same task to Copilot, Claude, and Codex side by side, comparing how different agents reason about trade-offs. Mentioning `@Copilot`, `@Claude`, or `@Codex` in PR comments kicks off follow-up work from the respective agent. GitHub is working with Google, Cognition, and xAI to add more agents to the platform. These approaches are complementary: Agent Teams provides intra-tool parallelism (one vendor, multiple agents), while Agent HQ provides inter-tool selection (multiple vendors, developer's choice).
 
 ### Integration with the Broader Ecosystem
 
