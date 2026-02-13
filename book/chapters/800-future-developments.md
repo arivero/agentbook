@@ -53,9 +53,9 @@ This layered approach—high-level convenience on top of low-level control—is 
 
 Major cloud providers have introduced first-party agent platforms that bundle model access, tool execution, and observability.
 
-**Amazon Bedrock AgentCore** provides serverless agent deployment with built-in memory, identity, browser, code interpreter, and observability features. Multi-agent collaboration became generally available in early 2026, allowing multiple AI agents to coordinate on complex tasks within the AWS ecosystem.
+**Amazon Bedrock AgentCore** provides serverless agent deployment with built-in memory, identity, browser, code interpreter, and observability features. Multi-agent collaboration reached general availability in late 2025, making AWS one of the first major cloud providers to ship production-grade multi-agent orchestration as a managed service.
 
-**Google Agent Development Kit (ADK)** is an open-source framework optimised for Gemini but compatible with other providers. It supports A2A protocol integration natively and recommends deployment to Vertex AI Agent Engine Runtime. Primary SDK is Python, with TypeScript and Go SDKs in active development.
+**Google Agent Development Kit (ADK)** is an open-source framework optimised for Gemini but compatible with other providers. It supports A2A protocol integration natively and recommends deployment to Vertex AI Agent Engine Runtime. The Python SDK is mature, and the TypeScript SDK shipped in early 2026, expanding ADK's reach to web-focused teams. Go SDK development continues.
 
 **Vercel AI SDK 6** introduced first-class agent abstractions for TypeScript developers, including a `ToolLoopAgent` class, full MCP support, and durable agents through its Workflow DevKit. For teams building agent-powered web applications, this provides a natural integration path.
 
@@ -105,9 +105,11 @@ As agents move into production, observability and evaluation are becoming first-
 
 **Cost attribution** is becoming more sophisticated as agent workflows involve multiple model calls, tool invocations, and sub-agent spawns. Understanding per-task cost is essential for making agents economically viable at scale.
 
+**Agent Trace** (<https://agent-trace.dev/>) is an emerging open specification (RFC v0.1.0, January 2026) for recording AI contributions alongside human authorship in version-controlled codebases. Led by Cursor and supported by Cognition, Cloudflare, Vercel, Google Jules, and others, Agent Trace provides a vendor-neutral JSON format that connects code ranges to the conversations and contributors behind them. As AI-generated code becomes a larger share of commits, attribution metadata will become essential for debugging, compliance, and agent performance improvement.
+
 ### Shared Memory and Context Spaces
 
-Another notable trend is explicit memory and shared-context products for coding assistants. GitHub Copilot's memory features and Copilot Spaces push teams toward persistent project context as a first-class artifact, not just transient prompt state. In practice, this reduces repeated instruction overhead and improves continuity, but it also raises governance questions: which memories are retained, who can inspect them, and when they should expire.
+Another notable trend is explicit memory and shared-context products for coding assistants. GitHub **Copilot Memory** (public preview) builds persistent, repository-scoped memory that learns coding preferences, naming conventions, and framework choices from corrections and interactions over time. Memories are scoped per-repository or per-user, auto-expire after 28 days unless reused, and users retain full control to review, edit, or delete individual entries. Complementing this, **Copilot Spaces** (generally available since September 2025, with public sharing added December 2025) provides team-curated knowledge bases that organise repositories, code, PRs, issues, free-text notes, and file uploads into a shared project context—without requiring underlying repository access. Memory provides implicit, automatic adaptation within a single repository, while Spaces provides explicit, collaborative context across multiple repositories. Together they push teams toward persistent project context as a first-class artifact, not just transient prompt state. In practice, this reduces repeated instruction overhead and improves continuity, but it also raises governance questions: which memories are retained, who can inspect them, and when they should expire.
 
 ### Multimodal and Physical Agency
 
@@ -119,17 +121,17 @@ Computer-use capabilities are maturing alongside explicit safety controls. The n
 
 ### Governance and Safety Automation
 
-Regulators are increasingly demanding traceability, data minimisation, and safety controls for autonomous systems. Agent stacks are responding with policy engines that enforce allow/deny rules, runtime red-teaming, and signed skill bundles. Expect governance requirements (audit logs, privacy zones, least-privilege tool access) to become a gating factor for enterprise deployment, pushing teams to treat safety automation as a first-class feature rather than an afterthought.
+Regulators are increasingly demanding traceability, data minimisation, and safety controls for autonomous systems. Agent stacks are responding with policy engines that enforce allow/deny rules, runtime red-teaming, and signed skill bundles. Two new frameworks crystallise the threat landscape: the **OWASP MCP Top 10** catalogues protocol-level risks from token mismanagement and tool poisoning to shadow MCP servers and context over-sharing, while the **OWASP Top 10 for Agentic Applications (2026)** covers the broader attack surface of autonomous agents, introducing the principle of "least agency"—granting agents only the minimum autonomy required for bounded tasks. Real-world MCP exploits have already validated these frameworks: CVE-2025-68145/68143/68144 enabled remote code execution through Anthropic's Git MCP server via path validation bypass and argument injection, and CVE-2025-6514 (CVSS 9.6) in the `mcp-remote` package affected over 437,000 AI development environments. The first malicious MCP server found in the wild (September 2025) secretly BCC'd every email through a Postmark impersonation. Expect governance requirements (audit logs, privacy zones, least-privilege tool access) to become a gating factor for enterprise deployment, pushing teams to treat safety automation as a first-class feature rather than an afterthought.
 
 ## The Local-First Personal AI Wave
 
-One of the most striking developments of late 2025 and early 2026 is the explosive growth of local-first personal AI assistants, led by **OpenClaw** (169,000+ GitHub stars, 3,000+ community skills). These are not coding agents or enterprise tools—they are general-purpose AI assistants that users self-host on their own hardware, connecting to WhatsApp, Telegram, Slack, Discord, and dozens of other channels through a single brain with shared context and persistent memory.
+One of the most striking developments of late 2025 and early 2026 is the explosive growth of local-first personal AI assistants, led by **OpenClaw** (183,000+ GitHub stars, 3,000+ community skills, 100,000+ active installations). These are not coding agents or enterprise tools—they are general-purpose AI assistants that users self-host on their own hardware, connecting to WhatsApp, Telegram, Slack, Discord, and dozens of other channels through a single brain with shared context and persistent memory.
 
 This trend represents a shift in who controls the agent. Where cloud-hosted AI services control the data, the model, and the interaction surface, local-first assistants put all three under user ownership. The architectural patterns—gateway/runtime separation, model-agnostic backends, plugin-based skills—mirror what enterprise agent frameworks provide, but optimised for individual users rather than organisations.
 
 The personal AI ecosystem is diversifying rapidly. **Letta** (formerly MemGPT) focuses on sophisticated memory management, allowing agents to learn and self-improve over time. **LettaBot** brings Letta's memory to a multi-channel assistant. **Langroid** provides lightweight multi-agent orchestration. **Open Interpreter** turns natural language into computer actions. **Leon** offers a minimal, self-hosted assistant.
 
-For the broader agentic workflows field, the personal AI wave matters for three reasons. First, it validates the architectural patterns described throughout this book—skills, tools, MCP integration, multi-agent orchestration—at consumer scale. Second, it surfaces security challenges (infostealer targeting, credential exposure, data sovereignty) that enterprise deployments will also face. Third, it demonstrates that the demand for AI agents extends far beyond software development into every domain of digital life.
+For the broader agentic workflows field, the personal AI wave matters for three reasons. First, it validates the architectural patterns described throughout this book—skills, tools, MCP integration, multi-agent orchestration—at consumer scale. Second, it surfaces security challenges that enterprise deployments will also face—notably, the **ClawHavoc** campaign (February 2026) saw 341 malicious skills deploying Atomic Stealer across macOS and Windows, Censys counted 30,000+ exposed instances, and Gartner recommended enterprises block OpenClaw immediately. Third, it demonstrates that the demand for AI agents extends far beyond software development into every domain of digital life.
 
 ## Open Questions
 
@@ -139,7 +141,7 @@ Several questions remain genuinely open and will shape the field's direction.
 
 **Will interoperability standards converge?** MCP and A2A address different layers of the stack, but there is no guarantee they will remain complementary rather than competing. The Linux Foundation governance of both protocols is a positive signal, but standards fragmentation remains a risk.
 
-**How will agent security evolve?** As agents gain more autonomy and tool access, the attack surface expands. Prompt injection, tool misuse, and supply-chain attacks on skills and plugins are active research areas. The field needs security practices that scale with agent capability.
+**How will agent security evolve?** As agents gain more autonomy and tool access, the attack surface expands. Prompt injection, tool misuse, and supply-chain attacks on skills and plugins are no longer theoretical—the OpenClaw malicious-skills incident and MCP security advisories have demonstrated real-world exploitation. The field needs security practices that scale with agent capability, including skill signing, runtime sandboxing, and automated secret-leak detection.
 
 **What happens to developer roles?** The stratification of coding agents into assistants, CLI agents, and autonomous agents will reshape how development teams organise. The balance between human oversight and agent autonomy will vary by organisation, risk tolerance, and regulatory context.
 
@@ -159,6 +161,6 @@ Several questions remain genuinely open and will shape the field's direction.
 
 **Governance and safety automation** will shape deployment eligibility. Build policy controls, audit trails, and least-privilege defaults early to satisfy regulatory expectations.
 
-**Local-first personal AI assistants** (OpenClaw, Letta, LettaBot) are validating enterprise agentic patterns at consumer scale, while surfacing security and data sovereignty challenges that affect the whole field.
+**Local-first personal AI assistants** (OpenClaw, Letta, LettaBot) are validating enterprise agentic patterns at consumer scale, while surfacing concrete security challenges—malicious skill packages, secret leakage, supply-chain attacks—that affect the whole field.
 
 **Open questions** around autonomy limits, standard convergence, security, and developer roles will shape the field over the next two to three years. Stay informed and maintain architectural flexibility.

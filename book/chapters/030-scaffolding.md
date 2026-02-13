@@ -194,7 +194,7 @@ agent_policies:
 
 #### Case Study: MicroVM-Based Sandboxing
 
-To make these patterns concrete, consider Matchlock (https://github.com/jingkaihe/matchlock), an open-source CLI tool that combines microVMs with transparent secret injection. While new (created February 2026), it demonstrates the architectural approach.
+To make these patterns concrete, consider Matchlock (https://github.com/jingkaihe/matchlock), an open-source CLI tool that combines microVMs with transparent secret injection. Matchlock has matured since its February 2026 debut, shipping Go and Python SDKs for embedding sandboxes directly in applications, and gaining community recognition as a developer-first, cross-platform option for agent sandboxing.
 
 **Problem addressed:** Agent workflows need to execute potentially untrusted code while calling authenticated APIs. Traditional approaches either expose credentials to the agent (security risk) or require complex credential management (operational burden).
 
@@ -228,7 +228,7 @@ print(response.choices[0].message.content)
 
 - **Docker + seccomp/AppArmor:** Simpler to deploy but weaker isolation (shared kernel). Suitable when agent code is mostly trusted or security requirements are moderate.
 - **gVisor:** Application kernel providing stronger isolation than containers without full VMs. More complex than Docker but lighter than microVMs. Good middle ground for medium-security needs.
-- **Microsandbox:** Rust-based sandboxing tool (https://github.com/stackblitz/microsandbox) with broader adoption (4.7k GitHub stars). Focuses on browser-based agent execution, complementary to server-side microVM approaches.
+- **Microsandbox:** Open-source sandboxing tool (https://github.com/zerocore-ai/microsandbox) powered by libkrun for lightweight microVM isolation, with boot times under 200 ms. Microsandbox is MCP-ready and self-hosted, positioning it as a "self-hosted E2B" option for teams that need the isolation primitive without managed infrastructure.
 - **Full VMs (QEMU, VirtualBox):** Strongest isolation but slower boot times (30+ seconds). Use when security requirements justify the latency cost, such as for long-running batch jobs with untrusted code.
 
 **When to use each approach:**

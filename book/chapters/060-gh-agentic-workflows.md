@@ -400,6 +400,12 @@ This repository uses a hybrid lifecycle documented in [WORKFLOW_PLAYBOOK.md](../
 
 Publishing and validation remain separate automation concerns. `pages.yml` deploys the site and `build-pdf.yml` maintains the generated PDF. `check-links.yml` and `check-external-links.yml` validate internal and external links. `compile-workflows.yml` verifies that `.lock.yml` files stay in sync with their markdown sources. `copilot-setup-steps.yml` configures the coding agent environment.
 
+## Ecosystem Growth: From Single Repos to Agent Factories
+
+GH-AW adoption has expanded beyond single-repo use cases. Practitioners have begun publishing multi-repository workflow libraries: for example, the "Peli's Agent Factory" blog series documents a pattern of over 100 GH-AW workflows maintained across repositories with shared components, versioned imports, and centralised governance policies. This pattern—agent factory as infrastructure—validates the composition primitives described above and suggests that GH-AW is scaling beyond individual repositories into platform-level automation.
+
+The `gh aw` CLI has also matured with `gh aw upgrade` for in-place CLI updates and `gh aw update` for refreshing vendored action directories within repositories, reducing the maintenance burden for teams running many GH-AW-enabled repos.
+
 ## Operational Lessons from Production Runs
 
 Running the workflows in real issue traffic surfaced several practical lessons.
