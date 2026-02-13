@@ -53,9 +53,9 @@ This layered approach—high-level convenience on top of low-level control—is 
 
 Major cloud providers have introduced first-party agent platforms that bundle model access, tool execution, and observability.
 
-**Amazon Bedrock AgentCore** provides serverless agent deployment with built-in memory, identity, browser, code interpreter, and observability features. Multi-agent collaboration became generally available in early 2026, allowing multiple AI agents to coordinate on complex tasks within the AWS ecosystem.
+**Amazon Bedrock AgentCore** provides serverless agent deployment with built-in memory, identity, browser, code interpreter, and observability features. Multi-agent collaboration reached general availability in late 2025, making AWS one of the first major cloud providers to ship production-grade multi-agent orchestration as a managed service.
 
-**Google Agent Development Kit (ADK)** is an open-source framework optimised for Gemini but compatible with other providers. It supports A2A protocol integration natively and recommends deployment to Vertex AI Agent Engine Runtime. Primary SDK is Python, with TypeScript and Go SDKs in active development.
+**Google Agent Development Kit (ADK)** is an open-source framework optimised for Gemini but compatible with other providers. It supports A2A protocol integration natively and recommends deployment to Vertex AI Agent Engine Runtime. The Python SDK is mature, and the TypeScript SDK shipped in early 2026, expanding ADK's reach to web-focused teams. Go SDK development continues.
 
 **Vercel AI SDK 6** introduced first-class agent abstractions for TypeScript developers, including a `ToolLoopAgent` class, full MCP support, and durable agents through its Workflow DevKit. For teams building agent-powered web applications, this provides a natural integration path.
 
@@ -123,13 +123,13 @@ Regulators are increasingly demanding traceability, data minimisation, and safet
 
 ## The Local-First Personal AI Wave
 
-One of the most striking developments of late 2025 and early 2026 is the explosive growth of local-first personal AI assistants, led by **OpenClaw** (169,000+ GitHub stars, 3,000+ community skills). These are not coding agents or enterprise tools—they are general-purpose AI assistants that users self-host on their own hardware, connecting to WhatsApp, Telegram, Slack, Discord, and dozens of other channels through a single brain with shared context and persistent memory.
+One of the most striking developments of late 2025 and early 2026 is the explosive growth of local-first personal AI assistants, led by **OpenClaw** (183,000+ GitHub stars, 3,000+ community skills, 100,000+ active installations). These are not coding agents or enterprise tools—they are general-purpose AI assistants that users self-host on their own hardware, connecting to WhatsApp, Telegram, Slack, Discord, and dozens of other channels through a single brain with shared context and persistent memory.
 
 This trend represents a shift in who controls the agent. Where cloud-hosted AI services control the data, the model, and the interaction surface, local-first assistants put all three under user ownership. The architectural patterns—gateway/runtime separation, model-agnostic backends, plugin-based skills—mirror what enterprise agent frameworks provide, but optimised for individual users rather than organisations.
 
 The personal AI ecosystem is diversifying rapidly. **Letta** (formerly MemGPT) focuses on sophisticated memory management, allowing agents to learn and self-improve over time. **LettaBot** brings Letta's memory to a multi-channel assistant. **Langroid** provides lightweight multi-agent orchestration. **Open Interpreter** turns natural language into computer actions. **Leon** offers a minimal, self-hosted assistant.
 
-For the broader agentic workflows field, the personal AI wave matters for three reasons. First, it validates the architectural patterns described throughout this book—skills, tools, MCP integration, multi-agent orchestration—at consumer scale. Second, it surfaces security challenges (infostealer targeting, credential exposure, data sovereignty) that enterprise deployments will also face. Third, it demonstrates that the demand for AI agents extends far beyond software development into every domain of digital life.
+For the broader agentic workflows field, the personal AI wave matters for three reasons. First, it validates the architectural patterns described throughout this book—skills, tools, MCP integration, multi-agent orchestration—at consumer scale. Second, it surfaces security challenges that enterprise deployments will also face—notably, in February 2026, VirusTotal reported over 230 malicious skills uploaded to ClawHub, and Snyk found 7.1% of community skills mishandle secrets via LLM context windows. Third, it demonstrates that the demand for AI agents extends far beyond software development into every domain of digital life.
 
 ## Open Questions
 
@@ -139,7 +139,7 @@ Several questions remain genuinely open and will shape the field's direction.
 
 **Will interoperability standards converge?** MCP and A2A address different layers of the stack, but there is no guarantee they will remain complementary rather than competing. The Linux Foundation governance of both protocols is a positive signal, but standards fragmentation remains a risk.
 
-**How will agent security evolve?** As agents gain more autonomy and tool access, the attack surface expands. Prompt injection, tool misuse, and supply-chain attacks on skills and plugins are active research areas. The field needs security practices that scale with agent capability.
+**How will agent security evolve?** As agents gain more autonomy and tool access, the attack surface expands. Prompt injection, tool misuse, and supply-chain attacks on skills and plugins are no longer theoretical—the OpenClaw malicious-skills incident and MCP security advisories have demonstrated real-world exploitation. The field needs security practices that scale with agent capability, including skill signing, runtime sandboxing, and automated secret-leak detection.
 
 **What happens to developer roles?** The stratification of coding agents into assistants, CLI agents, and autonomous agents will reshape how development teams organise. The balance between human oversight and agent autonomy will vary by organisation, risk tolerance, and regulatory context.
 
@@ -159,6 +159,6 @@ Several questions remain genuinely open and will shape the field's direction.
 
 **Governance and safety automation** will shape deployment eligibility. Build policy controls, audit trails, and least-privilege defaults early to satisfy regulatory expectations.
 
-**Local-first personal AI assistants** (OpenClaw, Letta, LettaBot) are validating enterprise agentic patterns at consumer scale, while surfacing security and data sovereignty challenges that affect the whole field.
+**Local-first personal AI assistants** (OpenClaw, Letta, LettaBot) are validating enterprise agentic patterns at consumer scale, while surfacing concrete security challenges—malicious skill packages, secret leakage, supply-chain attacks—that affect the whole field.
 
 **Open questions** around autonomy limits, standard convergence, security, and developer roles will shape the field over the next two to three years. Stay informed and maintain architectural flexibility.

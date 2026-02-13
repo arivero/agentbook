@@ -399,7 +399,7 @@ Modern repositories need to support multiple AI agent platforms. Different codin
 
 When multiple AI agents work with your repository, you face a coordination challenge. **GitHub Copilot** reads `.github/copilot-instructions.md` for project-specific guidance. **Claude** automatically incorporates `CLAUDE.md`; the generic `AGENTS.md` may still be useful as shared project documentation but should be explicitly referenced for reliable Claude workflows. **OpenAI Codex (GPT-5.3-Codex)** can be configured with system instructions and skills packaged via `SKILL.md` (see <https://developers.openai.com/codex>). **Generic agents** look for `AGENTS.md` as the emerging standard for project-level instructions.
 
-> **Note:** Both Claude and Codex are available as GitHub engines in public preview, joining Copilot as first-class options for GitHub-integrated agentic workflows.
+> **Note:** Both Claude and Codex are available as GitHub engines in public preview, joining Copilot as first-class options for GitHub-integrated agentic workflows. As of February 2026, GPT-5.3-Codex is also available directly inside GitHub Copilot as a selectable model, giving Copilot users access to OpenAI's latest agentic coding model without configuring a separate engine.
 
 Each platform has slightly different expectations, but the core information they need is similar: project structure, coding conventions, build commands, and constraints.
 

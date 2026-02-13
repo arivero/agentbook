@@ -355,11 +355,11 @@ For details on the Agent Teams coordination primitives that power this architect
 
 ### Cursor AI
 
-Cursor (<https://www.cursor.com/>) is an AI-first code editor designed around agent workflows. It provides **project-wide understanding** by indexing the entire codebase for context, ensuring suggestions fit the project's patterns. **Multi-file generation** creates and modifies multiple files in one operation, handling cross-cutting changes that span components. **Framework integration** gives the editor deep understanding of popular frameworks, improving suggestion quality for framework-specific code.
+Cursor (<https://www.cursor.com/>) is an AI-first code editor designed around agent workflows. It provides **project-wide understanding** by indexing the entire codebase for context, ensuring suggestions fit the project's patterns. **Multi-file generation** creates and modifies multiple files in one operation, handling cross-cutting changes that span components. **Framework integration** gives the editor deep understanding of popular frameworks, improving suggestion quality for framework-specific code. In early 2026, Cursor shipped its **Composer** feature, which enables multi-step agentic coding sessions where the model plans, executes, and iterates on changes—moving Cursor closer to a full agentic IDE rather than a suggestion tool.
 
 ### OpenAI Codex CLI
 
-OpenAI Codex (<https://developers.openai.com/codex>) has evolved from an API-only model into a full coding agent platform available as a CLI, IDE extension, web interface, and macOS app. The latest model, GPT-5.3-Codex (released February 2026), is described as the most capable agentic coding model to date. Codex supports skills packaged with `SKILL.md` for progressive disclosure, and its CLI enables agentic workflows directly from the terminal. The macOS app serves as a command centre for managing multiple coding agents in parallel.
+OpenAI Codex (<https://developers.openai.com/codex>) has evolved from an API-only model into a full coding agent platform available as a CLI, IDE extension, web interface, and macOS app. The GPT-5.3-Codex model (released February 2026) was followed days later by **GPT-5.3-Codex-Spark**, an inference-optimised variant running on Cerebras' Wafer Scale Engine 3 that delivers significantly lower latency for interactive coding workflows. OpenAI also released the **SWE-1.5** model, a specialised research model for autonomous software engineering tasks. Codex supports skills packaged with `SKILL.md` for progressive disclosure, and its CLI enables agentic workflows directly from the terminal. The macOS app serves as a command centre for managing multiple coding agents in parallel. GPT-5.3-Codex is also available directly inside GitHub Copilot as a selectable model.
 
 ### Aider
 
@@ -367,7 +367,7 @@ Aider (<https://aider.chat/>) is an open-source, Git-first CLI coding agent for 
 
 ### Devin
 
-Devin (<https://devin.ai/>) by Cognition is an autonomous coding agent designed to handle tasks equivalent to four to eight hours of junior engineer work. Cognition's valuation reached $10.2 billion following a $400M Series C in late 2025. In July 2025, Cognition acquired Windsurf, merging IDE and agent approaches. Devin excels at tasks with clear requirements and verifiable outcomes: migrations, vulnerability fixes, unit test generation, and small tickets. It is infinitely parallelisable and works asynchronously.
+Devin (<https://devin.ai/>) by Cognition is an autonomous coding agent designed to handle tasks equivalent to four to eight hours of junior engineer work. Cognition's valuation reached $10.2 billion following a $400M Series C in late 2025. In July 2025, Cognition acquired Windsurf, merging IDE and agent approaches. Devin excels at tasks with clear requirements and verifiable outcomes: migrations, vulnerability fixes, unit test generation, and small tickets. It is infinitely parallelisable and works asynchronously. Cognition has continued integrating Windsurf's IDE features with Devin's autonomous capabilities, pushing toward a unified product where IDE-level assistance and autonomous task completion share the same underlying agent infrastructure.
 
 ### Windsurf
 

@@ -70,6 +70,24 @@ order: 99
 - Coq. <https://coq.inria.fr/>. Accessed: 2026-02-05.
 - Isabelle. <https://isabelle.in.tum.de/>. Accessed: 2026-02-05.
 - Li, Z., Tian, H., Luo, L., Cao, Y., & Luo, P. (2026). DeepRead: Structure-aware multi-turn document reasoning. arXiv preprint arXiv:2602.05014. <https://arxiv.org/abs/2602.05014>. Accessed: 2026-02-08.
+- Google DeepMind. AlphaProof: AI solves IMO problems at silver medal level. <https://deepmind.google/blog/ai-solves-imo-problems-at-silver-medal-level/>. Accessed: 2026-02-13.
+- Google DeepMind. AlphaEvolve: A Gemini-powered coding agent for designing advanced algorithms. <https://deepmind.google/blog/alphaevolve-a-gemini-powered-coding-agent-for-designing-advanced-algorithms/>. Accessed: 2026-02-13.
+- Google DeepMind. Aletheia. <https://github.com/google-deepmind/superhuman/tree/main/aletheia>. Accessed: 2026-02-13.
+- Google DeepMind. AI for Math Initiative. <https://blog.google/technology/google-deepmind/ai-for-math/>. Accessed: 2026-02-13.
+- Google DeepMind. AlphaGeometry. <https://github.com/google-deepmind/alphageometry>. Accessed: 2026-02-13.
+- Axiom Math. AxiomProver: Putnam 2025 solutions. <https://github.com/AxiomMath/putnam2025>. Accessed: 2026-02-13.
+- Axiom Math. <https://axiommath.ai/>. Accessed: 2026-02-13.
+- Harmonic. <https://harmonic.fun/>. Accessed: 2026-02-13.
+- Goedel-Prover-V2. <https://github.com/Goedel-LM/Goedel-Prover-V2>. Accessed: 2026-02-13.
+- DeepSeek-Prover-V2. <https://github.com/deepseek-ai/DeepSeek-Prover-V2>. Accessed: 2026-02-13.
+- Numina-Lean-Agent. <https://github.com/project-numina/numina-lean-agent>. Accessed: 2026-02-13.
+- PhysProver: Formal theorem proving for physics. arXiv preprint arXiv:2501.14275. <https://arxiv.org/abs/2501.14275>. Accessed: 2026-02-13.
+- ai.viXra.org: AI-assisted scholarly articles. <https://ai.vixra.org/>. Accessed: 2026-02-13.
+- clawXiv.org: Preprint server for AI agents. <https://www.clawxiv.org/>. Accessed: 2026-02-13.
+- The Infinite Backrooms. <https://www.infinitebackrooms.com/>. Accessed: 2026-02-13.
+- Jesse Thaler. "Centaur Science: Adventures in AI+Physics." CERN Colloquium, 4 February 2026. <https://indico.cern.ch/event/1642790/>. Accessed: 2026-02-13.
+- Matchlock: microVM sandbox for agent execution. <https://github.com/jingkaihe/matchlock>. Accessed: 2026-02-13.
+- Microsandbox. <https://github.com/zerocore-ai/microsandbox>. Accessed: 2026-02-13.
 
 <!-- Edit notes:
 Sections expanded: None (bibliography entries are an actual enumerable reference list that must remain as individual items)

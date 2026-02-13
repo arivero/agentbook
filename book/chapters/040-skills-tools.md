@@ -581,7 +581,7 @@ In practice, a single integration might expose multiple tools and enable multipl
 
 ## Case Study: OpenClaw and pi-mono
 
-**OpenClaw** (<https://openclaw.ai/>, <https://github.com/openclaw/openclaw>) is an open-source, local-first personal AI assistant that runs a gateway control plane and connects to over 50 chat providers and device surfaces. Originally published in November 2025 as Clawdbot by Austrian software engineer Peter Steinberger, the project was renamed to OpenClaw in January 2026. With over 169,000 GitHub stars and 3,000+ community-built skills, it has become one of the most popular open-source AI projects. OpenClaw emphasizes multi-channel inboxes ("one brain, many channels"), tool access, and skill management inside a user-owned runtime.
+**OpenClaw** (<https://openclaw.ai/>, <https://github.com/openclaw/openclaw>) is an open-source, local-first personal AI assistant that runs a gateway control plane and connects to over 50 chat providers and device surfaces. Originally published in November 2025 as Clawdbot by Austrian software engineer Peter Steinberger, the project was renamed to OpenClaw in January 2026. With over 183,000 GitHub stars, 3,000+ community-built skills, and 100,000+ active installations, it has become one of the most popular open-source AI projects. OpenClaw emphasizes multi-channel inboxes ("one brain, many channels"), tool access, and skill management inside a user-owned runtime. The v2026.2.6 release (February 2026) added support for Opus 4.6 and GPT-5.3-Codex models, plus a code safety scanner addressing growing security concerns in the skills ecosystem.
 
 OpenClaw is built on the **pi-mono** ecosystem (<https://github.com/badlogic/pi-mono>). The pi-mono monorepo provides an agent runtime, tool calling infrastructure, and multi-provider LLM APIs that OpenClaw leverages to keep the assistant portable across models and deployments.
 
@@ -638,7 +638,7 @@ OpenClaw's architecture consists of several interconnected components:
 4. **Persistent Memory**: Learns and adapts over long-term interactions
 5. **One Brain, Many Channels**: A single AI assistant maintains shared context across all 50+ messaging channels simultaneously—message from WhatsApp on your phone, switch to Telegram on your laptop, and the same assistant remembers everything
 
-> **Warning:** Security researchers have flagged local-first AI assistants as potential targets for infostealers. Without encryption-at-rest and proper containerisation, a compromised device exposes the assistant's full memory and credentials. Treat OpenClaw deployments with the same security discipline as any service handling sensitive data.
+> **Warning:** Security researchers have flagged local-first AI assistants as potential targets for infostealers. Without encryption-at-rest and proper containerisation, a compromised device exposes the assistant's full memory and credentials. Treat OpenClaw deployments with the same security discipline as any service handling sensitive data. In February 2026, VirusTotal reported that over 230 malicious skills had been uploaded to ClawHub since late January, with attack vectors including droppers, backdoors, and infostealers disguised as helpful automation. OpenClaw responded with a VirusTotal partnership for security governance and the code safety scanner in v2026.2.6. Snyk found 7.1% of nearly 4,000 skills mishandle secrets via LLM context windows. These incidents underscore the importance of supply-chain security in agent skill ecosystems.
 
 Key takeaways for skills/tools architecture:
 
@@ -650,7 +650,7 @@ Key takeaways for skills/tools architecture:
 
 OpenClaw is the largest project in a rapidly growing personal AI assistant category. Several related frameworks share its local-first philosophy while making different architectural trade-offs.
 
-**Letta** (<https://www.letta.com/>, formerly MemGPT) is a platform for building stateful agents with advanced memory that can learn and self-improve over time. In January 2026, Letta shipped a Conversations API for agents with shared memory across parallel user experiences, and its **Letta Code** agent ranked #1 on Terminal-Bench among model-agnostic open-source agents. Letta's architecture emphasises programmable memory management—where OpenClaw focuses on channel integration and skills, Letta focuses on making agents that remember and adapt intelligently. The **LettaBot** project (<https://github.com/letta-ai/lettabot>) brings Letta's memory capabilities to a multi-channel personal assistant supporting Telegram, Slack, Discord, WhatsApp, and Signal.
+**Letta** (<https://www.letta.com/>, formerly MemGPT) is a platform for building stateful agents with advanced memory that can learn and self-improve over time. In January 2026, Letta shipped a Conversations API for agents with shared memory across parallel user experiences, and its **Letta Code** agent ranked #1 on Terminal-Bench among model-agnostic open-source agents. In February 2026, Letta introduced **Context Repositories**, a feature that gives agents structured, revisable long-term knowledge bases—moving beyond conversational memory toward persistent project-scoped context. Letta's architecture emphasises programmable memory management—where OpenClaw focuses on channel integration and skills, Letta focuses on making agents that remember and adapt intelligently. The **LettaBot** project (<https://github.com/letta-ai/lettabot>) brings Letta's memory capabilities to a multi-channel personal assistant supporting Telegram, Slack, Discord, WhatsApp, and Signal.
 
 **Langroid** (<https://langroid.github.io/langroid/>) is a Python multi-agent framework from CMU and UW-Madison researchers that emphasises simplicity and composability. Langroid has enhanced MCP support with persistent connections, Portkey integration for unified access to 200+ LLMs, and declarative task termination patterns. Its architecture treats agents, tasks, and tools as lightweight composable objects, making it well-suited for teams that want multi-agent orchestration without heavy infrastructure.
 
@@ -721,6 +721,8 @@ crew = Crew(
 ```
 
 **Shared patterns with OpenClaw**: Role-based agents, sequential and parallel execution, tool assignment per agent.
+
+Version 1.8.0 (February 2026) added native A2A protocol support, enabling CrewAI agents to interoperate with agents built on other frameworks through standardised task delegation. CrewAI also added built-in MCP client support, so crews can connect to any MCP server as a tool source.
 
 ### Microsoft Semantic Kernel
 

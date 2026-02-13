@@ -693,6 +693,8 @@ Google DeepMind has pursued a multi-pronged strategy for mathematical AI. **Alph
 
 In November 2025, DeepMind launched the **AI for Math Initiative** (<https://blog.google/technology/google-deepmind/ai-for-math/>), partnering with Imperial College London, the Institute for Advanced Study, IHES, the Simons Institute at UC Berkeley, and India's Tata Institute of Fundamental Research. The latest Gemini model with Deep Think scored 35 points at IMO 2025—gold-medal level, solving five of six problems.
 
+**February 2026 update:** Gemini 3 with Deep Think has expanded beyond mathematics into broader scientific reasoning. It achieved gold-medal performance on the International Physics Olympiad (IPhO) and the International Chemistry Olympiad (IChO), scoring 48.4% on the Humanity's Last Exam (HLE) benchmark—double the next best model—and 84.6% on ARC-AGI-2. DeepMind has also reported that Gemini 3 Deep Think with extended thinking has been collaborating directly with research teams to solve previously open mathematical problems, suggesting that the transition from competition performance to genuine research contribution is accelerating.
+
 ### Axiom Math and the AxiomProver
 
 Axiom Math (<https://axiommath.ai/>) is a startup led by Morgan Prize winner Carina Hong and former Meta FAIR engineer Shubho Sengupta. It raised $64 million at a $300 million valuation to develop mathematical AI that not only solves problems but proposes new conjectures.
@@ -723,7 +725,7 @@ Using Claude Opus 4.5 as the base model, Numina-Lean-Agent solved all 12 Putnam 
 
 ### PhysProver: Formal Theorem Proving for Physics
 
-PhysProver (<https://arxiv.org/abs/2601.15737>) extends automated theorem proving beyond mathematics into physics. Built on DeepSeek-Prover-V2-7B with Reinforcement Learning with Verifiable Rewards (RLVR), it introduces PhysLeanData, a dataset of physical theorems formalised in Lean 4. Trained on just 5,000 samples, PhysProver achieves consistent 2.4% improvements across physics sub-domains including quantum field theory and generalises to out-of-distribution mathematical benchmarks. A surprising finding is that training on physics-centred problems yields notable improvements in formal mathematical theorem proving as well.
+PhysProver (<https://arxiv.org/abs/2501.14275>) extends automated theorem proving beyond mathematics into physics. Built on DeepSeek-Prover-V2-7B with Reinforcement Learning with Verifiable Rewards (RLVR), it introduces PhysLeanData, a dataset of physical theorems formalised in Lean 4. Trained on just 5,000 samples, PhysProver achieves consistent 2.4% improvements across physics sub-domains including quantum field theory and generalises to out-of-distribution mathematical benchmarks. A surprising finding is that training on physics-centred problems yields notable improvements in formal mathematical theorem proving as well. The paper was published on 22 January 2026; the dataset and training code are available on GitHub.
 
 ### Competitive Landscape Summary
 
@@ -736,9 +738,11 @@ PhysProver (<https://arxiv.org/abs/2601.15737>) extends automated theorem provin
 | **Goedel-Prover-V2** | Princeton | — | — | 90.4% | Yes |
 | **DeepSeek-Prover-V2** | DeepSeek | — | — | 88.9% | Yes |
 | **DeepSeekMath-V2** | DeepSeek | 118/120* | Gold | — | Yes |
-| **PhysProver** | Research | — | — | +1.3% | Planned |
+| **Gemini 3 Deep Think** | Google DeepMind | — | — | — | No |
+| **PhysProver** | Research | — | — | +1.3% | Yes |
 
 *Putnam 2024 score; Putnam 2025 results not reported.
+†Gemini 3 Deep Think also achieved gold at IPhO and IChO, and 48.4% on HLE.
 
 ### Open-Source Activity Signals
 
