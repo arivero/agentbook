@@ -103,6 +103,50 @@ order: 99
 - JFrog. Critical mcp-remote RCE Vulnerability (CVE-2025-6514). <https://jfrog.com/blog/2025-6514-critical-mcp-remote-rce-vulnerability/>. Accessed: 2026-02-13.
 - Cyata / The Register. Anthropic Git MCP Server Flaws (CVE-2025-68145/68143/68144). <https://www.theregister.com/2026/01/20/anthropic_prompt_injection_flaws/>. Accessed: 2026-02-13.
 
+- Gemini CLI repository. <https://github.com/google-gemini/gemini-cli>. Accessed: 2026-02-13.
+- Gemini CLI documentation. <https://geminicli.com/docs/>. Accessed: 2026-02-13.
+- Gemini CLI subagents. <https://geminicli.com/docs/core/subagents/>. Accessed: 2026-02-13.
+- Gemini CLI Agent Skills. <https://geminicli.com/docs/cli/skills/>. Accessed: 2026-02-13.
+- Claude Agent SDK overview. <https://platform.claude.com/docs/en/agent-sdk/overview>. Accessed: 2026-02-13.
+- Claude Code subagents documentation. <https://docs.anthropic.com/en/docs/claude-code/sub-agents>. Accessed: 2026-02-13.
+- Anthropic. Tool Search Tool. <https://platform.claude.com/docs/en/agents-and-tools/tool-use/tool-search-tool>. Accessed: 2026-02-13.
+- Anthropic. Programmatic Tool Calling. <https://platform.claude.com/docs/en/agents-and-tools/tool-use/programmatic-tool-calling>. Accessed: 2026-02-13.
+- Anthropic. Claude Opus 4.6 announcement. <https://www.anthropic.com/news/claude-opus-4-6>. Accessed: 2026-02-13.
+- Anthropic. Building a C compiler with Agent Teams. <https://www.anthropic.com/engineering/building-c-compiler>. Accessed: 2026-02-13.
+- OpenAI Codex CLI repository. <https://github.com/openai/codex>. Accessed: 2026-02-13.
+- OpenAI Codex security documentation. <https://developers.openai.com/codex/security/>. Accessed: 2026-02-13.
+- OpenAI. Introducing AgentKit. <https://openai.com/index/introducing-agentkit/>. Accessed: 2026-02-13.
+- OpenAI. Introducing OpenAI Frontier. <https://openai.com/index/introducing-openai-frontier/>. Accessed: 2026-02-13.
+- OpenAI. Migrate from Assistants API to Responses API. <https://platform.openai.com/docs/guides/migrate-to-responses>. Accessed: 2026-02-13.
+- Vertex AI Agent Builder overview. <https://docs.cloud.google.com/agent-builder/overview>. Accessed: 2026-02-13.
+- Google ADK with A2A protocol. <https://google.github.io/adk-docs/a2a/>. Accessed: 2026-02-13.
+- Google. Enhanced tool governance in Vertex AI Agent Builder. <https://cloud.google.com/blog/products/ai-machine-learning/new-enhanced-tool-governance-in-vertex-ai-agent-builder>. Accessed: 2026-02-13.
+- Agentic AI Foundation (AAIF). <https://www.linuxfoundation.org/press/agentic-ai-foundation>. Accessed: 2026-02-13.
+- Anthropic. Cowork desktop preview. <https://www.anthropic.com/news/cowork>. Accessed: 2026-02-13.
+- llms.txt specification. <https://llmstxt.org/>. Accessed: 2026-02-13.
+- MCP Registry. <https://registry.modelcontextprotocol.io/>. Accessed: 2026-02-13.
+- MCP Registry GitHub repository. <https://github.com/modelcontextprotocol/registry>. Accessed: 2026-02-13.
+- MCP reference servers repository. <https://github.com/modelcontextprotocol/servers>. Accessed: 2026-02-13.
+- MCP SEP-1960: .well-known/mcp discovery endpoint. <https://github.com/modelcontextprotocol/modelcontextprotocol/issues/1960>. Accessed: 2026-02-13.
+- MCP SEP-1649: MCP Server Cards. <https://github.com/modelcontextprotocol/modelcontextprotocol/issues/1649>. Accessed: 2026-02-13.
+- MCP ext-apps: MCP Apps extension. <https://github.com/modelcontextprotocol/ext-apps>. Accessed: 2026-02-13.
+- A2A protocol: Agent discovery. <https://a2a-protocol.org/latest/topics/agent-discovery/>. Accessed: 2026-02-13.
+- Lightweight Agent Standards Working Group (LAS-WG). agent-permissions.json. <https://github.com/las-wg/agent-permissions.json>. Accessed: 2026-02-13.
+- Spawning. ai.txt: A new way for websites to set AI permissions. <https://spawning.substack.com/p/aitxt-a-new-way-for-websites-to-set>. Accessed: 2026-02-13.
+- Anthropic Agent Skills GitHub repository. <https://github.com/anthropics/skills>. Accessed: 2026-02-13.
+- OpenAI Agent Skills. <https://github.com/openai/skills>. Accessed: 2026-02-13.
+- VoltAgent/awesome-agent-skills. <https://github.com/VoltAgent/awesome-agent-skills>. Accessed: 2026-02-13.
+- punkpeye/awesome-mcp-servers. <https://github.com/punkpeye/awesome-mcp-servers>. Accessed: 2026-02-13.
+- SkillRegistry.io. <https://skillregistry.io/>. Accessed: 2026-02-13.
+- PulseMCP: MCP server directory. <https://www.pulsemcp.com/servers>. Accessed: 2026-02-13.
+- Playwright MCP server. <https://github.com/microsoft/playwright-mcp>. Accessed: 2026-02-13.
+- Notion MCP server documentation. <https://developers.notion.com/docs/mcp>. Accessed: 2026-02-13.
+- Stripe MCP server documentation. <https://docs.stripe.com/mcp>. Accessed: 2026-02-13.
+- Slack MCP server documentation. <https://docs.slack.dev/ai/mcp-server/>. Accessed: 2026-02-13.
+- Datadog MCP server documentation. <https://docs.datadoghq.com/bits_ai/mcp_server/>. Accessed: 2026-02-13.
+- Grafana MCP server. <https://github.com/grafana/mcp-grafana>. Accessed: 2026-02-13.
+- Hugging Face MCP server. <https://github.com/huggingface/hf-mcp-server>. Accessed: 2026-02-13.
+
 <!-- Edit notes:
 Sections expanded: None (bibliography entries are an actual enumerable reference list that must remain as individual items)
 Lists preserved: All bibliography entries (reference lists must remain enumerable for citation purposes)
