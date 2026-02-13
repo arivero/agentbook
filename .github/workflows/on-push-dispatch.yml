@@ -1,0 +1,74 @@
+name: Push Dispatcher
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  actions: write
+  contents: read
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 2
+
+      - name: Detect changed paths
+        id: paths
+        run: |
+          set -euo pipefail
+
+          if git rev-parse HEAD~1 >/dev/null 2>&1; then
+            changed="$(git diff --name-only HEAD~1 HEAD)"
+          else
+            changed="$(git ls-files)"
+          fi
+
+          has_book=$(echo "$changed" | grep -qE '^book/.*\.md$' && echo true || echo false)
+          has_check_links_script=$(echo "$changed" | grep -qE '^scripts/check-links\.py$' && echo true || echo false)
+          has_workflows_md=$(echo "$changed" | grep -qE '^\.github/workflows/.*\.md$' && echo true || echo false)
+
+          {
+            echo "has_book=${has_book}"
+            echo "has_check_links_script=${has_check_links_script}"
+            echo "has_workflows_md=${has_workflows_md}"
+          } >> "${GITHUB_OUTPUT}"
+
+      - name: Dispatch pages deployment
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh workflow run pages.yml \
+            --repo "${{ github.repository }}" \
+            --ref "${{ github.ref_name }}"
+
+      - name: Dispatch PDF build
+        if: ${{ steps.paths.outputs.has_book == 'true' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh workflow run build-pdf.yml \
+            --repo "${{ github.repository }}" \
+            --ref "${{ github.ref_name }}"
+
+      - name: Dispatch link check
+        if: ${{ steps.paths.outputs.has_book == 'true' || steps.paths.outputs.has_check_links_script == 'true' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh workflow run check-links.yml \
+            --repo "${{ github.repository }}" \
+            --ref "${{ github.ref_name }}"
+
+      - name: Dispatch compile check
+        if: ${{ steps.paths.outputs.has_workflows_md == 'true' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh workflow run compile-workflows.yml \
+            --repo "${{ github.repository }}" \
+            --ref "${{ github.ref_name }}"

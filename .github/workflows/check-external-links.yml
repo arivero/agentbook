@@ -2,9 +2,6 @@ name: Check External Links (internet required)
 
 on:
   workflow_dispatch:
-  schedule:
-    # Roughly every 15 days (1st and 16th of each month) at 06:00 UTC.
-    - cron: '0 6 1,16 * *'
 
 jobs:
   check-external-links:

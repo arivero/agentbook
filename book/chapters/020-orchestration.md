@@ -7,7 +7,7 @@ order: 2
 
 ## Chapter Preview
 
-This chapter compares common orchestration patterns and explains when to use each, helping you choose the right approach for your specific workflow requirements. It maps orchestration concepts to the roles introduced earlier—planner, executor, and reviewer—showing how these components interact in practice. Finally, it presents practical guardrails for coordination at scale, addressing the challenges that emerge when multiple agents work together on complex tasks.
+This chapter compares common orchestration patterns—sequential, parallel, hierarchical, and event-driven—and explains when to use each, helping you choose the right approach for your specific workflow requirements. It maps orchestration concepts to the roles introduced earlier—planner, executor, and reviewer—showing how these components interact in practice. Finally, it presents practical guardrails for coordination at scale, addressing the challenges that emerge when multiple agents work together on complex tasks.
 
 ## Understanding Agent Orchestration
 
@@ -98,6 +98,22 @@ class MultiTurnSearchAgent:
 ```
 
 This represents an emerging research direction in agent tool design, where the focus shifts from individual tool capabilities to deliberate coordination between tools within an agent's reasoning loop. For principles of tool design that enable such coordination, see Chapter 040 (Skills and Tools Management).
+### Git as Coordination Substrate
+
+Agents can coordinate through Git itself, using commits as the communication and state management layer. In this approach, agents read commit state from Git history, process tasks based on structured commit trailers (e.g., `aynig: state-name`), and respond by creating new commits with updated state. Git worktrees enable parallel agent execution, and the Git history becomes the complete audit trail.
+
+**Example commit message**:
+```
+Implement user authentication
+
+aynig: review-needed
+aynig: assigned-to: security-agent
+aynig: depends-on: abc123
+```
+
+When an agent processes this commit, it reads the trailers, executes the appropriate state script (`.aynig/review-needed`), and creates a response commit with updated state. This mechanism suits distributed teams with limited infrastructure, audit-critical workflows requiring full provenance, and scenarios where humans and agents are peer contributors. However, it requires disciplined commit message practices and is limited to Git-hosted projects.
+
+**Reference implementation**: [AYNIG (All You Need Is Git)](https://github.com/hacknlove/all-you-need-is-git) demonstrates this coordination mechanism experimentally (work-in-progress).
 
 ## Best Practices
 
@@ -211,6 +227,86 @@ As a result, backrooms conversations gravitate toward domains where language alo
 ### From Backrooms to Productive Multi-Agent Systems
 
 The gap between backrooms-style free conversation and productive multi-agent orchestration can be bridged by adding the components this chapter describes. Give the agents tools (proof assistants, simulators, search APIs) and they can verify claims rather than just generating them. Add a supervisor or planner and the conversation becomes directed toward a goal. Introduce shared state (a knowledge base, a codebase, a formal proof) and the agents can build on each other's work rather than drifting through associative chains. The Google Agent2Agent protocol (A2A) and Anthropic's Model Context Protocol (MCP), both released in 2025, provide infrastructure for exactly this kind of structured multi-agent communication. The evolution from backrooms to production multi-agent systems mirrors the broader evolution of the field from impressive demonstrations to reliable engineering.
+
+## Claude Agent Teams: Native Multi-Agent Coordination
+
+Anthropic introduced **Agent Teams** with the release of Opus 4.6, providing native multi-agent coordination primitives that replace workaround patterns developers had been using. This feature represents a significant architectural evolution in how agents can collaborate on complex tasks.
+
+Before Agent Teams, developers coordinated multiple Claude instances through manual patterns: using the Task tool to spawn parallel work, implementing custom polling loops to check agent status, and managing state synchronisation by hand. These workarounds were functional but fragile, requiring significant boilerplate code and careful state management.
+
+### Architecture and Coordination Primitives
+
+Agent Teams introduces the **TeammateTool API**, which provides first-class support for multi-agent coordination. The architecture follows a **Team Lead pattern** where a primary agent spawns specialised teammates, each focused on a particular aspect of the problem. These teammates coordinate through **shared task queues**, allowing work to be distributed dynamically as agents complete their assignments.
+
+A key innovation is **idle notification handling**—agents explicitly signal when they are ready for work rather than requiring the coordinator to poll their status. This reduces coordination overhead and enables more natural parallel execution. The system also provides **dependency management**, allowing agents to specify which tasks must complete before others can begin, supporting both sequential and parallel execution patterns as appropriate.
+
+### Implementation Pattern
+
+The following example demonstrates the Agent Teams pattern for coordinating a software development task:
+
+```python
+from anthropic import TeammateTool
+
+class DevelopmentTeamLead:
+    """Coordinate development using Agent Teams"""
+
+    def __init__(self, model="opus-4.6"):
+        self.model = model
+        self.teammates = {}
+
+    async def execute_feature(self, specification: str):
+        """Execute a feature using coordinated agent team"""
+
+        # Spawn specialised teammates
+        self.teammates['architect'] = await self.spawn_teammate(
+            role="system architect",
+            focus="design patterns and component structure"
+        )
+        self.teammates['implementer'] = await self.spawn_teammate(
+            role="code implementer",
+            focus="writing production code"
+        )
+        self.teammates['tester'] = await self.spawn_teammate(
+            role="test engineer",
+            focus="test creation and validation"
+        )
+
+        # Create shared task queue
+        task_queue = TeamTaskQueue()
+
+        # Lead breaks down specification
+        tasks = await self.decompose_feature(specification)
+        for task in tasks:
+            await task_queue.add(task)
+
+        # Teammates claim and execute tasks
+        results = await self.coordinate_execution(task_queue)
+
+        # Lead aggregates results
+        return await self.integrate_results(results)
+
+    async def spawn_teammate(self, role: str, focus: str):
+        """Spawn a specialised teammate using TeammateTool"""
+        return await TeammateTool.create(
+            model=self.model,
+            system_prompt=f"You are a {role}. {focus}.",
+            idle_notification=True
+        )
+```
+
+> **Note:** This pseudo-code illustrates the Agent Teams pattern. Refer to Claude Code documentation for exact API signatures.
+
+### From Workarounds to Native Coordination
+
+The shift from workaround patterns to native Agent Teams demonstrates tangible improvements in code quality and reliability. Before Agent Teams, coordinating multiple agents required manual state management, complex polling loops, and brittle synchronisation logic that made multi-agent systems difficult to maintain. With Agent Teams, coordination happens through built-in APIs that handle state management automatically, idle notification replaces polling loops, and reliability improves through tested infrastructure rather than custom code.
+
+Community adoption has been rapid, with developers migrating existing multi-agent systems to the native APIs. GitHub repositories show migrations from Task tool parallelism to TeammateTool, demonstrating the clear value of first-class coordination support.
+
+### Integration with the Broader Ecosystem
+
+Agent Teams integrates naturally with the orchestration patterns described earlier in this chapter. The Team Lead pattern implements hierarchical execution with a supervisor delegating to specialised workers. Task queues enable both parallel and sequential execution depending on dependency structure. The system works alongside Model Context Protocol (MCP) for tool access and A2A for inter-agent communication, completing the infrastructure needed for production multi-agent systems.
+
+For coding-specific applications of Agent Teams, see [Agents for Coding](080-agents-for-coding.md) where Claude Code's subagent architecture leverages these primitives. For workflow integration, see [GitHub Agentic Workflows](060-gh-agentic-workflows.md) where Agent Teams can be used as the execution engine.
 
 ## Challenges and Solutions
 

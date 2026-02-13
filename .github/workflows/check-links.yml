@@ -1,14 +1,6 @@
 name: Check Links (offline)
 
 on:
-  push:
-    paths:
-      - 'book/**/*.md'
-      - 'scripts/check-links.py'
-  pull_request:
-    paths:
-      - 'book/**/*.md'
-      - 'scripts/check-links.py'
   workflow_dispatch:
 
 jobs:

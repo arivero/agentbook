@@ -46,6 +46,7 @@ order: 99
 - LangChain documentation. <https://docs.langchain.com>. Accessed: 2026-02-06.
 - LangGraph documentation. <https://langchain-ai.github.io/langgraph/>. Accessed: 2026-02-05.
 - CrewAI documentation. <https://docs.crewai.com/>. Accessed: 2026-02-05.
+- AYNIG (All You Need Is Git): Git-native orchestration framework. <https://github.com/hacknlove/all-you-need-is-git>. Accessed: 2026-02-08.
 - Microsoft Semantic Kernel. <https://learn.microsoft.com/semantic-kernel/>. Accessed: 2026-02-05.
 - AutoGen documentation (v0.4). <https://microsoft.github.io/autogen/stable/>. Accessed: 2026-02-06.
 - AutoGen v0.2 to v0.4 migration guide. <https://microsoft.github.io/autogen/stable/user-guide/agentchat-user-guide/migration-guide.html>. Accessed: 2026-02-06.

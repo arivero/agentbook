@@ -93,6 +93,150 @@ USER agent
 ENTRYPOINT ["python", "agent_runner.py"]
 ```
 
+### Secure Execution Environments
+
+Production agentic workflows require safe execution of potentially untrusted agent-generated code without exposing credentials, allowing unrestricted network access, or risking the host system. The isolation strategy you choose determines the security boundaries and operational characteristics of your agent infrastructure.
+
+#### The Isolation Spectrum
+
+Different isolation technologies offer varying levels of security, performance, and complexity. Understanding these trade-offs helps you choose the right approach for your use case.
+
+**Process-level isolation** is the simplest approach, running agents as separate operating system processes with restricted permissions. This provides basic separation but shares the kernel and much of the system state with other processes. A vulnerability in the kernel or a privilege escalation exploit can compromise the entire system. Use this for trusted code in low-risk environments where simplicity matters more than strong isolation.
+
+**Container isolation** uses Linux kernel features like namespaces and cgroups to create isolated execution contexts. Docker and Podman implement this approach, providing filesystem isolation, network isolation, and resource limits. Containers share the host kernel, which means kernel vulnerabilities affect all containers. They boot quickly (seconds) and have low overhead, making them suitable for many agentic workflows. Use containers when you need better isolation than processes but can accept shared kernel risks.
+
+**Full virtualization** runs a complete operating system inside a hypervisor, providing the strongest isolation at the cost of higher overhead. QEMU, VirtualBox, and VMware implement full virtualization. Each VM has its own kernel, eliminating shared kernel vulnerabilities. Boot times are slower (tens of seconds to minutes) and resource overhead is higher. Use full VMs when security requirements justify the performance cost, such as when executing code from untrusted sources or handling sensitive data.
+
+**MicroVMs** combine the strong isolation of VMs with the performance characteristics of containers. Firecracker (used by AWS Lambda) and Cloud Hypervisor implement this approach, booting minimal Linux kernels in under a second while maintaining kernel-level isolation. MicroVMs use hardware virtualization but minimize guest OS overhead, providing a practical balance for production agent workloads. Use microVMs when you need strong isolation without sacrificing the rapid iteration cycles that agentic workflows require.
+
+| Technology | Boot Time | Isolation | Overhead | Use Case |
+|------------|-----------|-----------|----------|----------|
+| Processes | Instant | Weak | Minimal | Trusted code, low risk |
+| Containers | 1-5 seconds | Moderate | Low | Most agent workflows |
+| MicroVMs | &lt;1 second | Strong | Low-Medium | High-security agents |
+| Full VMs | 30-60 seconds | Strongest | High | Maximum isolation |
+
+#### Secret Management Patterns
+
+Agents frequently need credentials to call external APIs—language model providers, code repositories, cloud services. Exposing these secrets to the agent execution environment creates risk. If the agent is compromised or generates malicious code, credentials can be exfiltrated. Different secret management patterns offer varying levels of security.
+
+**Environment variables** are the simplest approach, injecting secrets as environment variables that agent code reads at runtime. This is easy to implement and widely supported but offers minimal protection. Any code running in the environment can access these variables, and they may appear in process listings, logs, or error messages. Use this only for non-sensitive credentials in trusted environments.
+
+```python
+# Simple but insecure: secrets visible in environment
+import os
+
+api_key = os.environ.get('API_KEY')
+# If agent code is compromised, api_key is directly accessible
+```
+
+**Sealed secrets** use encryption and access control systems like Kubernetes secrets or HashiCorp Vault to protect credentials at rest and in transit. Secrets are decrypted only when needed and only by authorized agents. This prevents static credential exposure but still requires the decrypted secret to exist in the agent's memory space. Use this when you need better protection than environment variables but can accept in-memory credential presence.
+
+```python
+# Better: fetch secrets from secure store
+from vault_client import VaultClient
+
+vault = VaultClient(token=os.environ.get('VAULT_TOKEN'))
+api_key = vault.get_secret('api_keys/openai')
+# Secret is encrypted until fetched, but still in memory
+```
+
+**Network-layer injection** provides the strongest protection by keeping credentials entirely outside the agent execution environment. A transparent proxy intercepts outbound API calls from the agent and injects real credentials at the network layer. The agent sees and uses a placeholder token, but actual API calls work seamlessly because the proxy rewrites requests in flight. If the agent is compromised, the attacker only obtains the placeholder, which is useless outside the sandboxed environment.
+
+```python
+# Most secure: agent never sees real credentials
+api_key = "placeholder_token_12345"  # Not the real secret
+client = OpenAI(api_key=api_key)
+
+# Proxy intercepts this request:
+# - Sees placeholder token in Authorization header
+# - Replaces it with real credential
+# - Forwards to actual API endpoint
+# - Returns response to agent
+response = client.chat.completions.create(...)
+```
+
+This pattern requires infrastructure support—a MITM proxy with vsock or similar communication channel—but provides defense in depth. Even if agent code is fully compromised, credentials remain protected. Use this for high-security environments or when executing untrusted agent code.
+
+**Secret rotation** is essential regardless of injection method. Credentials should expire and rotate regularly, limiting the window of exposure if a secret is compromised. Automated rotation with short-lived tokens (hours to days rather than months) reduces risk without requiring manual intervention.
+
+#### Network Security for Agent Workflows
+
+Unrestricted network access allows agents to exfiltrate data, call arbitrary APIs, or participate in distributed attacks. Default-deny networking with explicit allowlisting provides control without breaking legitimate functionality.
+
+**Default-deny networking** blocks all outbound connections unless explicitly permitted. This prevents agents from reaching unexpected endpoints. Implement this at the firewall, container network policy, or virtual network level. Agents can only call services you have explicitly authorized.
+
+**Explicit allowlisting per host** defines which external services each agent workflow can access. A code review agent might need GitHub API and language model APIs, but not database access. A documentation agent might need only static site generators and file storage. Granular policies limit blast radius when agents behave unexpectedly.
+
+```yaml
+# Example network policy for agent workspace
+agent_policies:
+  code_review_agent:
+    allowed_hosts:
+      - api.github.com
+      - api.openai.com
+      - api.anthropic.com
+    blocked_hosts:
+      - internal-database.corp
+      - admin-panel.corp
+
+  documentation_agent:
+    allowed_hosts:
+      - api.openai.com
+      - storage.googleapis.com
+    blocked_hosts:
+      - "*"  # default deny
+```
+
+**Egress filtering** logs and monitors agent network activity, providing visibility into what agents actually do. Even with allowlisting, tracking connection attempts helps detect anomalies. If an agent suddenly attempts connections to unexpected hosts, this indicates potential compromise or unintended behavior.
+
+**Monitoring and logging** complement filtering by recording which APIs agents call, how often, and with what results. This telemetry helps debug agent behavior and detect security issues early. Pattern-based alerting can flag unusual activity for human review.
+
+#### Case Study: MicroVM-Based Sandboxing
+
+To make these patterns concrete, consider Matchlock (https://github.com/jingkaihe/matchlock), an open-source CLI tool that combines microVMs with transparent secret injection. While new (created February 2026), it demonstrates the architectural approach.
+
+**Problem addressed:** Agent workflows need to execute potentially untrusted code while calling authenticated APIs. Traditional approaches either expose credentials to the agent (security risk) or require complex credential management (operational burden).
+
+**Solution architecture:** Matchlock runs agents in ephemeral Firecracker microVMs (Linux) or Virtualization.framework (macOS) with:
+
+- **Disposable filesystems:** Each agent run gets a fresh copy-on-write filesystem that disappears after execution, preventing persistence of malicious code or leaked data
+- **Transparent MITM proxy:** A host-side proxy intercepts agent API calls, sees placeholder tokens in request headers, and injects real credentials before forwarding to actual endpoints
+- **Vsock communication:** Guest-host communication uses vsock (virtual socket) rather than TCP, reducing attack surface
+- **Network allowlisting:** Only explicitly permitted hosts are reachable from the VM
+- **Sub-second boot:** MicroVMs start in under one second, making sandboxing practical for iterative development workflows
+
+The agent code looks normal—it imports libraries, reads a placeholder API key, and makes API calls. But the execution environment ensures credentials never enter the VM and network access is tightly controlled.
+
+```python
+# Agent code running inside Matchlock microVM
+import openai
+
+# This is a placeholder token, not the real credential
+client = openai.OpenAI(api_key="matchlock_placeholder")
+
+# Proxy intercepts this call and injects the real API key
+response = client.chat.completions.create(
+    model="gpt-4",
+    messages=[{"role": "user", "content": "Hello"}]
+)
+# Agent receives response as if it had used real credentials
+print(response.choices[0].message.content)
+```
+
+**Comparison with alternatives:**
+
+- **Docker + seccomp/AppArmor:** Simpler to deploy but weaker isolation (shared kernel). Suitable when agent code is mostly trusted or security requirements are moderate.
+- **gVisor:** Application kernel providing stronger isolation than containers without full VMs. More complex than Docker but lighter than microVMs. Good middle ground for medium-security needs.
+- **Microsandbox:** Rust-based sandboxing tool (https://github.com/stackblitz/microsandbox) with broader adoption (4.7k GitHub stars). Focuses on browser-based agent execution, complementary to server-side microVM approaches.
+- **Full VMs (QEMU, VirtualBox):** Strongest isolation but slower boot times (30+ seconds). Use when security requirements justify the latency cost, such as for long-running batch jobs with untrusted code.
+
+**When to use each approach:**
+
+Use **containers** (Docker, Podman) for trusted agent code in controlled environments where convenience and ecosystem maturity matter. Use **microVMs** (Firecracker, Matchlock) when you need strong isolation without sacrificing rapid iteration, especially for executing user-provided or LLM-generated code. Use **full VMs** when security requirements are paramount and boot time is less critical, such as for isolated compliance workloads. Use **process-level isolation** only for prototyping or fully trusted code where security is not a concern.
+
+The architecture of transparent proxying plus ephemeral environments provides a reference pattern for high-security agent scaffolding, applicable beyond any specific tool implementation.
+
 ### Communication Protocol
 Standardize how agents communicate.
 

@@ -1,0 +1,38 @@
+name: Weekly Scheduler
+
+on:
+  schedule:
+    - cron: '0 14 * * 1'   # Mondays at 14:00 UTC
+  workflow_dispatch:
+
+permissions:
+  actions: write
+  contents: read
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dispatch research updates
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh workflow run "daily-research-updates.lock.yml" \
+            --repo "${{ github.repository }}" \
+            --ref main
+
+      - name: Dispatch editorial quality pass
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh workflow run "weekly-editorial-quality.lock.yml" \
+            --repo "${{ github.repository }}" \
+            --ref main
+
+      - name: Dispatch external link check
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh workflow run "check-external-links.yml" \
+            --repo "${{ github.repository }}" \
+            --ref main
