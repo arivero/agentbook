@@ -74,7 +74,7 @@ class AgentContext:
 
 #### Case Study: LocalGPT's Persistent Memory Architecture
 
-LocalGPT (https://github.com/localgpt-app/localgpt) demonstrates practical persistent memory implementation in a Rust-based AI assistant. The system uses markdown files as the primary storage format for different memory types, providing both human-readable persistence and efficient retrieval.
+LocalGPT (<https://github.com/localgpt-app/localgpt>) demonstrates practical persistent memory implementation in a Rust-based AI assistant. The system uses markdown files as the primary storage format for different memory types, providing both human-readable persistence and efficient retrieval.
 
 **Memory structure:** LocalGPT maintains three core markdown files that serve distinct memory purposes. `MEMORY.md` stores conversational context and learned facts that persist across sessions. `SOUL.md` defines the agent's persona, constraints, and behavioral patterns—essentially the agent's identity and operating principles. `HEARTBEAT.md` tracks autonomous background tasks and their execution schedules, enabling the agent to perform work without explicit prompts.
 
