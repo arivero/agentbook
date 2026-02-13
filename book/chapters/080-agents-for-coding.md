@@ -373,6 +373,10 @@ Devin (<https://devin.ai/>) by Cognition is an autonomous coding agent designed 
 
 Windsurf (<https://windsurf.com/>), formerly Codeium, is an AI-native IDE now owned by Cognition (acquired July 2025). It is a feature-rich fork of VS Code with seamless import of existing settings and extensions. Its **Cascade** feature is an agentic assistant that plans multi-step edits, calls tools, and uses deep repository context. Windsurf offers a permanently free individual plan with unlimited autocomplete and chat, making it accessible for individual developers.
 
+### Snowflake Cortex Code: Domain-Specific Coding Agents
+
+Snowflake Cortex Code (<https://www.snowflake.com/en/product/features/cortex-code/>), generally available as of February 2026, represents a different trajectory: a **domain-specific** coding agent that understands enterprise data context. Unlike general-purpose agents, Cortex Code reads users' Snowflake schemas, compute resources, and governance policies, generating SQL and Python code that respects the organisation's RBAC model. It is available through both the Snowsight web interface and a CLI that integrates with VS Code, Cursor, and terminal shells. The practical significance is that domain-specific agents can outperform general-purpose ones within their vertical by leveraging proprietary context—data lineage, access policies, and operational semantics—that a general-purpose model does not have. Expect similar domain-specific coding agents from other data platform vendors.
+
 ### CodeGPT and Agent Marketplaces
 
 CodeGPT (<https://codegpt.co/>) and marketplace-based approaches offer specialised agents. **Specialised agents** provide over 200 pre-built agents for specific tasks, from code review to documentation generation. **Custom agent creation** lets you build and share domain-specific agents tailored to your organisation's needs. **Multi-model support** combines different LLMs for different tasks, using each model's strengths where they apply best.

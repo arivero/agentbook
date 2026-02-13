@@ -156,6 +156,16 @@ Pass criteria should include not just correctness, but also policy compliance, c
 
 Before enabling autonomous writes and merges in production, validate that guardrails work correctly. Protected-path enforcement should block modifications to sensitive files. Secret scanning and licence checks should catch policy violations. Human approval routing should engage for high-impact actions. Rollback paths should work on failed deployments.
 
+## Case Study: MCP Supply-Chain Vulnerabilities in Practice
+
+Two 2025 incidents illustrate how protocol-level vulnerabilities propagate through agentic systems.
+
+**CVE-2025-6514 (`mcp-remote` OS command injection, CVSS 9.6).** The `mcp-remote` npm package (versions 0.0.5 through 0.1.15), used by over 437,000 AI development environments, contained an OS command injection flaw. When connecting to an untrusted MCP server, the server could craft a malicious `authorization_endpoint` URL that, when processed by the client's `open()` function, executed arbitrary operating-system commands. The vulnerability required user interaction but no authentication. JFrog Security Research discovered and reported it; the fix (version 0.1.16) sanitised special elements in authorisation responses. The lesson: MCP client packages that handle authentication flows from external servers must treat every server response as untrusted input.
+
+**CVE-2025-68145/68143/68144 (Anthropic Git MCP server, RCE chain).** Three flaws in `mcp-server-git` (prior to version 2025.12.18) combined into a remote-code-execution chain. CVE-2025-68145 (CVSS 7.1) bypassed the `--repository` flag's path restrictions, allowing access to any repository on the system. CVE-2025-68143 let `git_init` create repositories at arbitrary filesystem paths. CVE-2025-68144 injected arguments through unsanitised `git_diff` and `git_checkout` parameters, enabling file overwrites. Researchers at Cyata demonstrated that chaining these flaws with a Filesystem MCP server allowed writing malicious Git smudge/clean filters that achieved full code execution. Anthropic patched all three in December 2025. The lesson: individual MCP tools may appear safe in isolation, but **tool chaining creates exponential attack surface**—security boundaries must be enforced at every tool invocation, not just at initialisation.
+
+Both incidents validate the OWASP MCP Top 10 and reinforce that MCP server/client security is now a production concern, not a theoretical exercise. For governance context, see [Governance and Safety Automation](800-future-developments.md#governance-and-safety-automation).
+
 ## Practical Fix Patterns
 
 When incidents happen, reusable fix patterns reduce MTTR (mean time to recovery).

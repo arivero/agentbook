@@ -98,6 +98,10 @@ order: 99
 - OWASP Top 10 for Agentic Applications (2026). <https://genai.owasp.org/resource/owasp-top-10-for-agentic-applications-for-2026/>. Accessed: 2026-02-13.
 - VirusTotal. From Automation to Infection: How OpenClaw AI Agent Skills Are Being Weaponized. <https://blog.virustotal.com/2026/02/from-automation-to-infection-how.html>. Accessed: 2026-02-13.
 - Cognition. Agent Trace: Capturing the Context Graph of Code. <https://cognition.ai/blog/agent-trace>. Accessed: 2026-02-13.
+- Snowflake. Cortex Code: Snowflake-native AI coding agent. <https://www.snowflake.com/en/product/features/cortex-code/>. Accessed: 2026-02-13.
+- GitHub Copilot Memory documentation. <https://docs.github.com/copilot/concepts/agents/copilot-memory>. Accessed: 2026-02-13.
+- JFrog. Critical mcp-remote RCE Vulnerability (CVE-2025-6514). <https://jfrog.com/blog/2025-6514-critical-mcp-remote-rce-vulnerability/>. Accessed: 2026-02-13.
+- Cyata / The Register. Anthropic Git MCP Server Flaws (CVE-2025-68145/68143/68144). <https://www.theregister.com/2026/01/20/anthropic_prompt_injection_flaws/>. Accessed: 2026-02-13.
 
 <!-- Edit notes:
 Sections expanded: None (bibliography entries are an actual enumerable reference list that must remain as individual items)
