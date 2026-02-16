@@ -5,9 +5,9 @@ order: 10
 
 # Common Failure Modes, Testing, and Fixes
 
-## Chapter Goals
+## Chapter Preview
 
-By the end of this chapter, you should be able to recognise the most common ways agentic workflows fail in production, understanding the symptoms and root causes of each failure mode. You should be able to design a test strategy that catches failures before deployment, combining static checks, deterministic tests, and adversarial evaluations. You should be able to apply practical mitigation and recovery patterns that reduce mean time to recovery when failures occur. And you should be able to turn incidents into durable process and architecture improvements that prevent recurrence.
+This chapter catalogues the most common failure modes in agentic workflows, explaining symptoms, root causes, and immediate fixes for planning failures, tooling failures, context failures, and operational failures. It presents a layered testing strategy combining static validation, deterministic tests, and adversarial evaluation to catch failures before deployment. Finally, it provides practical mitigation patterns—progressive autonomy, explicit termination criteria, and incident-to-architecture feedback loops—that reduce mean time to recovery and prevent recurrence.
 
 ## Why Failures Are Different in Agentic Systems
 
