@@ -116,6 +116,16 @@ Different isolation technologies offer varying levels of security, performance, 
 | MicroVMs | &lt;1 second | Strong | Low-Medium | High-security agents |
 | Full VMs | 30-60 seconds | Strongest | High | Maximum isolation |
 
+#### Execution Auditability and Provenance
+
+Beyond isolation, production agentic scaffolding includes execution substrates that provide built-in auditability. These systems treat agent runs as version-controlled artifacts, enabling systematic debugging through execution replay and provenance tracking.
+
+**Execution substrates** capture complete agent execution snapshots—inputs, tool calls, model responses, outputs, and metadata—in content-addressed, immutable logs. This creates tamper-evident audit trails for compliance and incident investigation. The execution history becomes a first-class artifact that can be replayed, diffed, and verified using developer-native workflows similar to git.
+
+Tools like ContextSubstrate implement this pattern, applying version control primitives (content-addressing, immutable snapshots, git-like CLI workflows) to agent execution artifacts. For production systems requiring auditability, reproducibility, or compliance, execution substrates complement isolation by providing post-hoc debugging and provenance verification.
+
+For detailed coverage of reproducible execution infrastructure, see [Reproducible Execution Infrastructure](100-failure-modes-testing-fixes.md#3a-reproducible-execution-infrastructure).
+
 #### Secret Management Patterns
 
 Agents frequently need credentials to call external APIs—language model providers, code repositories, cloud services. Exposing these secrets to the agent execution environment creates risk. If the agent is compromised or generates malicious code, credentials can be exfiltrated. Different secret management patterns offer varying levels of security.
