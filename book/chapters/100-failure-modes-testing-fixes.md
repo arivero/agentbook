@@ -146,6 +146,266 @@ Capture representative interactions and replay them against newer builds. Record
 
 Use these to detect drift in behaviour after prompt, tool, or model changes.
 
+## Reproducible Execution Infrastructure
+
+### The Agent Debugging Challenge
+
+Agent debugging differs fundamentally from traditional software debugging in three critical dimensions. The first dimension is **nondeterminism**: the same input can produce different outputs across runs due to model sampling, evolving external context, and API variance. A bug that appears in one execution may disappear in the next, making reproduction unreliable. The second dimension is **long execution horizons**: agents often operate across dozens or hundreds of steps, where small errors in early stages compound into significant failures much later. Traditional step-through debugging becomes impractical when the relevant state spans an entire execution history. The third dimension is **distributed tool chains**: agents interact with external APIs, file systems, databases, and other services, each introducing variance and failure modes that are difficult to isolate.
+
+These characteristics mean that debugging agent failures currently relies on ad-hoc logging and manual incident reconstruction. When an agent produces incorrect output or violates a policy, developers must piece together what happened from scattered logs, correlating timestamps and tool invocations to understand the decision chain. This process is time-consuming, error-prone, and often fails to capture enough detail to reproduce the failure reliably.
+
+What is needed is version control for execution artifacts. Just as git provides reproducibility and provenance for source code, agent systems need infrastructure that captures complete execution snapshots in a tamper-evident, content-addressed format. This enables systematic debugging workflows: replaying executions to reproduce failures, diffing executions to understand behavioral changes, and verifying execution integrity for compliance and audit purposes.
+
+### Content-Addressed Execution Snapshots
+
+Content-addressed storage treats data as immutable objects identified by cryptographic hashes of their content. Git popularized this model for source code: every commit, tree, and blob is identified by its SHA-1 hash, creating a tamper-evident history where any change to content produces a different hash. This model provides three critical properties for version control: **deduplication** (identical content is stored once), **integrity verification** (any modification is detectable), and **content-based addressing** (objects are referenced by what they contain, not where they are stored).
+
+The same properties apply to agent execution artifacts. An execution snapshot captures a complete record of an agent run: the initial inputs (prompts, tool configurations, environment parameters), the sequence of steps taken (tool calls with arguments and results, model responses, intermediate state), the final outputs (results, artifacts produced, errors encountered), and metadata (timestamps, model versions, framework configuration). When this snapshot is identified by the hash of its content, any modification to the execution record produces a different identifier, making the record tamper-evident.
+
+Execution snapshots structured this way enable git-like workflows for agent debugging. You can **log** execution history to see what happened over time. You can **show** a specific execution in detail to understand its decision chain. You can **diff** two executions to understand how behavior changed between runs. You can **verify** that an execution record has not been modified since creation. You can **replay** an execution to reproduce a failure or validate a fix. You can **fork** an execution to test alternative strategies from a known starting point.
+
+The structure of an execution snapshot parallels git's object model. Just as git represents commits (with metadata) that point to trees (directory structure) that point to blobs (file content), an execution snapshot represents a **context pack** (with metadata about the run) that contains **execution steps** (sequential operations) that reference **tool invocations** and **model responses** (the actual artifacts). The content-addressed nature means that identical steps across multiple runs are stored only once, similar to how git deduplicates identical file contents.
+
+### ContextSubstrate: Git-Like Workflows for Agent Execution
+
+ContextSubstrate (`ctx`) is an open-source execution substrate (MIT license, released February 2026) that implements content-addressed execution snapshots for AI agents. It provides a CLI and storage format that brings git's version control paradigm to agent execution artifacts. The tool uses SHA-256 hashing for content addressing and stores execution data in a `.ctx/` directory structure similar to git's `.git/` directory.
+
+The storage model uses a **blob store** for immutable execution logs (inputs, steps, outputs) and a **pack registry** that maps human-readable identifiers to content hashes. This separation means you can reference executions by memorable names while benefiting from content-addressed storage properties. The `.ctx/` directory typically looks like:
+
+```
+.ctx/
+├── blobs/           # Content-addressed execution logs (SHA-256)
+│   ├── ab/
+│   │   └── cdef12...  # Execution step data
+│   └── 12/
+│       └── 3456ab...  # Model responses
+├── packs/           # Context pack metadata
+│   └── pack-001.json
+└── config           # Repository configuration
+```
+
+ContextSubstrate provides eight core commands that mirror git workflows:
+
+**`ctx init`** initializes execution tracking in the current directory, creating the `.ctx/` directory structure and configuration. This is analogous to `git init`.
+
+**`ctx pack <execution_log.json>`** creates an immutable context pack from an execution log. The execution log is a JSON file containing the complete record of an agent run (see below for format). The pack is identified by the SHA-256 hash of its content and stored in the blob store. Returns the pack ID (content hash) for later reference.
+
+**`ctx log`** displays execution history, showing pack IDs, timestamps, and summary information for all recorded executions. This is analogous to `git log` but for agent runs rather than code commits.
+
+**`ctx show <pack-id>`** displays detailed information about a specific execution, including inputs, all intermediate steps, outputs, and metadata. This is the primary command for inspecting what an agent did during a run.
+
+**`ctx diff <pack1> <pack2>`** compares two executions, highlighting differences in the steps taken, tools called, and results produced. This helps understand how behavior changed between runs—for example, after a prompt modification or model version upgrade.
+
+**`ctx replay <pack-id>`** attempts to reproduce an execution by re-running the agent with the same inputs and configuration. Because agents involve external APIs and model nondeterminism, replay is best-effort: it validates that the agent takes the same sequence of steps (same tools in the same order) but does not guarantee bit-identical outputs. This is sufficient for debugging many failure modes.
+
+**`ctx verify <pack-id>`** validates that an execution pack has not been tampered with by recomputing its content hash and checking it against the pack ID. This provides tamper-evidence for compliance and audit use cases.
+
+**`ctx fork <pack-id>`** creates a new execution starting from the state of an existing pack. This enables testing alternative strategies from a known checkpoint—for example, trying a different tool or prompt after a specific step.
+
+To integrate ContextSubstrate with agent frameworks, agents must output structured execution logs in JSON format. The log structure captures the complete execution trace:
+
+```json
+{
+  "execution_id": "unique-id-for-this-run",
+  "timestamp": "2026-02-16T14:30:00Z",
+  "agent": {
+    "framework": "langchain",
+    "version": "0.1.0",
+    "model": "gpt-4"
+  },
+  "inputs": {
+    "prompt": "Review the PR and suggest improvements",
+    "tools": ["git_diff", "static_analyzer"],
+    "config": {
+      "temperature": 0.2,
+      "max_tokens": 2000
+    }
+  },
+  "steps": [
+    {
+      "step": 1,
+      "type": "tool_call",
+      "tool": "git_diff",
+      "arguments": {"pr_number": 123},
+      "result": {"diff": "...", "files_changed": 3},
+      "timestamp": "2026-02-16T14:30:05Z"
+    },
+    {
+      "step": 2,
+      "type": "model_response",
+      "prompt": "Analyze this diff: ...",
+      "response": "I see three issues...",
+      "timestamp": "2026-02-16T14:30:12Z"
+    }
+  ],
+  "outputs": {
+    "final_response": "Suggested improvements: ...",
+    "artifacts": ["review.md"]
+  },
+  "metadata": {
+    "duration_seconds": 45,
+    "tool_calls": 2,
+    "tokens_used": 1500
+  }
+}
+```
+
+Integrating ContextSubstrate with a framework like LangChain requires wrapping the agent execution to capture this structure. Here is a simplified Python wrapper:
+
+```python
+import json
+import subprocess
+from datetime import datetime
+from langchain.agents import AgentExecutor
+
+class ContextSubstrateWrapper:
+    """Wraps agent execution to create ContextSubstrate logs"""
+    
+    def __init__(self, agent_executor: AgentExecutor):
+        self.agent = agent_executor
+        self.execution_log = {
+            "execution_id": None,
+            "timestamp": None,
+            "agent": {},
+            "inputs": {},
+            "steps": [],
+            "outputs": {},
+            "metadata": {}
+        }
+    
+    def execute(self, prompt: str, tools: list, config: dict):
+        """Execute agent and capture execution log"""
+        # Initialize execution log
+        self.execution_log["execution_id"] = f"exec-{datetime.now().timestamp()}"
+        self.execution_log["timestamp"] = datetime.utcnow().isoformat() + "Z"
+        self.execution_log["inputs"] = {
+            "prompt": prompt,
+            "tools": tools,
+            "config": config
+        }
+        
+        # Execute agent with callbacks to capture steps
+        result = self.agent.run(
+            input=prompt,
+            callbacks=[self._capture_callback()]
+        )
+        
+        # Store outputs
+        self.execution_log["outputs"] = {
+            "final_response": result
+        }
+        
+        # Write log and create context pack
+        log_path = "/tmp/execution_log.json"
+        with open(log_path, 'w') as f:
+            json.dump(self.execution_log, f, indent=2)
+        
+        # Create context pack
+        pack_result = subprocess.run(
+            ["ctx", "pack", log_path],
+            capture_output=True,
+            text=True
+        )
+        pack_id = pack_result.stdout.strip()
+        
+        return result, pack_id
+    
+    def _capture_callback(self):
+        """Create callback to capture execution steps"""
+        # Callback implementation would capture tool calls
+        # and model responses, appending to self.execution_log["steps"]
+        pass  # Simplified for clarity
+```
+
+A typical debugging workflow using ContextSubstrate looks like:
+
+```bash
+# Initialize execution tracking
+ctx init
+
+# Run agent (wrapper creates execution log and packs it)
+python agent_script.py > run.log
+# Output: Created context pack: abc123...
+
+# View execution history
+ctx log
+# Output:
+# abc123... | 2026-02-16T14:30:00Z | Review PR #123 | Success
+# def456... | 2026-02-16T13:15:00Z | Review PR #122 | Failed
+
+# Inspect failed execution
+ctx show def456
+# Output: [Detailed execution trace showing all steps]
+
+# Compare successful and failed runs
+ctx diff abc123 def456
+# Output: [Differences in steps, tool calls, results]
+
+# Replay failed execution to reproduce issue
+ctx replay def456
+# Output: [Re-runs agent with same inputs, validates step sequence]
+
+# Verify execution integrity
+ctx verify abc123
+# Output: Pack abc123... is valid (hash matches)
+```
+
+### Production Use Cases
+
+Execution replay infrastructure enables several production workflows that are difficult or impossible without systematic execution provenance.
+
+**Incident investigation** benefits from complete execution history. When an agent produces incorrect output or violates a policy, developers can use `ctx show` to inspect exactly what happened: which tools were called with which arguments, what model responses guided decisions, and where the execution diverged from expected behavior. This is far more reliable than reconstructing events from scattered log files. The content-addressed storage ensures that the execution record cannot be modified after the fact, providing trustworthy evidence for post-mortems.
+
+**Regression testing** uses execution diffs to detect behavioral changes after modifications to prompts, tools, or models. When you update a prompt to fix one issue, `ctx diff` reveals whether the change inadvertently affects other behaviors. By maintaining a suite of golden context packs representing correct executions, you can validate that changes preserve expected behavior across diverse scenarios. This is analogous to regression tests for code but operates at the execution level rather than the unit test level.
+
+**Compliance audits** require immutable provenance chains showing how decisions were made. In regulated industries (finance, healthcare, legal services), AI systems must demonstrate that agent decisions are traceable, reproducible, and not tampered with. ContextSubstrate's content-addressed storage provides cryptographic proof that execution records are authentic. Auditors can verify pack integrity using `ctx verify` and inspect full decision chains using `ctx show`, satisfying regulatory requirements without custom audit infrastructure.
+
+**A/B testing** of agent strategies benefits from execution forking. When evaluating whether a different tool or prompt would improve performance, `ctx fork` creates a variant execution from a known checkpoint. This allows comparing alternative approaches from identical starting states, controlling for variance in earlier steps. The content-addressed storage ensures that the baseline execution is immutable while you experiment with variants.
+
+**Debugging long-horizon failures** is tractable with replay infrastructure. When an agent fails after many steps, traditional debugging requires reproducing the entire sequence. With ContextSubstrate, you can replay executions up to the point of failure and then inspect state, modify inputs, or test alternative actions. This reduces debugging time from hours to minutes for complex multi-step workflows.
+
+As a concrete example, consider debugging a multi-agent workflow where a code review agent produces incorrect feedback. Without execution replay, you would need to manually review logs, correlate timestamps across agents, and try to reconstruct the decision chain. With ContextSubstrate:
+
+1. Use `ctx log` to find the failed execution pack ID
+2. Use `ctx show <pack-id>` to see exactly which tools the agent called, what data it received, and how it processed that data
+3. Use `ctx diff` to compare with a successful execution, identifying where behavior diverged
+4. Use `ctx replay` to reproduce the failure with modified inputs, testing hypotheses about the root cause
+5. Once fixed, create a new golden pack representing correct behavior for regression testing
+
+This systematic approach reduces mean time to recovery (MTTR) by eliminating manual log correlation and providing deterministic reproduction of failures.
+
+### Integration and Operational Considerations
+
+Adopting execution replay infrastructure introduces operational overhead and architectural requirements that must be considered before deployment.
+
+**Logging overhead** varies by execution complexity. Capturing structured execution logs adds latency and memory usage. In practice, the overhead ranges from 5-15% of total execution time for typical agent workloads—acceptable for production but noticeable. Most overhead comes from serializing tool results and model responses to JSON. Logging can be made asynchronous to reduce blocking, but this introduces eventual consistency: execution logs may not be complete until seconds after the agent finishes.
+
+**Storage requirements** depend on execution frequency and retention policies. A typical context pack containing 10-20 tool calls with moderate-sized results averages 100KB compressed. For systems executing hundreds of agents per day, this translates to tens of megabytes daily. Content-addressed storage deduplicates identical steps: if multiple executions call the same tool with the same arguments, the result is stored once. This reduces storage by 30-60% in practice for workflows with repeated patterns. Storage growth is linear with unique executions, so retention policies (for example, keeping only the last 30 days of executions, or retaining only failures and golden packs indefinitely) keep storage manageable.
+
+**Replay fidelity** is best-effort, not guaranteed. Agent replay faces three sources of variance. First, **external API variance**: the same API call may return different results over time (for example, GitHub API returns updated issue comments, weather APIs return current conditions). Second, **model nondeterminism**: even with temperature set to zero, language models are not strictly deterministic due to floating-point precision and inference implementation differences. Third, **environment differences**: the execution environment at replay time may differ from original execution (different library versions, system load, network conditions). ContextSubstrate validates that the **structure** of execution is preserved—same sequence of steps, same tools called in the same order—but does not guarantee bit-identical outputs. This level of fidelity suffices for most debugging use cases: you can confirm that the agent takes the same path through the decision space even if individual outputs differ slightly.
+
+**When to use execution replay**: Not all agent executions warrant the overhead of structured logging and context packing. High-value use cases include production agents making consequential decisions (for example, autonomous code merges, financial transactions, policy changes), debugging sessions where failures are difficult to reproduce, regression testing of critical workflows, and compliance-heavy domains requiring audit trails. The overhead is justified when the cost of failures or the difficulty of debugging exceeds the infrastructure cost.
+
+**When not to use execution replay**: Low-stakes scenarios where failures are acceptable and easy to recover from do not need replay infrastructure. Ephemeral development testing, rapid prototyping without production consequences, and latency-sensitive applications where 5-15% overhead matters should skip structured logging. For these cases, traditional logging (even verbose logging) suffices.
+
+**Framework integration patterns** vary by architecture. For orchestrator-based systems (LangChain, AutoGen, custom frameworks), add a wrapper that captures callbacks and events during execution, serializes them to the execution log format, and invokes `ctx pack` after completion. For API-native agent runtimes (OpenAI Assistants API, Anthropic Claude API), implement post-execution logging by fetching the execution trace from the API provider and transforming it to ContextSubstrate format. For multi-agent systems, each agent logs its execution independently, creating separate context packs that can be correlated by execution ID and timestamp. Coordination agents that spawn sub-agents should log the delegation structure so full workflow provenance is traceable.
+
+### Limitations and Future Directions
+
+ContextSubstrate addresses execution replay and provenance but has clear boundaries that users must understand to avoid misuse.
+
+**Not real-time monitoring**: ContextSubstrate is a post-hoc analysis tool. It records execution history for later inspection but does not provide live observability during execution. For real-time monitoring—tracking agent progress, alerting on anomalies, displaying dashboards—use observability platforms like OpenTelemetry, LangSmith, or custom telemetry infrastructure. ContextSubstrate complements these tools by providing reproducibility after incidents are detected.
+
+**Not version control for code**: ContextSubstrate versions **execution artifacts** (what the agent did), not source code or prompts (what the agent is). Use git for versioning prompts, policies, and agent code. Use ContextSubstrate for versioning agent runs. These tools serve different layers of the stack and should be used together: git tracks changes to the agent system itself, while ContextSubstrate tracks the behavior of that system over time.
+
+**Not an orchestration framework**: ContextSubstrate does not run agents—it captures their execution. It is middleware that sits between your orchestration layer (LangChain, AutoGen, custom framework) and your storage layer. Do not expect ContextSubstrate to provide agent planning, tool routing, or multi-agent coordination. It assumes an existing agent system and adds execution logging as a cross-cutting concern.
+
+**Emerging pattern with limited adoption**: ContextSubstrate was released in February 2026 and has limited production adoption beyond early adopters. The tool is functional and actively maintained, but the ecosystem is immature: Python wrappers are unofficial and incomplete, integration with major frameworks requires custom code, and community resources (tutorials, examples, troubleshooting guides) are sparse. Teams adopting ContextSubstrate should expect integration work and be prepared to contribute to the ecosystem. That said, the underlying **pattern**—content-addressed execution logs with git-like workflows—is architecturally sound and likely to persist even if specific implementations evolve.
+
+**Ecosystem maturity gaps**: Features planned but not yet available include remote sharing (publishing context packs to shared registries), cryptographic signing (proving provenance of execution logs), and graphical UI for browsing execution history. Currently, all interaction is via CLI. Teams needing these features should either wait for official releases or implement them as extensions (the MIT license permits this).
+
+Future directions for execution replay infrastructure likely include tighter integration with agent frameworks (first-party support in LangChain, AutoGen, OpenAI Agents SDK), standardization of execution log formats (similar to OpenTelemetry spans but for agentic workflows), and federation (cross-organization execution registries for collaborative agent debugging). For broader context on observability and evaluation trends, see [Future Developments](800-future-developments.md#agent-observability-and-evaluation).
+
 ## 4. Scenario and Adversarial Evaluations
 
 Design "challenge suites" for known weak spots. These should include ambiguous requirements that could be interpreted multiple ways, contradictory documentation that forces the agent to choose, missing dependencies that test error handling, and partial outages and degraded APIs that test resilience. Include prompt-injection attempts in retrieved content to test security boundaries.
