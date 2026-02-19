@@ -3,6 +3,12 @@ name: PR Gate (Policy + Optional Auto-Approval)
 on:
   pull_request_target:
     types: [opened, reopened, synchronize, ready_for_review]
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: 'Pull request number to evaluate'
+        required: true
+        type: string
 
 permissions:
   checks: read
@@ -13,7 +19,11 @@ permissions:
 
 jobs:
   gate:
-    if: ${{ github.event.pull_request.state == 'open' && github.event.pull_request.draft == false }}
+    if: >-
+      ${{
+        github.event_name == 'workflow_dispatch' ||
+        (github.event.pull_request.state == 'open' && github.event.pull_request.draft == false)
+      }}
     runs-on: ubuntu-latest
     steps:
       - name: Evaluate risk policy and maintain labels
@@ -22,7 +32,12 @@ jobs:
         with:
           script: |
             const { owner, repo } = context.repo;
-            const pr = context.payload.pull_request;
+            let pr = context.payload.pull_request;
+            if (!pr) {
+              const prNumber = Number('${{ inputs.pr_number }}');
+              const res = await github.rest.pulls.get({ owner, repo, pull_number: prNumber });
+              pr = res.data;
+            }
             const issue_number = pr.number;
 
             const allowedPaths = [
@@ -131,11 +146,17 @@ jobs:
           github-token: ${{ secrets.PR_APPROVER_TOKEN }}
           script: |
             const { owner, repo } = context.repo;
-            const pull_number = context.payload.pull_request.number;
+            let pr = context.payload.pull_request;
+            if (!pr) {
+              const prNumber = Number('${{ inputs.pr_number }}');
+              const res = await github.rest.pulls.get({ owner, repo, pull_number: prNumber });
+              pr = res.data;
+            }
+            const pull_number = pr.number;
 
             const me = await github.rest.users.getAuthenticated();
             const approverLogin = me.data.login;
-            const prAuthor = context.payload.pull_request.user.login;
+            const prAuthor = pr.user.login;
 
             if (approverLogin === prAuthor) {
               core.info(`Skipping approval because approver (${approverLogin}) is the PR author.`);

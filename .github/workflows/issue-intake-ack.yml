@@ -3,6 +3,12 @@ name: Issue Intake ACK
 on:
   issues:
     types: [opened]
+  workflow_dispatch:
+    inputs:
+      issue_number:
+        description: 'Issue number to acknowledge and route'
+        required: true
+        type: string
 
 permissions:
   actions: write
@@ -11,12 +17,14 @@ permissions:
 
 jobs:
   acknowledge-and-dispatch:
-    if: ${{ github.event.issue.pull_request == null }}
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.issue.pull_request == null }}
     runs-on: ubuntu-latest
+    env:
+      ISSUE_NUMBER: ${{ inputs.issue_number || github.event.issue.number }}
     steps:
       - name: Acknowledge issue
         run: |
-          gh issue comment "${{ github.event.issue.number }}" \
+          gh issue comment "${ISSUE_NUMBER}" \
             --repo "${{ github.repository }}" \
             --body "Thanks for opening this suggestion. It has been acknowledged and is now queued for agentic routing."
         env:
@@ -24,7 +32,7 @@ jobs:
 
       - name: Apply intake label
         run: |
-          gh issue edit "${{ github.event.issue.number }}" \
+          gh issue edit "${ISSUE_NUMBER}" \
             --repo "${{ github.repository }}" \
             --add-label "acknowledged"
         env:
@@ -34,7 +42,7 @@ jobs:
         run: |
           gh workflow run "issue-routing-decision.lock.yml" \
             --repo "${{ github.repository }}" \
-            --ref "${{ github.event.repository.default_branch }}" \
-            -f issue_number="${{ github.event.issue.number }}"
+            --ref "${{ github.ref_name }}" \
+            -f issue_number="${ISSUE_NUMBER}"
         env:
           GH_TOKEN: ${{ github.token }}
