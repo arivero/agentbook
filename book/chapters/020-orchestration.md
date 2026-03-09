@@ -312,6 +312,80 @@ Agent Teams integrates naturally with the orchestration patterns described earli
 
 For coding-specific applications of Agent Teams, see [Agents for Coding](080-agents-for-coding.md) where Claude Code's subagent architecture leverages these primitives. For workflow integration, see [GitHub Agentic Workflows](060-gh-agentic-workflows.md) where Agent Teams can be used as the execution engine.
 
+## Multi-Agent Resource Allocation at Scale
+
+As agentic systems graduate from demos to production, a new class of coordination problem emerges: multiple agents competing for shared infrastructure—compute, memory, network bandwidth, API rate limits—rather than simply exchanging messages. How resources get allocated across agents directly determines whether decentralised coordination scales or collapses under load.
+
+### When Resource Allocation Matters
+
+Single-agent prototypes rarely surface allocation problems because resources are abundant relative to demand. Production deployments change this picture. Ten coding agents sharing a GitHub API rate-limit budget, a hundred inference workers competing for GPU time, or a fleet of edge devices routing requests through a shared cloud backend all face allocation constraints that messaging alone cannot solve.
+
+The key insight is that resource allocation is a *structural* problem: the topology of agent dependencies—not the volume of requests—determines whether price-based or market-based allocation mechanisms converge to stable solutions.
+
+### Graph Topology and Coordination Scalability
+
+Research by Lovén et al. (2026) on decentralised resource allocation across device-edge-cloud continua shows that **service-dependency graphs** (modelled as directed acyclic graphs, DAGs) determine whether price-based allocation scales reliably. When agents share resources, their inter-dependencies form a graph, and the shape of that graph controls convergence behaviour.
+
+**Hierarchical structures** (trees and series-parallel graphs) converge to stable price equilibria. Each node has clear precedence, so pricing signals propagate cleanly and agents settle on consistent allocations without oscillation.
+
+**Complex cross-cutting dependencies** cause price oscillation and allocation failures. When agents from different domains share resources through non-hierarchical relationships—common in multi-team deployments where agents cross organisational or infrastructure boundaries—pricing signals interfere destructively, leading to instability.
+
+```text
+Stable (tree): A → B → C → D         (price signals propagate cleanly)
+
+Unstable (cross-cuts): A → B → D
+                       ↑       ↓
+                       C ←─────┘     (circular dependencies amplify oscillation)
+```
+
+The practical heuristic: if your agent workflow forms a tree or pipeline, decentralised price-based allocation scales. If it has many cross-domain dependencies, you need either centralised allocation or a hybrid architecture.
+
+### The Hybrid Integrator Pattern
+
+The hybrid integrator pattern addresses cross-cutting dependencies by encapsulating complex sub-graphs into well-structured resource *slices*. A cross-domain integrator component sits at the boundary between heterogeneous subsystems and presents a clean hierarchical interface to the broader allocation mechanism, regardless of the internal complexity it manages.
+
+```python
+class CrossDomainIntegrator:
+    """Encapsulates a complex sub-graph into a well-structured resource slice."""
+
+    def __init__(self, subgraph_agents: list, slice_policy: dict):
+        self.agents = subgraph_agents
+        self.policy = slice_policy  # e.g., max_tokens, max_latency_ms
+
+    def allocate(self, incoming_requests: list) -> dict:
+        """Present a single, stable allocation interface to the outer system."""
+        # Internally resolves cross-cutting dependencies
+        internal_plan = self._resolve_internal_dependencies(incoming_requests)
+        # Returns a clean slice that appears hierarchical to callers
+        return self._apply_policy(internal_plan)
+
+    def _resolve_internal_dependencies(self, requests):
+        # Complex internal scheduling hidden from the outer allocation mechanism
+        ...
+
+    def _apply_policy(self, plan):
+        # Enforce slice-level limits (latency, cost, throughput)
+        ...
+```
+
+Experimental validation across 1,620 runs shows that wrapping complex sub-graphs with integrators reduces price volatility by 70–75% without sacrificing throughput (Lovén et al., 2026). The integrators do not centralise all allocation decisions; they only restructure the interface so that hierarchical pricing mechanisms can function correctly at the system level.
+
+### Practical Design Choices
+
+Three decisions determine whether your multi-agent resource allocation will scale:
+
+1. **Minimise cross-domain dependencies.** When designing agent workflows, prefer pipeline or tree-shaped dependency graphs. Avoid architectures where agents from different domains must negotiate shared resources directly. Where cross-domain sharing is unavoidable, introduce integrators at the boundary.
+
+2. **Choose allocation granularity carefully.** Fine-grained allocation (per-request pricing) provides optimal efficiency in hierarchical graphs but amplifies oscillation in complex ones. Coarser allocations (reserved slices, rate limits per domain) trade some efficiency for stability.
+
+3. **Governance constraints interact with topology.** Real deployments face compliance requirements—latency SLAs, cost budgets, data residency rules—that restrict the allocation space. Hierarchical topologies handle these constraints gracefully because each constraint applies cleanly at one level of the tree. Complex topologies may require explicit constraint propagation between integrators.
+
+### Connection to Orchestration Patterns
+
+Resource allocation constraints shape which orchestration patterns are viable at scale. **Sequential pipelines** are naturally hierarchical and allocate resources simply. **Parallel fan-out** with an aggregator is series-parallel and scales well. **Hierarchical supervisor/worker patterns** also scale reliably because dependencies follow the tree. The patterns most likely to encounter allocation problems are **event-driven meshes** with many cross-agent event subscriptions and **peer-to-peer coordination** without a central scheduler.
+
+Understanding topology-driven allocation limits helps you choose orchestration patterns not just for logical fit (as described earlier in this chapter) but for operational viability at scale. For infrastructure-level resource management across device-edge-cloud deployments, see [Agentic Scaffolding](030-scaffolding.md#device-edge-cloud-continuum-infrastructure).
+
 ## Challenges and Solutions
 
 **Challenge: Agent Conflicts.** When multiple agents modify the same resources, they can overwrite each other's changes or create inconsistent state. The **solution** is to use locks, transactions, or coordinator patterns that ensure only one agent modifies a resource at a time.
@@ -324,12 +398,12 @@ For coding-specific applications of Agent Teams, see [Agents for Coding](080-age
 
 ## Key Takeaways
 
-Orchestration coordinates multiple agents effectively, turning independent capabilities into coherent workflows. Choose the right pattern for your use case based on dependency structure and scaling requirements. Clear responsibilities and interfaces are essential for maintainability and debugging. Monitor and iterate on your orchestration strategies as you learn what works. Use established frameworks when possible, but be ready to customise when your needs diverge from standard patterns. The AI backrooms pattern demonstrates by contrast what happens without orchestration: agents default to domains where language alone suffices, bypassing any task that requires tools, verification, or structured coordination.
+Orchestration coordinates multiple agents effectively, turning independent capabilities into coherent workflows. Choose the right pattern for your use case based on dependency structure and scaling requirements. Clear responsibilities and interfaces are essential for maintainability and debugging. Monitor and iterate on your orchestration strategies as you learn what works. Use established frameworks when possible, but be ready to customise when your needs diverge from standard patterns. The AI backrooms pattern demonstrates by contrast what happens without orchestration: agents default to domains where language alone suffices, bypassing any task that requires tools, verification, or structured coordination. At production scale, dependency graph topology determines whether decentralised resource allocation converges to stable equilibria; prefer hierarchical or pipeline-shaped workflows and use hybrid integrators at cross-domain boundaries to preserve stability.
 
 For implementation-oriented workflow examples, see [GitHub Agentic Workflows (GH-AW)](060-gh-agentic-workflows.md). For reliability controls on multi-agent systems, see [Common Failure Modes, Testing, and Fixes](100-failure-modes-testing-fixes.md).
 
 <!-- Edit notes:
-Sections expanded: Chapter Preview, Coordination Mechanisms (all three subsections), Error Handling, Monitoring, Isolation, first Key Takeaways, Real-World Example, Challenges and Solutions (all four), second Key Takeaways
+Sections expanded: Chapter Preview, Coordination Mechanisms (all three subsections), Error Handling, Monitoring, Isolation, first Key Takeaways, Real-World Example, Challenges and Solutions (all four), second Key Takeaways, Multi-Agent Resource Allocation at Scale (new section)
 Lists preserved: Use cases for each pattern (converted to prose paragraphs)
 Ambiguous phrases left ambiguous: None identified
 -->
