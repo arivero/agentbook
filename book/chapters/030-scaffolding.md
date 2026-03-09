@@ -237,6 +237,25 @@ Use **containers** (Docker, Podman) for trusted agent code in controlled environ
 
 The architecture of transparent proxying plus ephemeral environments provides a reference pattern for high-security agent scaffolding, applicable beyond any specific tool implementation.
 
+### Environment Versioning and Evolution
+
+Production agent scaffolding must accommodate the reality that environments evolve. APIs add or deprecate endpoints. Schemas gain new fields or remove old ones. Tools change their interfaces across versions. MCP servers update their capabilities. Agents that work perfectly today may fail when a dependency updates tomorrow.
+
+**Environment versioning** treats the environment itself—the combination of available tools, their schemas, and data structures—as a versioned artifact that changes over time. Just as application code is versioned, environments should be versioned so that agents can be tested against past, current, and future environment states.
+
+In practice, this means representing environments explicitly rather than implicitly. Instead of assuming agents will "just work" with whatever environment they encounter, define what the environment looks like: which tools are available, what parameters they accept, what data schemas they operate on, and what constraints they enforce. This representation becomes the contract between the scaffolding layer and the agent.
+
+**Environment evolution patterns** codify how environments change:
+- **Additive changes:** New fields in schemas, new optional parameters in tools, new tools added to the registry. These are generally backward-compatible—existing agents continue to work, and new agents can exploit additional capabilities.
+- **Deprecations:** Tools or parameters marked as deprecated, with replacement tools provided. Agents should be tested to ensure they can migrate from deprecated to replacement tools when the old tool is eventually removed.
+- **Breaking changes:** Required fields added to schemas, mandatory parameters added to tools, tools removed entirely. These require agent code changes and should be detected through testing before deployment.
+
+The benefit of explicit environment representation is that it enables **evolution-aware testing**. Rather than only testing agents against the current environment, scaffolding can generate evolved environments that represent realistic future states and verify that agents adapt correctly. If an agent assumes a schema will never change or a tool will always be available, evolution testing will reveal that brittleness before it causes production failures.
+
+ProEvolve (Li et al., arXiv:2603.05910) demonstrates this approach by representing environments as typed relational graphs where transformations propagate changes coherently across data, tools, and schemas. While ProEvolve is a research framework, its principles apply broadly: version your environment definitions, test agents against multiple versions, and design scaffolding that makes environment changes visible rather than hidden.
+
+For testing strategies that incorporate environment evolution, see [Testing for Environmental Change](100-failure-modes-testing-fixes.md#5-testing-for-environmental-change). For forward-looking implications, see [Environment Adaptability as a Design Goal](800-future-developments.md#environment-adaptability-as-a-design-goal).
+
 ### Communication Protocol
 Standardize how agents communicate.
 
