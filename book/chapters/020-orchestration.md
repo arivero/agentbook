@@ -312,6 +312,46 @@ Agent Teams integrates naturally with the orchestration patterns described earli
 
 For coding-specific applications of Agent Teams, see [Agents for Coding](080-agents-for-coding.md) where Claude Code's subagent architecture leverages these primitives. For workflow integration, see [GitHub Agentic Workflows](060-gh-agentic-workflows.md) where Agent Teams can be used as the execution engine.
 
+## Multi-Agent Resource Allocation at Scale
+
+Large agent swarms rarely fail because of dialogue quality—they fail because their coordination layer cannot allocate shared resources (compute, API quotas, bandwidth) without oscillation or starvation. The 2026 study *Real-Time AI Service Economy* (<https://arxiv.org/abs/2603.05614>) shows that **the shape of your service-dependency graph determines whether price-based, decentralised coordination converges**. Understanding that shape is a prerequisite to choosing an orchestration strategy.
+
+### When Price-Based Coordination Works
+
+If your workflow forms a **hierarchy or series-parallel pipeline** (e.g., planner → specialised executors → reviewers), distributed price signals converge quickly to stable equilibria. Each agent adjusts its “price” for time or capacity, and the system reaches a steady state without central control. In practice this fits common agent pipelines: intake → retrieval → reasoning → execution → review.
+
+### When It Fails
+
+Cross-cutting dependencies—many-to-many edges across the graph—create feedback loops. The paper shows that richly connected DAGs generate **price oscillation** and unstable allocations: agents raise and lower prices in response to each other faster than the system can settle, degrading throughput even though total capacity is sufficient.
+
+### Hybrid Integrators: Encapsulate Complexity
+
+The authors propose a **hybrid architecture**: wrap complex subgraphs inside **cross-domain integrators** that expose a stable interface (resource slice, latency target, budget) to the rest of the system. Internally, the integrator can use local optimisation or even centralised scheduling, but outwardly it behaves like a hierarchical node. In experiments across 1,620 runs, this cut price volatility by **70–75%** while preserving throughput.
+
+```python
+class HybridIntegrator:
+    """Encapsulate a complex subgraph behind a stable contract"""
+
+    def __init__(self, subgraph, slice_policy):
+        self.subgraph = subgraph          # internal DAG with cross-cuts
+        self.slice_policy = slice_policy  # e.g., latency or budget caps
+
+    def request(self, demand):
+        """Expose a simple interface to upstream orchestrators"""
+        budget = self.slice_policy.allocate(demand)
+        return self.subgraph.run(demand, budget=budget)
+```
+
+The orchestrator only reasons about the integrator's public contract (budget/latency slice) rather than the internal cross-dependencies, restoring hierarchical behaviour.
+
+### Practitioner Checklist
+
+- **Map the graph first.** Is your dependency DAG mostly tree/series-parallel? Decentralised price-based coordination likely converges.  
+- **Detect cross-cuts.** If many agents depend on each other’s intermediate outputs, expect oscillation under pure market signals.  
+- **Introduce integrators.** Encapsulate dense regions behind a single interface with resource slices and SLAs.  
+- **Choose the coordinator.** Hierarchical graphs → decentralised prices; cross-cut graphs → hybrid or central scheduler.  
+- **Instrument volatility.** Track price swings and queue depths; rising oscillation is an early warning of allocation failure.
+
 ## Challenges and Solutions
 
 **Challenge: Agent Conflicts.** When multiple agents modify the same resources, they can overwrite each other's changes or create inconsistent state. The **solution** is to use locks, transactions, or coordinator patterns that ensure only one agent modifies a resource at a time.
