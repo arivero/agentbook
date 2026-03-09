@@ -466,6 +466,22 @@ In this repository, the scaffolding is implemented in concrete files:
 
 For workflow semantics, see [GitHub Agentic Workflows (GH-AW)](060-gh-agentic-workflows.md). For failure handling and validation strategy, see [Common Failure Modes, Testing, and Fixes](100-failure-modes-testing-fixes.md).
 
+## Environment Evolution Infrastructure
+
+Scaffolding that exposes environment structure programmatically is far easier to test for evolution. When tools self-describe their schemas, data entities carry type information, and schema definitions are queryable at runtime, agents can detect changes and adapt rather than failing silently.
+
+Three design choices make environment evolution testable:
+
+**Schema introspection at the tool boundary.** Tools that expose their current input and output schemas—for example, through an OpenAPI-style definition or an MCP resource manifest—allow scaffolding to detect schema drift before it causes failures. An agent can compare the schema it was initialised with against the schema returned at runtime, and route mismatches to a recovery path rather than proceeding with stale assumptions.
+
+**Versioned tool identities.** When tools carry explicit version information alongside their names, agents and orchestrators can manage the lifecycle of parallel versions—keeping `search_v1` available during migration while `search_v2` becomes the default. Scaffolding that enforces version pinning in agent configuration files makes schema migrations auditable and reversible.
+
+**Change-propagation contracts.** In systems where a data-entity update affects multiple tools (adding a required field to a `User` entity affects every tool that creates or updates users), the scaffolding layer can enforce that all affected tools declare their dependency on the entity type. When the entity evolves, the registry surfaces the full list of tools that need corresponding updates, preventing half-consistent states.
+
+The ProEvolve framework formalises these patterns as typed relational graphs: data, tools, and schemas as nodes with typed edges encoding dependencies (Li et al., arXiv:2603.05910, March 2026). Transformation rules propagate changes coherently across all connected components—the same graph structure that enables benchmark diversity makes production scaffolding easier to test, because a change to the graph is a well-defined operation with known propagation consequences rather than a free-form modification that may leave parts of the environment inconsistent.
+
+For testing strategies that cover environment evolution scenarios, see [Common Failure Modes, Testing, and Fixes](100-failure-modes-testing-fixes.md#5-testing-for-environmental-change).
+
 ## Best Practices
 
 **Start Simple.** Build minimal scaffolding first and expand only as needed. Over-engineering early creates maintenance burden without corresponding benefit; let actual requirements drive complexity.

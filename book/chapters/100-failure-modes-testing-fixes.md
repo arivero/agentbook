@@ -152,7 +152,43 @@ Design "challenge suites" for known weak spots. These should include ambiguous r
 
 Pass criteria should include not just correctness, but also policy compliance, cost and latency ceilings, and evidence quality including citations and rationale.
 
-## 5. Production Guardrail Tests
+## 5. Testing for Environmental Change
+
+The four testing layers above share a common assumption: the environment—tools, APIs, and data schemas—remains stable between runs. In production, this assumption fails regularly. APIs gain new required fields and deprecate old endpoints. Tool schemas tighten validation constraints. Data entities acquire new attributes. Agents that pass a static test suite may fail silently when the environment beneath them shifts.
+
+Treating environment change as a first-class test concern requires a different approach than adversarial evaluation. Adversarial tests probe agent behaviour under unusual or hostile inputs within a fixed environment. Evolution tests probe agent behaviour when the environment itself changes—and both types of robustness are necessary for production reliability.
+
+The ProEvolve framework (Li et al., arXiv:2603.05910, March 2026) provides a systematic approach. It represents environments as typed relational graphs with three layers: data entities and relationships, tool operations that manipulate data, and schema definitions that enforce type constraints. Graph transformations propagate changes coherently across all three layers simultaneously, maintaining internal consistency while enabling controlled variation. A single seed environment can be evolved into hundreds of valid but distinct variants, shifting the benchmark question from "can the agent complete this task?" to "does the agent maintain performance as the environment changes around it?"
+
+**Evolution dimensions to cover in tests:**
+
+- **Additive changes**: New fields on existing entities, new tools alongside existing ones, new optional parameters. A robust agent ignores or uses new fields gracefully rather than failing on unexpected keys.
+- **Breaking changes**: Deprecated operations replaced by differently-named equivalents, renamed fields, removed endpoints. A robust agent detects the failure, discovers the replacement, and retries.
+- **Schema migrations**: Type narrowing, constraint tightening, validation rules added. A robust agent produces output satisfying new constraints or handles validation errors rather than assuming old rules still hold.
+- **Cascading changes**: When a core entity gains a new required field, every tool that creates or updates that entity must propagate the change. Testing the cascade ensures agents do not produce half-consistent states.
+
+A minimal evolution test adds three scenario variants for each core tool or API your agent relies on:
+
+```python
+# Sketch: categories of environment evolution scenarios
+evolution_scenarios = [
+    # Additive: new field appears; agent should handle or ignore gracefully
+    {"change": "add_field(entity='Result', field='confidence_score', type='float')",
+     "pass_if": "agent completes task; may use or ignore new field"},
+    # Breaking: tool renamed; agent must discover and switch
+    {"change": "deprecate_tool('search_v1', replacement='search_v2')",
+     "pass_if": "agent detects failure and retries with search_v2"},
+    # Migration: constraint tightened; agent must produce valid output
+    {"change": "require_field('email', format='validated_email')",
+     "pass_if": "agent produces a syntactically valid email address"},
+]
+```
+
+These scenarios integrate naturally into the scenario suite from Layer 4. They extend existing challenge suites with environment-variation cases rather than requiring separate infrastructure. Pass criteria remain the same: task completion plus correct behaviour under the changed condition.
+
+Environment evolution testing delivers the most value when your agent targets external APIs you do not control, when multiple teams independently evolve their service schemas, or when your agent must work across major version upgrades of its toolset. For scaffolding patterns that make environment evolution testable by keeping environments introspectable, see [Agentic Scaffolding](030-scaffolding.md#environment-evolution-infrastructure).
+
+## 6. Production Guardrail Tests
 
 Before enabling autonomous writes and merges in production, validate that guardrails work correctly. Protected-path enforcement should block modifications to sensitive files. Secret scanning and licence checks should catch policy violations. Human approval routing should engage for high-impact actions. Rollback paths should work on failed deployments.
 
