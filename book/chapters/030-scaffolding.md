@@ -371,6 +371,87 @@ class AgentObserver:
         return self._build_trace(agent_id)
 ```
 
+## Device-Edge-Cloud Continuum Infrastructure
+
+Modern agentic deployments rarely live in a single environment. A coding agent may run in a cloud data centre, route requests through an edge proxy, and invoke tools on end-user devices—all within a single task. This **device-edge-cloud continuum** introduces infrastructure challenges distinct from single-environment deployments: heterogeneous resource capabilities, varying latency constraints, and governance boundaries that differ by tier.
+
+### The Three Tiers
+
+**Device tier**: End-user hardware (laptops, phones, embedded systems) with constrained compute but direct access to local sensors, files, and private data. Agents running here benefit from low latency to local resources but face strict power and memory budgets.
+
+**Edge tier**: Infrastructure at the boundary between devices and cloud (on-premises servers, CDN PoPs, telco edge nodes). Agents here aggregate device requests, enforce data-residency policies, and reduce cloud round-trip latency. Edge resources are more capable than devices but less elastic than cloud.
+
+**Cloud tier**: Centralised, highly elastic infrastructure with access to large models and bulk storage. Cloud agents can handle computationally intensive tasks but are subject to network latency and egress costs when working with device-local data.
+
+Scaffolding for continuum deployments must handle **dynamic resource availability** (edge nodes fluctuate; cloud instances spin up on demand) and **heterogeneous agent capabilities** (not every agent can run at every tier).
+
+### Resource Allocation Across Tiers
+
+Allocating agent workloads across tiers is a scheduling problem complicated by dependency structure. As established in the [orchestration chapter](020-orchestration.md#multi-agent-resource-allocation-at-scale), DAG topology determines whether price-based or decentralised allocation scales. The same principle applies to infrastructure tiers: agents with hierarchical dependencies can be scheduled tier-by-tier without coordination overhead, while agents with cross-tier cross-domain dependencies require explicit integration boundaries.
+
+A practical scaffolding pattern for continuum deployments uses **tier-local resource managers** that communicate through well-defined allocation interfaces:
+
+```python
+class ContinuumResourceManager:
+    """Coordinates agent scheduling across device-edge-cloud tiers."""
+
+    def __init__(self, tiers: dict):
+        # Each tier has its own scheduler and resource pool
+        self.tiers = tiers  # {'device': DeviceScheduler, 'edge': EdgeScheduler, 'cloud': CloudScheduler}
+
+    def schedule(self, task_graph: dict) -> dict:
+        """Assign tasks to tiers based on capability and policy constraints."""
+        assignments = {}
+        for task_id, task in task_graph.items():
+            tier = self._select_tier(task)
+            assignments[task_id] = self.tiers[tier].reserve(task)
+        return assignments
+
+    def _select_tier(self, task: dict) -> str:
+        """Route a task to the most appropriate tier."""
+        if task.get('requires_local_data'):
+            return 'device'
+        if task.get('latency_ms') and task['latency_ms'] < 50:
+            return 'edge'
+        return 'cloud'
+```
+
+### Governance and Compliance at Tier Boundaries
+
+Continuum architectures introduce governance complexity that single-environment deployments avoid. Data processed at the edge may be subject to different regulations than data sent to cloud. Agents must respect these boundaries without compromising throughput.
+
+Practical patterns for tier-boundary governance:
+
+- **Data-residency enforcement**: Tag data with residency requirements at ingestion. Scaffolding checks tags before routing any data across tier boundaries; violating tasks are rejected or transformed (e.g., anonymised) before transfer.
+
+- **Latency-aware scheduling**: Track observed latency between tiers and adjust routing when SLAs are at risk. An edge node with degraded connectivity should shed load to the device tier (for local data) or accept longer cloud round-trips rather than miss latency targets silently.
+
+- **Cost-aware routing**: Cloud compute incurs egress and inference costs. Scaffolding can implement budget guards that redirect tasks to cheaper tiers when remaining budget is low, with human escalation paths for budget breaches.
+
+```yaml
+# Example tier routing policy
+continuum_policy:
+  default_tier: cloud
+  routing_rules:
+    - condition: data_residency == "EU"
+      allowed_tiers: [device, edge_eu]
+    - condition: latency_requirement_ms < 20
+      preferred_tier: device
+    - condition: task_type == "bulk_analysis"
+      preferred_tier: cloud
+  budget_guard:
+    daily_cloud_budget_usd: 50
+    action_on_breach: escalate_to_human
+```
+
+### Hybrid Integrators in Practice
+
+The hybrid integrator pattern (introduced in the orchestration chapter) maps directly to tier boundaries in continuum deployments. A cross-domain integrator deployed at the edge-cloud boundary encapsulates the complex allocation decisions within the cloud tier, exposing only a clean hierarchical interface to edge and device schedulers. This structure prevents price oscillation from propagating across tiers and reduces observed price volatility by 70–75% in experimental evaluations (Lovén et al., 2026).
+
+For coding agents specifically, the continuum pattern matters when multi-agent pipelines invoke tools that span tiers: a local linter (device), a remote static analyser (edge), and a cloud-hosted model for complex refactoring. Scaffolding that treats each of these as a separately scheduled resource—rather than an unstructured set of HTTP calls—provides the observability and governance hooks needed for production operation.
+
+For orchestration-level resource allocation strategy, see [Multi-Agent Resource Allocation at Scale](020-orchestration.md#multi-agent-resource-allocation-at-scale). For security isolation at tier boundaries, see the Secure Execution Environments section earlier in this chapter.
+
 ## Building Scaffolding: Step by Step
 
 ### Step 1: Define Your Agent Ecosystem
@@ -497,7 +578,7 @@ For workflow semantics, see [GitHub Agentic Workflows (GH-AW)](060-gh-agentic-wo
 Scaffolding provides the foundation for effective agent operation, enabling capabilities that agents could not achieve in isolation. Core components include tools for interacting with the environment, context for maintaining state across invocations, execution environments for safe isolated operation, and communication protocols for agent coordination. Patterns like tool composition and resource management improve scalability by letting you combine simple pieces into complex capabilities. Build incrementally, focusing on security and observability as primary concerns rather than afterthoughts. Good scaffolding makes agents more capable and easier to manage by providing reliable infrastructure they can depend on.
 
 <!-- Edit notes:
-Sections expanded: Chapter Preview, Scaffolding for This Book, Best Practices (all six items), Common Pitfalls (all five items), Key Takeaways
+Sections expanded: Chapter Preview, Scaffolding for This Book, Best Practices (all six items), Common Pitfalls (all five items), Key Takeaways, Device-Edge-Cloud Continuum Infrastructure (new section)
 Lists preserved: None (all original lists were shorthand that read better as prose)
 Ambiguous phrases left ambiguous: None identified
 -->
