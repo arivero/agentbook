@@ -152,11 +152,118 @@ Design "challenge suites" for known weak spots. These should include ambiguous r
 
 Pass criteria should include not just correctness, but also policy compliance, cost and latency ceilings, and evidence quality including citations and rationale.
 
-## 5. Production Guardrail Tests
+## 5. Testing for Environmental Change
+
+### The Static Environment Problem
+
+Most agent testing strategies assume the environment is stable. Tests verify that agents work with current APIs, schemas, and tool signatures, but they do not verify what happens when those foundations shift. Yet in production, environments evolve continuously. REST APIs change endpoints or require new authentication methods. Database schemas add or deprecate fields. External services introduce rate limits or change response formats. Tool libraries update interfaces in minor version bumps. MCP servers evolve their capabilities and parameter structures.
+
+The consequence is a silent assumption baked into our test suites: **if it works today, it will work tomorrow**. This assumption fails when the environment changes faster than tests are updated. Agents that passed all scenario evaluations suddenly fail in production because a dependency changed. The failure symptom is often cryptic—a parsing error deep in a tool chain, a missing field in a response, or an authentication flow that no longer works.
+
+Traditional software handles this through integration tests and contract validation, but agents add complexity. An agent that fails gracefully when a tool is unavailable might loop indefinitely when the tool returns an unexpected schema. An agent that works perfectly with version N of an API might make incorrect assumptions about version N+1. Tool and API variance, mentioned in line 18, is a known problem. What has been missing is a systematic approach to test for it.
+
+### Programmable Environment Evolution
+
+ProEvolve (Li et al., arXiv:2603.05910) introduces a graph-based framework that makes environment evolution explicit and testable. Instead of treating environments as opaque fixtures, ProEvolve represents them as typed relational graphs with three interconnected layers:
+
+**Data layer:** Entities and their relationships, such as users, repositories, issues, comments, file contents. This layer captures the state the agent perceives and manipulates.
+
+**Tool layer:** Operations that transform data, such as `create_issue`, `read_file`, `merge_pull_request`. Tools define how agents interact with the data layer.
+
+**Schema layer:** Type definitions, constraints, and validation rules that govern both data and tools. Schemas define what fields exist, what types they have, and what relationships are valid.
+
+The key insight is that changes propagate across layers. Adding a field to an entity schema requires updating tools that create or modify that entity. Deprecating a tool parameter requires updating schemas that reference it. In conventional test infrastructure, these updates are manual and error-prone. ProEvolve makes them explicit through **graph transformations**—programmatic operations that modify the environment graph while maintaining consistency.
+
+A graph transformation might:
+- Add a new data field to an entity type (schema layer), which automatically updates all tools that create or modify that entity (tool layer), and generates migration logic for existing data instances (data layer)
+- Deprecate a tool and provide a replacement, which updates all agent workflows that reference the old tool and validates that the new tool provides equivalent capabilities
+- Introduce a rate limit on an API endpoint, which adds retry logic to affected tool calls and updates test scenarios to verify graceful degradation
+
+These transformations are composable. A single environment can spawn many evolved variants through sequences of transformations. ProEvolve's validation study demonstrated this by evolving one environment into 200 distinct environments, each representing a plausible evolution path (API version updates, schema migrations, tool deprecations). From these evolved environments, the system generated 3,000 task sandboxes—isolated test instances where agents attempt specific tasks against specific environment states.
+
+```python
+# Conceptual example: Environment evolution through graph transformation
+from proevolve import Environment, Transformation
+
+# Start with a base environment
+base_env = Environment.from_specification({
+    'data': {'Issue': {'fields': ['title', 'body', 'state']}},
+    'tools': {'create_issue': {'params': ['title', 'body']}},
+    'schema': {'Issue': {'required': ['title', 'body']}}
+})
+
+# Define evolution: add 'labels' field to Issue
+add_labels_field = Transformation(
+    target='Issue',
+    operation='add_field',
+    field_name='labels',
+    field_type='List[String]',
+    default_value=[]
+)
+
+# Apply transformation (coherently updates all three layers)
+evolved_env = add_labels_field.apply(base_env)
+
+# The evolved environment now has:
+# - Data layer: Issue entities with 'labels' field
+# - Tool layer: create_issue tool accepts 'labels' parameter
+# - Schema layer: Issue schema includes labels validation
+```
+
+The practical benefit is that teams can **generate test environments programmatically** rather than maintaining them manually. Instead of maintaining dozens of test fixtures that represent different environment states, teams define transformations that generate those states on demand. This reduces maintenance burden and improves coverage: you can test against environment variations that would be too expensive to maintain as static fixtures.
+
+### Integration with Existing Testing Layers
+
+ProEvolve complements the testing strategy outlined earlier rather than replacing it. Use **static checks** (section 1) to validate environment graph consistency. Use **deterministic unit tests** (section 2) to verify transformation logic without executing agents. Use **golden traces** (section 3) to detect when environment evolution breaks agent behavior. Use **scenario evaluations** (section 4) to test agent adaptation against evolved environments.
+
+The new capability ProEvolve adds is **evolution-aware adversarial testing**: deliberately evolving the environment in ways that stress agent assumptions and then measuring how gracefully agents adapt. Examples include:
+
+**Schema drift:** Add required fields to entities that agents create, forcing agents to handle validation errors. Remove optional fields that agents expect, forcing them to handle missing data.
+
+**Tool deprecation:** Mark a tool as deprecated, provide a replacement with a similar but not identical interface, and verify agents can discover and use the replacement.
+
+**API versioning:** Evolve an API from version N to version N+1 with breaking changes, provide both versions temporarily, and verify agents migrate correctly.
+
+**Performance degradation:** Introduce latency or rate limits on high-traffic endpoints and verify agents implement appropriate backoff and retry logic.
+
+These scenarios surface brittleness that traditional tests miss. An agent might pass all fixed-environment tests yet fail immediately when a schema changes. ProEvolve makes that failure testable and measurable.
+
+In practice, integrating ProEvolve into a CI pipeline looks like this:
+1. Define your environment as a ProEvolve graph (data, tools, schema)
+2. Define transformation patterns that represent realistic evolution (new API versions, schema migrations, tool deprecations)
+3. Generate evolved environments by applying transformation sequences
+4. Run your existing agent test suites against both the base and evolved environments
+5. Measure agent success rate across environment versions
+
+Agents that maintain high success rates across evolved environments demonstrate **environment adaptability**—a reliability metric that traditional testing does not capture. Agents that fail when environments evolve reveal brittle assumptions that need architectural fixes.
+
+### Practical Adoption Guidance
+
+Adopting environment evolution testing does not require wholesale replacement of existing infrastructure. Start incrementally:
+
+**Identify brittle dependencies** in your agent workflows. Which APIs, schemas, or tools does your agent assume will never change? Those are candidates for evolution testing.
+
+**Model critical interfaces** as ProEvolve graphs. You do not need to model the entire environment—focus on the components your agent depends on most heavily.
+
+**Define realistic evolution scenarios** based on your domain. If you integrate with GitHub, test against GitHub API version changes. If you manage databases, test against schema migrations. If you call LLM providers, test against model version updates and rate limit changes.
+
+**Run evolution tests alongside existing tests** rather than replacing them. Evolution tests complement scenario tests by adding the dimension of time—they verify agents work today and will continue working as the environment changes.
+
+For teams that cannot adopt ProEvolve directly (it is a research framework, not yet a production-ready tool), the underlying principles still apply:
+- Represent your environment explicitly (data, tools, constraints) rather than implicitly
+- Version your environment definitions alongside your agent code
+- Define environment update patterns as code (migrations, deprecations, additions)
+- Test agents against multiple environment versions, not just the current one
+
+ProEvolve's contribution is demonstrating that **environment evolution is testable** and that testing for it reveals real failure modes. The specific framework is less important than the practice of treating environment change as a first-class testing concern.
+
+For related context on infrastructure that must adapt to change, see [Agentic Scaffolding](030-scaffolding.md#environment-versioning-and-evolution). For benchmarking approaches that test agent robustness, see the Scenario and Adversarial Evaluations section above. For forward-looking context on environment adaptability as a design goal, see [Future Developments](800-future-developments.md#environment-adaptability-as-a-design-goal).
+
+## 6. Production Guardrail Tests
 
 Before enabling autonomous writes and merges in production, validate that guardrails work correctly. Protected-path enforcement should block modifications to sensitive files. Secret scanning and licence checks should catch policy violations. Human approval routing should engage for high-impact actions. Rollback paths should work on failed deployments.
 
-## Case Study: MCP Supply-Chain Vulnerabilities in Practice
+## 7. Case Study: MCP Supply-Chain Vulnerabilities in Practice
 
 Two 2025 incidents illustrate how protocol-level vulnerabilities propagate through agentic systems.
 

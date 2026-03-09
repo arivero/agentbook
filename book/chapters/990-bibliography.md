@@ -146,6 +146,7 @@ order: 99
 - Datadog MCP server documentation. <https://docs.datadoghq.com/bits_ai/mcp_server/>. Accessed: 2026-02-13.
 - Grafana MCP server. <https://github.com/grafana/mcp-grafana>. Accessed: 2026-02-13.
 - Hugging Face MCP server. <https://github.com/huggingface/hf-mcp-server>. Accessed: 2026-02-13.
+- Li, G., Xie, Y., Liu, Y., Dong, Z., Pan, X., Zheng, T., Choi, J., Morais, M. J., Jha, B., Mishra, S., Zhou, B., Luo, C., Cheng, M. X., & Song, D. (2026). The World Won't Stay Still: Programmable Evolution for Agent Benchmarks. arXiv preprint arXiv:2603.05910. <https://arxiv.org/abs/2603.05910>. Accessed: 2026-03-09.
 
 <!-- Edit notes:
 Sections expanded: None (bibliography entries are an actual enumerable reference list that must remain as individual items)
