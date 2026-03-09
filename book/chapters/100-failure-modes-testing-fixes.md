@@ -152,7 +152,59 @@ Design "challenge suites" for known weak spots. These should include ambiguous r
 
 Pass criteria should include not just correctness, but also policy compliance, cost and latency ceilings, and evidence quality including citations and rationale.
 
-## 5. Production Guardrail Tests
+## 5. Testing for Environmental Change
+
+Static test suites assume the environment is fixed: the same API shape, the same schemas, the same tool catalogue. Real systems evolve. APIs deprecate fields, schemas gain or remove attributes, tool permissions change, and new backends appear. Agents that pass static tests frequently break when these shifts occur, even if their prompts and policies are unchanged.
+
+Programmable environment evolution solves this by treating the environment itself as a first-class artefact to mutate and test. **ProEvolve** (Li et al., 2026) models an environment as a typed relational graph with three coupled layers:
+- **Data layer**: entities and relationships
+- **Tool layer**: operations that read or mutate those entities
+- **Schema layer**: type definitions and constraints
+
+Graph transformations propagate coherently across all three layers, so adding a field, changing a permission, or replacing a backend automatically updates tools, schemas, and sample data. The authors demonstrate evolving one environment into 200 variants and 3,000 task sandboxes, providing breadth for robustness testing without hand-written fixtures.
+
+### How to exercise agents against evolving environments
+
+- **Cover the common drifts.** Include schema churn (new/renamed/removed fields), tool availability changes (permission tightened or tool replaced), and data distribution shifts (outliers, sparsity, locale changes).
+- **Pin invariants.** Declare behaviours that must stay true across all variants: safety policies, protected paths, idempotency, and audit trails. Validate these invariants after every mutation.
+- **Sample subgraphs.** Treat each subgraph as a task sandbox. This keeps tests small while still reflecting realistic constraints (for example, a subset of tools plus a partial schema).
+- **Keep deterministic seeds.** Mutations should be reproducible. Seeded graph transforms make it possible to debug failures and compare runs.
+
+### Minimal harness sketch
+
+> **Snippet status:** Runnable shape (simplified for clarity).
+
+```python
+from proevolve import EnvironmentGraph, mutations
+
+def generate_variants(seed: int = 7, count: int = 25):
+    base = EnvironmentGraph.load("envs/base.yaml")
+    for i in range(count):
+        mutated = base.transform([
+            mutations.AddField(entity="Order", field="currency", type="str"),
+            mutations.RestrictTool(name="refund", role="support"),
+        ], seed=seed + i)
+        yield mutated
+
+
+def test_agent_is_resilient(agent, variants):
+    for env in variants:
+        sandbox = env.sample_task_sandbox()
+        result = agent.run(task=sandbox.task, tools=sandbox.tools)
+        assert result.policy_compliant
+        assert sandbox.expected_outputs.verify(result.output)
+```
+
+### Operational guidance
+
+- **Run these suites on every tool/schema release.** Treat them like contract tests for the environment, not just the agent.
+- **Record regressions by mutation type.** Knowing that failures cluster around permission tightening versus schema churn guides mitigation work.
+- **Route incidents to the right owner.** Some failures indicate missing agent fallbacks; others indicate environment migrations that need better compatibility shims.
+- **Keep a "minimal viable environment" profile.** Define the smallest tool/data surface the agent needs. Run tests with only that surface enabled to ensure graceful degradation.
+
+For teams without ProEvolve, the pattern still applies: model tools, schemas, and data as linked artefacts, apply scripted mutations, and assert that the agent preserves policy, correctness, and safety across variants. Environment evolution tests complement scenario suites by validating that agents remain reliable when the world around them changes.
+
+## 6. Production Guardrail Tests
 
 Before enabling autonomous writes and merges in production, validate that guardrails work correctly. Protected-path enforcement should block modifications to sensitive files. Secret scanning and licence checks should catch policy violations. Human approval routing should engage for high-impact actions. Rollback paths should work on failed deployments.
 

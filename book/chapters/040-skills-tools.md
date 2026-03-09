@@ -851,6 +851,17 @@ MCP is broadly accepted as a **tooling interoperability layer**. The specifics v
 - **Prefer narrow, composable tools** over large monolithic endpoints.
 - **Treat MCP as infrastructure**: invest in uptime, monitoring, and security reviews.
 
+### Evolving Toolchains Under Environment Drift
+
+When environments evolve, toolchains must adapt without breaking skills that depend on them. ProEvolve's graph-based approach is a useful mental model: tools, schemas, and data are connected nodes that should change together. A tool registry that records **compatibility windows** (for example, `query_customer v2 supports schema >= 3.1`) allows orchestrators to route agents to the right version or to inject shims automatically.
+
+Practical patterns:
+- **Preflight compatibility checks.** Before executing a skill, verify that its declared tool and schema versions are still available. Fallback to the closest compatible version or ask for human approval when no match exists.
+- **Regression kits tied to mutations.** Every tool or schema change should trigger a focused regression suite for the skills that declare dependence on that surface. Use sampled sandboxes from environment graphs to cover realistic drift without hand-curating fixtures.
+- **Graceful deprecation.** Announce upcoming changes inside the registry (deprecation date, replacement tool, migration notes), and emit warnings in agent responses to surface the change to operators.
+
+Treat version metadata and compatibility rules as first-class parts of the tool catalogue. This keeps skills durable even as the surrounding environment shifts.
+
 ## Best Practices
 
 ### Version Tools and Skills
