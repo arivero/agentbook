@@ -72,6 +72,17 @@ class AgentContext:
         return self.history
 ```
 
+### Environment Evolution as Scaffolding
+
+Most scaffolding guidance assumes the surrounding environment is stable. In practice, tool contracts, schemas, and data topologies drift. A scaffolding layer that treats these artefacts as **linked graph nodes** can orchestrate safe evolution instead of reacting to breaking changes. ProEvolve (Li et al., 2026) models the environment as a typed relational graph spanning three layers: data entities, tool operations, and schemas. Transformations on the graph—adding a field, tightening a permission, swapping a backend—propagate across layers and keep derived task sandboxes consistent.
+
+Implement this pattern by centralising environment metadata in the same place you manage tool registries: a single source of truth that records tool signatures, schema versions, and data contracts. Layer three controls on top:
+- **Compatibility gates** that evaluate whether a proposed mutation is safe for current agents (for example, rejecting breaking schema changes without fallbacks).
+- **Sandbox sampling** that spawns short-lived environments from subgraphs so agents can be tested against realistic drift before promotion (see [Testing for Environmental Change](100-failure-modes-testing-fixes.md#5-testing-for-environmental-change)).
+- **Migration hooks** that trigger when mutations land: regenerating docs, revalidating skills, and refreshing cached context so agents do not carry stale assumptions.
+
+Treat environment evolution as infrastructure rather than an afterthought. When scaffolding owns the graph of tools, schemas, and data, it can offer policy-enforced evolution instead of brittle, ad hoc change management.
+
 ### Execution Environment
 Provide safe, isolated environments for agent execution.
 

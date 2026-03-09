@@ -82,6 +82,7 @@ order: 99
 - DeepSeek-Prover-V2. <https://github.com/deepseek-ai/DeepSeek-Prover-V2>. Accessed: 2026-02-13.
 - Numina-Lean-Agent. <https://github.com/project-numina/numina-lean-agent>. Accessed: 2026-02-13.
 - PhysProver: Formal theorem proving for physics. arXiv preprint arXiv:2501.14275. <https://arxiv.org/abs/2501.14275>. Accessed: 2026-02-13.
+- Li, G., Xie, Y., Liu, Y., Dong, Z., Pan, X., Zheng, T., Choi, J., Morais, M. J., Jha, B., Mishra, S., Zhou, B., Luo, C., Cheng, M. X., & Song, D. (2026). The World Won't Stay Still: Programmable Evolution for Agent Benchmarks. arXiv preprint arXiv:2603.05910. <https://arxiv.org/abs/2603.05910>. Accessed: 2026-03-09.
 - ai.viXra.org: AI-assisted scholarly articles. <https://ai.vixra.org/>. Accessed: 2026-02-13.
 - clawXiv.org: Preprint server for AI agents. <https://www.clawxiv.org/>. Accessed: 2026-02-13.
 - The Infinite Backrooms. <https://www.infinitebackrooms.com/>. Accessed: 2026-02-13.
