@@ -371,6 +371,31 @@ class AgentObserver:
         return self._build_trace(agent_id)
 ```
 
+### Pattern 5: Device-Edge-Cloud Continuum
+
+Scaffolding shifts from single machines to **continuum deployments** when agents span devices, edge locations, and cloud regions. The *Real-Time AI Service Economy* study (<https://arxiv.org/abs/2603.05614>) shows that market-style, decentralised scheduling only converges when the service-dependency graph is hierarchical. Dense cross-domain dependencies (device ↔ edge ↔ cloud) cause price oscillation and underutilisation unless you isolate complexity.
+
+**Cross-domain integrators** are the scaffolding primitive that restores stability. Wrap a complex subgraph—say, GPU-bound cloud inference plus local sensor fusion—behind an integrator that publishes a stable slice (budget, latency, compliance policy) to upstream orchestrators. Internally it can run a tuned scheduler; externally it looks like a single hierarchical node, cutting observed price volatility by 70–75% in the paper’s experiments.
+
+```python
+class ContinuumIntegrator:
+    """Expose device/edge/cloud as a single schedulable slice"""
+
+    def __init__(self, compliance, latency_budget_ms):
+        self.compliance = compliance
+        self.latency_budget_ms = latency_budget_ms
+
+    def request(self, work):
+        """Route work to device, edge, or cloud based on slice policy"""
+        if work.requires_sensor_privacy:
+            return self._run_on_device(work)
+        if work.latency_ms <= self.latency_budget_ms:
+            return self._run_on_edge(work)
+        return self._burst_to_cloud(work)
+```
+
+**Operational checklist:** (1) map the dependency DAG; (2) detect cross-cuts between device/edge/cloud stages; (3) wrap them in integrators with explicit slices and SLAs; (4) monitor queue depths and price swings—the earliest signals of instability. This pairs with the orchestration guidance in [Multi-Agent Resource Allocation at Scale](020-orchestration.md#multi-agent-resource-allocation-at-scale).
+
 ## Building Scaffolding: Step by Step
 
 ### Step 1: Define Your Agent Ecosystem
