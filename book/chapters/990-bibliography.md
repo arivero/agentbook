@@ -146,6 +146,7 @@ order: 99
 - Datadog MCP server documentation. <https://docs.datadoghq.com/bits_ai/mcp_server/>. Accessed: 2026-02-13.
 - Grafana MCP server. <https://github.com/grafana/mcp-grafana>. Accessed: 2026-02-13.
 - Hugging Face MCP server. <https://github.com/huggingface/hf-mcp-server>. Accessed: 2026-02-13.
+- Lovén, L., Saleh, A., Farahani, R., Murturi, I., López, M. B., Donta, P. K., & Dustdar, S. (2026). Real-Time AI Service Economy: A Framework for Agentic Computing Across the Continuum. arXiv preprint arXiv:2603.05614. <https://arxiv.org/abs/2603.05614>. Accessed: 2026-03-09.
 
 <!-- Edit notes:
 Sections expanded: None (bibliography entries are an actual enumerable reference list that must remain as individual items)

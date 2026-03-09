@@ -237,6 +237,115 @@ Use **containers** (Docker, Podman) for trusted agent code in controlled environ
 
 The architecture of transparent proxying plus ephemeral environments provides a reference pattern for high-security agent scaffolding, applicable beyond any specific tool implementation.
 
+### Device-Edge-Cloud Continuum Infrastructure
+
+Modern agent workflows increasingly span the **device-edge-cloud continuum**—a distributed computing architecture where computation happens across end devices (laptops, smartphones), edge servers (regional data centers, CDN nodes), and cloud infrastructure (centralized data centers). This distribution introduces both opportunities and constraints for agentic systems.
+
+Devices provide local compute with minimal latency and data privacy. Edge servers offer regional compute with moderate latency and local data residency. Cloud infrastructure provides massive scalability with higher latency and centralized data handling. Agents must decide where to execute based on resource availability, latency requirements, cost constraints, and governance policies.
+
+#### Hybrid Resource Allocation Architecture
+
+When agents operate across the continuum, resource allocation becomes distributed. A single agent workflow might start on a device, offload heavy computation to the edge, and aggregate results in the cloud. Coordinating this distribution requires infrastructure that spans execution environments.
+
+**Resource slicing** divides continuum resources into well-defined allocation units. A slice might represent "50ms of edge compute within 100km of Paris" or "100GB cloud storage in EU-west region". Agents request slices rather than raw infrastructure, simplifying coordination.
+
+**Cross-domain integrators** manage complex resource dependencies across continuum layers. When an agent workflow requires device sensing, edge inference, and cloud training, the integrator coordinates resource allocation across all three layers, presenting a unified interface to the requesting agent.
+
+```python
+class ContinuumResourceManager:
+    """Manage resource allocation across device-edge-cloud"""
+
+    def __init__(self):
+        self.device_pool = DeviceResourcePool()
+        self.edge_pool = EdgeResourcePool()
+        self.cloud_pool = CloudResourcePool()
+        self.allocation_policy = HybridAllocationPolicy()
+
+    def allocate(self, agent_request):
+        """Allocate resources optimizing for latency, cost, governance"""
+        # Determine which continuum layers can satisfy request
+        feasible_allocations = self._find_feasible(agent_request)
+
+        # Select allocation balancing constraints
+        selected = self.allocation_policy.select(
+            feasible_allocations,
+            optimize_for=['latency', 'cost', 'compliance']
+        )
+
+        # Reserve resources and return execution environment
+        return self._reserve_resources(selected)
+
+    def _find_feasible(self, request):
+        """Find allocations satisfying technical and governance constraints"""
+        options = []
+
+        # Device-only allocation
+        if self.device_pool.can_satisfy(request):
+            options.append(DeviceAllocation(request))
+
+        # Edge-cloud hybrid allocation
+        if request.allows_offload and self.edge_pool.has_capacity():
+            options.append(EdgeCloudAllocation(request))
+
+        # Cloud-only allocation
+        if request.allows_remote and self.cloud_pool.has_capacity():
+            options.append(CloudAllocation(request))
+
+        # Filter by governance constraints
+        return [opt for opt in options if opt.satisfies_policy(request.policy)]
+```
+
+This architecture enables agents to operate across the continuum without managing distribution complexity directly. The resource manager handles placement decisions, the integrator coordinates cross-layer dependencies, and the agent focuses on task logic.
+
+#### Latency-Governance-Cost Tradeoffs
+
+Continuum infrastructure forces explicit tradeoffs between competing objectives:
+
+**Latency versus governance.** Local device execution provides minimal latency but limited compute capacity. Cloud execution provides massive capacity but higher latency and potential data sovereignty issues. An agent processing medical imaging might prefer local inference to satisfy HIPAA requirements, even though cloud-based models offer better accuracy.
+
+**Cost versus performance.** Edge compute is more expensive per FLOP than cloud compute, but may be cheaper when network transfer costs are included. An agent transcoding video might run edge inference to avoid uploading raw footage, despite higher edge compute costs.
+
+**Compliance versus optimization.** GDPR may prohibit transferring EU citizen data to US cloud regions, preventing global optimization of resource allocation. Agents must respect geographic boundaries even when cloud resources are abundant elsewhere.
+
+These tradeoffs are not abstractions—they materially affect agent system design. Infrastructure that ignores governance fails compliance audits. Infrastructure that ignores cost overruns budgets. Infrastructure that ignores latency produces unacceptable user experience.
+
+#### Practical Deployment Patterns
+
+**Progressive offload** starts execution on the device and migrates to edge or cloud as needed. An agent begins processing locally; if task complexity exceeds device capacity, it checkpoints state and resumes on edge infrastructure. This pattern minimizes latency for common cases while handling exceptional cases gracefully.
+
+**Hierarchical scheduling** delegates resource allocation decisions to the layer best positioned to decide. Devices make sub-second scheduling decisions for local tasks. Edge servers coordinate regional agents with moderate latency budgets. Cloud schedulers handle global optimization for tasks with relaxed latency constraints.
+
+**Policy-driven placement** encodes governance requirements as declarative placement policies. "Personal health data must remain on device or HIPAA-compliant edge" becomes a constraint the allocator respects automatically. This separates business logic from governance logic, enabling compliance verification independent of agent code.
+
+```yaml
+# Example placement policy
+placement_policy:
+  data_residency:
+    personal_health: [device, hipaa_edge]
+    financial_records: [gdpr_cloud, regional_edge]
+    public_data: [any]
+
+  latency_requirements:
+    real_time_inference: max_ms: 50
+    batch_processing: max_ms: 5000
+
+  cost_limits:
+    per_request_max_usd: 0.01
+    monthly_budget_usd: 10000
+```
+
+The allocator parses these policies and generates feasible resource allocations. Agents declare requirements; infrastructure enforces constraints.
+
+#### Scaling to Production
+
+Continuum infrastructure scales differently than single-layer systems. Device resources scale horizontally (more devices) but are heterogeneous (varying capabilities). Edge resources scale regionally but require geographic distribution. Cloud resources scale nearly infinitely but centralize risk and cost.
+
+Production systems must monitor resource utilization across all layers, identify bottlenecks that emerge from cross-layer dependencies, and adapt allocation policies as load patterns evolve. An agent workflow that performs well with 100 users may exhibit different bottlenecks at 10,000 users due to edge cache exhaustion or cloud egress cost spikes.
+
+The fundamental insight: **device-edge-cloud continuum is not optional infrastructure—it is where agents execute in production**. Scaffolding that assumes single-layer execution misses the distribution that production systems require.
+
+For orchestration patterns that leverage continuum infrastructure, see [Agent Orchestration](020-orchestration.md) where multi-agent resource allocation depends on continuum support. For failure modes that emerge from distributed execution, see [Common Failure Modes, Testing, and Fixes](100-failure-modes-testing-fixes.md).
+
 ### Communication Protocol
 Standardize how agents communicate.
 
