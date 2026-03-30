@@ -214,7 +214,7 @@ In February 2026, Snyk researchers published the ToxicSkills report after scanni
 
 ## Announcing MCPs and Skills to Visiting Models
 
-As AI agents increasingly browse the web, retrieve documentation, and interact with services, sites need machine-readable ways to advertise their capabilities. This section covers the current state-of-the-art conventions for announcing MCP servers, Agent Skills, and agent policies to visiting models.
+As AI agents increasingly browse the web, retrieve documentation, and interact with services, sites need machine-readable ways to advertise their capabilities. This section covers current conventions for announcing MCP servers, Agent Skills, and agent policies to visiting models.
 
 ### llms.txt: Machine-Readable Site Context
 
