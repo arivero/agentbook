@@ -70,6 +70,7 @@ order: 99
 - Coq. <https://coq.inria.fr/>. Accessed: 2026-02-05.
 - Isabelle. <https://isabelle.in.tum.de/>. Accessed: 2026-02-05.
 - Li, Z., Tian, H., Luo, L., Cao, Y., & Luo, P. (2026). DeepRead: Structure-aware multi-turn document reasoning. arXiv preprint arXiv:2602.05014. <https://arxiv.org/abs/2602.05014>. Accessed: 2026-02-08.
+- Li, Y., Lin, Y., Wang, P., Liu, S., & Wei, X. (2026). BeSafe-Bench: First comprehensive behavioral safety benchmark for situated agents. arXiv preprint arXiv:2603.25747. <https://arxiv.org/abs/2603.25747>. Accessed: 2026-03-30.
 - Google DeepMind. AlphaProof: AI solves IMO problems at silver medal level. <https://deepmind.google/blog/ai-solves-imo-problems-at-silver-medal-level/>. Accessed: 2026-02-13.
 - Google DeepMind. AlphaEvolve: A Gemini-powered coding agent for designing advanced algorithms. <https://deepmind.google/blog/alphaevolve-a-gemini-powered-coding-agent-for-designing-advanced-algorithms/>. Accessed: 2026-02-13.
 - Google DeepMind. Aletheia. <https://github.com/google-deepmind/superhuman/tree/main/aletheia>. Accessed: 2026-02-13.
