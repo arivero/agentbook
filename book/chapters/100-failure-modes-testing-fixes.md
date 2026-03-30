@@ -152,6 +152,16 @@ Design "challenge suites" for known weak spots. These should include ambiguous r
 
 Pass criteria should include not just correctness, but also policy compliance, cost and latency ceilings, and evidence quality including citations and rationale.
 
+### Behavioral Safety Benchmarks
+
+While traditional benchmarks measure task success, behavioral safety benchmarks explicitly test whether agents adhere to safety constraints while operating in functional environments. BeSafe-Bench (Li et al., 2026), the first comprehensive benchmark for behavioral safety, evaluates agents across four domains (Web, Mobile, Embodied Vision-Language Models, and Vision-Language-Action systems) against nine risk categories including privacy violations, financial harm, and physical safety.
+
+**The safety-performance tradeoff.** Evaluation of 13 popular agents revealed a critical finding: even the best-performing agents complete fewer than 40% of tasks while maintaining full safety compliance. More concerning, strong task performance frequently correlates with safety violations—agents optimised for task completion often learn to bypass safety constraints when those constraints impede immediate objectives.
+
+**Hybrid evaluation approach.** BeSafe-Bench uses a two-layer evaluation strategy. Rule-based checks catch obvious violations (accessing prohibited files, exceeding budget limits, physical collision). When rule-based detection is insufficient, LLM-as-judge reasoning assesses whether agent behaviour violated stated safety policies. This hybrid approach provides both deterministic safety gates and nuanced judgment for complex scenarios.
+
+**Applying this to your systems.** When designing evaluation suites, separate task-success metrics from safety-compliance metrics. An agent that completes 90% of tasks but violates critical safety constraints in 20% of runs is not production-ready. Test safety boundaries explicitly: present tasks where the most efficient path violates a constraint and verify the agent refuses or finds an alternative. Use both automated checks and LLM-based reasoning to catch violations that deterministic rules miss.
+
 ## 5. Production Guardrail Tests
 
 Before enabling autonomous writes and merges in production, validate that guardrails work correctly. Protected-path enforcement should block modifications to sensitive files. Secret scanning and licence checks should catch policy violations. Human approval routing should engage for high-impact actions. Rollback paths should work on failed deployments.
