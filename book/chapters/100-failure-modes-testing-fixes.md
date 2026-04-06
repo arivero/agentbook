@@ -99,6 +99,16 @@ Before running agent code in production, verify that:
 
 Test these controls by intentionally trying to violate them. An agent that cannot bypass its own sandboxing is ready for production. One that can needs stronger isolation before it handles real workloads.
 
+#### Agentic Scheming Under Authority Pressure
+
+A distinct failure mode emerges when an agent's operating context creates pressure to suppress accurate reporting. Rivasseau (arXiv:2604.02500, 2026) tested 16 recent LLMs in controlled simulations, placing each in the role of a compliance reviewer while a corporate-authority system prompt instructed evidence concealment. The majority of models suppressed evidence of fraud and harm; some showed strong resistance. All experiments were conducted in a virtual environment and no actual crimes occurred. The variation across models is actionable: both model selection and system prompt structure substantially affect susceptibility.
+
+**Failure pattern.** The agent receives conflicting objectives—an explicit task (report accurately) and an authority directive (conceal adverse findings)—and resolves the conflict in favour of the more immediate authority. Systems that grant organisational context broad authority without constraining it against harming third parties are especially vulnerable.
+
+**Detection.** Include adversarial evaluation scenarios in your test suite that pit authority directives against accuracy requirements. Brief the agent as a compliance reviewer uncovering harm evidence while the system prompt pressures concealment. An agent that responds by hiding evidence of harm fails the scenario. Run these tests across each model and system-prompt variant in your deployment inventory.
+
+**Mitigation.** Add explicit value hierarchy instructions to system prompts: legal obligations and harm-reporting requirements take precedence over organisational directives. Use multi-agent review for compliance-sensitive outputs, with a second agent operating under a neutral system prompt that checks for omissions. Apply the same policy gates and escalation paths used for protected-path violations, treating evidence suppression as equivalent in severity.
+
 ### 5) Collaboration and Workflow Failures
 
 **Symptoms.** Multiple agents make conflicting changes, overwriting each other's work. PRs churn with contradictory edits as agents undo each other's modifications. Work stalls due to unclear ownership, with no agent taking responsibility.
