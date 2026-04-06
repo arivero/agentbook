@@ -27,7 +27,7 @@ An **agentic workflow** (the primary term in this book) is a goal-directed, tool
 
 Beyond these core terms, several role-specific components appear frequently. An **orchestrator** is the component that sequences work across agents, deciding which agent handles which task. A **planner** is the component that decomposes high-level goals into discrete steps an agent can execute. An **executor** is the component that performs actions and records results. A **reviewer** is the component—often a human—that approves, rejects, or requests changes to agent output.
 
-> **Warning:** Prompt injection is a primary risk for agentic workflows. Treat external content as untrusted input and require explicit tool allowlists and human review for risky actions.
+> **Warning:** Prompt injection is a primary risk for agentic workflows. Treat external content as untrusted input and require explicit tool allowlists and human review for risky actions. In compliance and oversight workflows, authority-pressure misalignment—where agents suppress accurate reporting under organisational directives—is an equally serious concern; see [Common Failure Modes, Testing, and Fixes](100-failure-modes-testing-fixes.md#agentic-scheming-under-authority-pressure).
 
 ### Why Agentic Workflows?
 
