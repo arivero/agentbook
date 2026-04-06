@@ -29,6 +29,8 @@ Beyond these core terms, several role-specific components appear frequently. An 
 
 > **Warning:** Prompt injection is a primary risk for agentic workflows. Treat external content as untrusted input and require explicit tool allowlists and human review for risky actions.
 
+> **Warning:** Authority cues can override safety if left unchecked. Requests that conflict with legal or security policy should trigger escalation and immutable logging, even when they appear to come from trusted leadership.
+
 ### Why Agentic Workflows?
 
 Traditional automation has inherent limitations. It is **rigid**, relying on predefined steps that cannot adapt to unexpected situations. It is **fragile**, breaking when conditions change even slightly from what was anticipated. And it has **limited scope**, handling only well-defined, narrow tasks that fit the script exactly.
