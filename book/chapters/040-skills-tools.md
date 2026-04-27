@@ -567,6 +567,127 @@ class DocumentedTool:
         return doc
 ```
 
+## Dynamic Tool Generation
+
+### The Token Overhead Problem
+
+Traditional agentic systems provide agents with a pre-defined toolset: N tools, each with name, description, parameters, and examples. As capabilities grow, tool catalogs expand—tens or hundreds of tools that agents must understand and choose from. This creates **token overhead**: every tool description consumes prompt tokens, and the agent must process all options before selecting relevant ones.
+
+The selection complexity grows with toolset size. An agent with 50 tools must evaluate 50 descriptions per request, even when only 2-3 are relevant to the current task. This wastes context window capacity and increases latency.
+
+### The Dynamic Generation Alternative
+
+**Dynamic tool generation** inverts this model. Instead of providing N pre-defined tools, the system provides a small set of **meta-tools** that enable the agent to create specialized tools on demand. The agent writes tool code during execution, registers it in a persistent registry, and invokes it—all autonomously.
+
+This approach maintains constant token overhead (the meta-tools remain fixed in size) while enabling unbounded capability growth through code generation.
+
+| Dimension | Static Toolset | Dynamic Generation |
+|-----------|----------------|-------------------|
+| Token overhead | O(N) tools | O(1) meta-tools |
+| Security audit surface | Fixed at deployment | Expands at runtime |
+| Capability evolution | Requires redeployment | Autonomous growth |
+| Failure modes | Tool selection errors | Code generation errors |
+| Maturity | Production-standard | Emerging (2026) |
+
+### Case Study: Tendril
+
+Tendril (https://github.com/serverless-dna/tendril) demonstrates dynamic tool generation in practice. Built with AWS Strands Agents SDK, Tauri, and Deno sandboxing, it begins with only three bootstrap meta-tools:
+
+1. **listCapabilities**: Query the registry for existing tools
+2. **registerCapability**: Write and persist new tool code
+3. **executeCode**: Run tool implementations in sandboxed environment
+
+The registry architecture uses two components:
+
+- **index.json**: Metadata including tool names, descriptions, trigger patterns, and suppression rules
+- **tools/*.ts**: TypeScript implementations executed in Deno subprocess isolation
+
+Agents can search the registry with natural language queries: `searchCapabilities("fetch url hacker news")` returns matching tools if they exist, or the agent autonomously creates one if needed.
+
+**Example workflow**: An agent needs to fetch Hacker News data. It queries `listCapabilities` and finds no matching tool. Instead of failing or asking for help, it autonomously:
+
+1. Generates TypeScript code that fetches from the Hacker News API
+2. Calls `registerCapability` to persist the code and metadata
+3. Uses `executeCode` to invoke the new tool
+4. Receives results and continues with the task
+
+The system prompt explicitly instructs autonomous behavior: "NEVER ask 'would you like me to create a tool?'—just build it."
+
+### Security Model for Dynamic Generation
+
+Dynamic code generation fundamentally changes the threat model. Pre-defined tools have a fixed audit surface—review code once at deployment time. Generated tools create executable code at runtime, requiring strong isolation to prevent unintended access or data exfiltration.
+
+Tendril addresses this through **Deno subprocess sandboxing** with scoped permissions:
+
+```typescript
+// Tool execution with explicit permission constraints
+const process = Deno.run({
+  cmd: ["deno", "run",
+        "--allow-net=api.example.com",  // Only specific domain
+        "--allow-read=/tmp/workspace",   // Only workspace directory
+        "tools/fetchHackerNews.ts"],
+  stdout: "piped",
+  stderr: "piped"
+});
+
+// 45-second default timeout prevents runaway execution
+const timeout = setTimeout(() => process.kill(), 45000);
+```
+
+Permission flags restrict network access to explicitly allowed domains, preventing agents from calling arbitrary APIs. Timeouts ensure generated code cannot run indefinitely, consuming resources.
+
+For detailed coverage of sandboxing patterns, see the "Secure Execution Environments" section in [Agentic Scaffolding](030-scaffolding.md#secure-execution-environments), which discusses Deno permissions, microVMs (Firecracker), and the isolation spectrum from process-level through full virtualization.
+
+**⚠️ Warning: Dynamic generation requires strong isolation**
+
+Do not implement dynamic tool generation without robust sandboxing. Executing agent-generated code without isolation creates critical security vulnerabilities:
+
+- **Credential theft**: Generated code can access environment variables, configuration files, or other secrets in the execution context
+- **Data exfiltration**: Without network restrictions, code can send sensitive data to external endpoints
+- **Resource exhaustion**: Uncontrolled loops or recursion can consume CPU, memory, or disk space
+- **Privilege escalation**: Code running with excessive permissions can modify system state or access protected resources
+
+Minimum safety requirements:
+
+1. **Subprocess isolation**: Run generated code in separate processes, not in the agent runtime
+2. **Scoped permissions**: Use explicit allow-lists for filesystem, network, and environment access
+3. **Timeout enforcement**: Kill processes that exceed time or resource limits
+4. **Audit logging**: Record all generated code and execution results for security review
+
+The "too many tools" problem does not justify unsafe implementations. If you cannot provide strong isolation, use static tool definitions with discovery-based filtering instead.
+
+### Trade-Offs and Constraints
+
+**When to choose static toolsets:**
+
+- High-security environments where runtime code generation cannot be audited in real-time
+- Regulated industries with compliance requirements for pre-approved capabilities
+- Teams lacking infrastructure for sandboxed execution (Deno, containers, microVMs)
+- Workflows where tool selection errors are easier to debug than code generation errors
+
+**When to consider dynamic generation:**
+
+- Research environments exploring emergent agent capabilities
+- Prototyping systems where rapid capability iteration matters more than production hardening
+- Scenarios where token overhead demonstrably limits performance (validate with empirical data)
+- Teams with strong sandboxing infrastructure and security monitoring
+
+**Debugging complexity**: Static tools have fixed, reviewable implementations. Generated tools are written by agents, making debugging harder—you must understand both the agent's intent and the generated code's actual behavior. Invest in comprehensive logging and tracing if using dynamic generation.
+
+**Audit and compliance implications**: In regulated environments, generated code may require security review before production use. Some compliance frameworks prohibit runtime code generation entirely. Verify that dynamic generation is permissible in your context before adopting this pattern.
+
+**Maturity disclaimer**: Dynamic tool generation is an **emerging pattern** (Tendril created April 2026). It demonstrates promising architectural principles but lacks extensive production validation. The ecosystem has not yet established best practices for versioning, rollback, or security incident response for agent-generated tools. Adopt cautiously, with monitoring and rollback plans.
+
+### Relationship to Existing Patterns
+
+Dynamic generation interacts with patterns covered elsewhere in this book:
+
+- **Discovery** (Chapter 5): Generated tools persist in registries and become discoverable by future agent sessions, blurring the line between "discover existing" and "generate on demand"
+- **Skill bundles** (this chapter): Skills can reference either static or dynamically generated tools, but composition rules differ—static tools have stable interfaces, while generated tools may change between runs
+- **Import/Install/Activate** (Chapter 5): Where do generated tools fit in the lifecycle? Tendril treats generation as combined import+install+activate, bypassing typical separation of concerns
+
+As the pattern matures, clearer guidance will emerge on how dynamic generation composes with established tool management workflows.
+
 ## Integrations: Connecting Tools to Real-World Surfaces
 
 **Integrations** sit above tools and skills. They represent packaged connectors to real systems (chat apps, device surfaces, data sources, or automation backends) that deliver a coherent user experience. Think of them as the **distribution layer** for tools and skills: they bundle auth, event routing, permissions, and UX entry points.
