@@ -25,6 +25,10 @@ An **artefact** is any reusable unit a workflow can reference, including tool en
 
 A **tool** is an executable capability exposed via a protocol or command surface. A tool's **identity** is its endpoint identity, such as an MCP server URL combined with an authentication context. A tool's **interface** consists of the enumerated callable operations it exposes, including their names, schemas, and permission requirements.
 
+Tool discovery typically finds pre-deployed endpoints—services that were written, tested, and deployed by humans before agents begin work. However, emerging patterns enable agents to **generate tools at runtime** and persist them in local registries, creating a hybrid model where discovery may return both static (human-authored) and dynamic (agent-generated) tools.
+
+When reading tool registries or catalogs, verify whether listed tools are static or dynamic. This distinction affects audit requirements: static tools have fixed, reviewable implementations, while dynamic tools are generated on-demand and require runtime sandboxing and monitoring. For detailed coverage of dynamic tool generation, see [Skills and Tools Management](040-skills-tools.md#dynamic-tool-generation).
+
 Discovery usually finds endpoints first; tool enumeration happens after connection, when the client can query what operations the tool server supports.
 
 ### 2) Skill artefacts

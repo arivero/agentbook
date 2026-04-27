@@ -237,6 +237,49 @@ Use **containers** (Docker, Podman) for trusted agent code in controlled environ
 
 The architecture of transparent proxying plus ephemeral environments provides a reference pattern for high-security agent scaffolding, applicable beyond any specific tool implementation.
 
+#### Deno Permissions for Dynamic Tool Generation
+
+Dynamic tool generation patterns (see [Skills and Tools Management](040-skills-tools.md#dynamic-tool-generation)) require runtime code execution with carefully controlled privileges. Deno's permission model provides fine-grained control over what generated code can access, making it well-suited for sandbox scenarios where agents autonomously create and execute tools.
+
+Deno permissions use explicit allow-lists rather than default-allow patterns. Code runs with no privileges unless explicitly granted via command-line flags:
+
+```bash
+# Network access restricted to specific domain
+deno run --allow-net=api.example.com tool.ts
+
+# Filesystem access restricted to specific directory
+deno run --allow-read=/workspace/data tool.ts
+
+# Combined permissions with timeout
+deno run \
+  --allow-net=api.github.com,api.openai.com \
+  --allow-read=/workspace \
+  --allow-write=/workspace/output \
+  tool.ts
+```
+
+This scoped permission model prevents unintended API calls from generated tools. If an agent creates a tool that attempts to access `internal-database.corp` but was only granted `api.example.com`, the operation fails immediately with a permission error rather than silently succeeding.
+
+Timeouts complement permission scoping by limiting execution duration. Generated code that runs indefinitely (infinite loops, resource exhaustion attempts) can be terminated forcibly:
+
+```typescript
+// Spawn sandboxed process with 45-second limit
+const process = Deno.run({
+  cmd: ["deno", "run", "--allow-net=api.example.com", "tool.ts"],
+  stdout: "piped",
+  stderr: "piped"
+});
+
+const timeout = setTimeout(() => {
+  process.kill("SIGKILL");
+}, 45000);  // 45 seconds
+
+const status = await process.status();
+clearTimeout(timeout);
+```
+
+For agents that generate tools at runtime, Deno provides a lightweight alternative to full container isolation while maintaining strong security boundaries. The permission model is explicit in configuration and enforceable at the OS process level, making it auditable and debuggable.
+
 ### Communication Protocol
 Standardize how agents communicate.
 
