@@ -567,6 +567,63 @@ class DocumentedTool:
         return doc
 ```
 
+## Dynamic Tool Generation
+
+### The Token Overhead Problem
+
+Traditional agent design pre-defines all possible tools at initialisation time. An agent with many specialised tools sees all their descriptions on every request, regardless of how many it actually needs. As toolsets grow to handle more use cases, enumerating available tools can consume a significant portion of the available context window. This is sometimes called the "too many tools" problem.
+
+Dynamic tool generation inverts this pattern. Instead of choosing from a large fixed toolset, an agent starts with a small set of **meta-tools**—capabilities specifically designed to build other capabilities—and generates specialised tools on demand. Once generated, tools persist in a registry, so future sessions can reuse them without regenerating them.
+
+### The Bootstrap Pattern: Tendril
+
+Tendril (<https://github.com/serverless-dna/tendril>) is an open-source agentic sandbox built with the AWS Strands Agents SDK (<https://github.com/strands-agents/sdk-typescript>) that demonstrates this pattern in a working implementation—an early-stage project that starts each session with exactly three tools:
+
+- **`listCapabilities`**: Returns the catalogue of previously generated tools from the registry.
+- **`registerCapability`**: Writes a new TypeScript function to disk and records its metadata in the registry index.
+- **`executeCode`**: Runs a registered capability inside a Deno subprocess with scoped permissions.
+
+The agent's system prompt reinforces autonomous behaviour: "NEVER ask 'would you like me to create a tool?'—just build it." When a user asks the agent to fetch Hacker News headlines, the agent does not ask permission; it calls `registerCapability` to write a `fetchHackerNews` TypeScript function, persists it to the local registry, then immediately executes it via `executeCode`.
+
+#### Registry Structure
+
+Tendril separates capability metadata from implementation:
+
+```text
+~/.tendril/
+├── index.json          # Metadata: name, description, trigger patterns
+└── tools/
+    ├── fetch-hn.ts     # Generated TypeScript implementation
+    └── summarise.ts    # Another generated tool
+```
+
+Each entry in `index.json` captures the capability name, a natural-language description, and patterns of user requests that should trigger it. Before building a new tool, the agent calls `listCapabilities` to check whether a relevant tool already exists—promoting reuse across sessions rather than rebuilding the same capability repeatedly.
+
+Tendril also implements the Agent Integrator Protocol (ACP) over JSON-RPC 2.0/NDJSON, the same protocol used by Claude Code, which validates the interoperability approach even as the dynamic generation pattern itself matures.
+
+### Security Considerations
+
+Dynamic code generation substantially changes the security model compared to static tools. Generated tools are agent-authored code executed at runtime with real permissions. This makes sandbox isolation not optional but **required**.
+
+Tendril addresses this through Deno's permission model: each tool execution receives only the permissions it explicitly needs. A tool that fetches from a specific API might receive `--allow-net=api.example.com` but no filesystem access. A file-processing tool might receive `--allow-read=/tmp` but no network access. A 45-second execution timeout prevents runaway tasks.
+
+> **⚠️ Security warning:** Dynamic tool generation must be paired with strong sandbox isolation. Without it, agent-generated code executes with the same permissions as the host process, creating an uncontrolled code execution surface. See [Agentic Scaffolding](030-scaffolding.md) for isolation patterns—containers, microVMs, and Deno subprocess scoping—applicable to dynamic generation. Never implement this pattern with `eval()` or equivalent mechanisms in an unsandboxed context.
+
+### Trade-offs
+
+| Dimension | Static Toolset | Dynamic Generation |
+|-----------|----------------|--------------------|
+| Context window usage | Grows with toolset size | Bounded by meta-tool count |
+| Security audit surface | Fixed at deployment | Expands at runtime |
+| Capability evolution | Requires redeployment | Autonomous growth |
+| Failure modes | Tool selection errors | Code generation errors |
+| Debugging | Tool source is human-authored | Tool source is agent-authored |
+| Maturity | Production-standard | Emerging |
+
+Dynamic generation is most appropriate when the set of needed tools is not fully predictable at design time, toolsets would otherwise grow too large to enumerate efficiently, or you want an agent to extend its capabilities across sessions. Choose static tools when auditability, compliance, or precise control over the executable surface are paramount.
+
+> **Note on maturity:** Tendril and the broader dynamic generation pattern are early-stage. Use them in experimental or exploratory contexts. For production systems handling sensitive data or requiring compliance audits, prefer static, pre-audited toolsets until the pattern has accumulated more production validation.
+
 ## Integrations: Connecting Tools to Real-World Surfaces
 
 **Integrations** sit above tools and skills. They represent packaged connectors to real systems (chat apps, device surfaces, data sources, or automation backends) that deliver a coherent user experience. Think of them as the **distribution layer** for tools and skills: they bundle auth, event routing, permissions, and UX entry points.

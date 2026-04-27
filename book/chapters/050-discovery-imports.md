@@ -27,6 +27,8 @@ A **tool** is an executable capability exposed via a protocol or command surface
 
 Discovery usually finds endpoints first; tool enumeration happens after connection, when the client can query what operations the tool server supports.
 
+Emerging patterns also enable tools to be **generated at runtime**: an agent writes a new tool implementation, registers it in a local capability index, and then executes it within the same session. These runtime-generated tools blur the boundary between discovery and creation—the agent discovers tools it built in earlier sessions while also building new ones on demand. When a tool registry may contain agent-generated artefacts, audit requirements differ from registries containing only human-authored, pre-reviewed tools. See [Skills and Tools Management](040-skills-tools.md) for the dynamic generation pattern and its trade-offs.
+
 ### 2) Skill artefacts
 
 A **skill** is a packaged reusable bundle of instructions, templates, and optional scripts. A skill's **identity** is its bundle source, which may be a repository path, a registry coordinate, or a version and digest combination. A skill's **interface** comprises its documented entrypoints, expected inputs and outputs, and policy constraints that govern how it may be used.
