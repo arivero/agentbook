@@ -107,6 +107,22 @@ Test these controls by intentionally trying to violate them. An agent that canno
 
 **Fast fixes.** Add ownership rules per path or component so responsibilities are clear. Use optimistic locking with conflict resolution policy to handle concurrent access. Define role-specific done criteria so agents know when to stop.
 
+### 6) Cost-Reliability Tradeoffs with Alternative Model Backends
+
+**Symptoms.** Agents using alternative or cost-optimized model backends produce lower-quality code on complex tasks, requiring more iterations or human intervention to reach acceptable results. Subtle reasoning errors accumulate across multi-step workflows, leading to incorrect conclusions that deterministic tests do not catch. Features that work with frontier models (vision input, advanced tool protocols, prompt caching) fail silently or degrade when backend is switched.
+
+**Typical causes.** Alternative models have capability gaps compared to frontier models, particularly in complex reasoning, ambiguous requirements, and novel problem-solving. API compatibility layers introduce subtle deviations in tool calling, error handling, or response formatting that break agent workflows. Cost-driven backend selection does not account for task complexity, routing all work to cheaper models regardless of difficulty.
+
+**Backend abstraction patterns.** Tools that enable agent platforms to use alternative model backends (such as DeepSeek V4 Pro, OpenRouter, or Fireworks AI instead of Anthropic or OpenAI) can reduce inference costs by 10-20x. This makes autonomous agents economically viable for high-volume or budget-constrained workloads. However, backend abstraction introduces reliability risks when the alternative model lacks capabilities the agent platform expects. See [Agentic Scaffolding](030-scaffolding.md#model-backend-abstraction) for implementation patterns.
+
+**The 80/20 capability split.** Empirical testing shows that cost-optimized models (such as DeepSeek V4 Pro at $0.87/M output tokens versus Claude Opus at $15/M) perform comparably on roughly 80 percent of routine coding tasks: well-defined bug fixes, straightforward feature additions, refactoring with clear requirements, and code review with explicit checklists. The remaining 20 percent—architectural decisions, debugging hard failures, resolving ambiguous requirements, and novel problem-solving—still require frontier model reasoning. Production deployments should route by complexity rather than treating all tasks identically.
+
+**Testing strategy for alternative backends.** Before deploying agents with alternative model backends, validate that critical workflows still work. Run your existing test suite (deterministic, scenario-based, and adversarial) with the alternative backend and compare pass rates. Manually review output quality on representative tasks, especially those involving multi-step reasoning or ambiguous inputs. Monitor failure rates and iteration counts in production—if an agent requires significantly more retries or human intervention with the alternative backend, the cost savings may be illusory. Establish a fallback path to frontier models for tasks that repeatedly fail with cheaper alternatives.
+
+**Cost-aware task routing.** Instead of switching all inference to a single backend, route tasks dynamically based on complexity signals. Use cheaper models for well-scoped tasks with clear acceptance criteria, explicit tool sequences, and low ambiguity. Escalate to frontier models when tasks involve architectural decisions, complex debugging, ambiguous requirements, or repeated failures with the cheaper model. Track cost per successful task completion rather than raw inference cost—a task that requires five retries with a cheap model may cost more than one attempt with a frontier model.
+
+**Fast fixes.** Implement complexity scoring at task intake to route appropriately. Add fallback escalation when cheaper models fail repeatedly on a task. Monitor capability-specific metrics (reasoning accuracy, tool-calling success rate, multi-step coherence) separately from general pass rates. Maintain feature parity checks that fail loudly when backend-specific capabilities (vision, caching, MCP) are required but unavailable.
+
 ## Testing Strategy for Agentic Workflows
 
 A robust strategy uses multiple test layers. No single test type is sufficient.
