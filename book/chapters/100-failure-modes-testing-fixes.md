@@ -218,6 +218,34 @@ Track these metrics to evaluate reliability improvements over time.
 
 Avoid vanity metrics (for example, "number of agent runs") without quality and safety context.
 
+## Cost-Reliability Trade-offs When Swapping Model Backends
+
+One of the fastest ways to reduce the cost of agentic workflows is to swap the model backend while keeping the same agent loop, tools, and UX. Proxy-based backend abstraction (see [Agentic Scaffolding](030-scaffolding.md)) makes this feasible, but it changes your failure profile.
+
+### The 80/20 Capability Split
+
+In practice, many teams observe an 80/20 pattern: cheaper, high-throughput models handle routine tasks (formatting, straightforward refactors, small bug fixes) comparably to frontier models, while frontier models still dominate on the hardest 20% (deep debugging, ambiguous requirements, multi-day refactors, subtle reasoning).
+
+Treat the split as an operational hypothesis, not a universal rule. Validate it on your own workload with a small, representative task suite before routing production traffic.
+
+### Testing Strategy for Alternative Backends
+
+When you swap backends, test more than output quality. You must also verify behavioural and protocol compatibility with the tool loop.
+
+- **Contract tests for the proxy boundary:** ensure request/response schemas, tool-call formatting, and streaming semantics match what the agent client expects.
+- **Golden-task regression suite:** rerun the same set of tasks across backends, comparing success rates, tool error rates, and time-to-completion.
+- **Long-horizon drift checks:** include multi-step tasks where small mistakes compound; cheaper models can look fine on short tasks but fail on long ones.
+- **Fallback and escalation:** define explicit triggers that route to a stronger model (for example, repeated tool failures, low-confidence self-assessment, or exceeding a step budget).
+
+### Common Failure Modes Unique to Backend Swaps
+
+Backend abstraction adds several specific failure modes:
+
+- **Feature parity gaps:** vision inputs, prompt caching, or protocol extensions (for example MCP routing) may fail or degrade.
+- **Error-shape mismatch:** the backend returns different error codes or fields, breaking retries and making failures harder to classify.
+- **Tool-use schema drift:** structured tool calls may be formatted differently, causing the agent loop to mis-parse tool invocations.
+- **Non-deterministic cost spikes:** different providers may price tokens differently (or count them differently), so cost per successful task can change even when success rates stay constant.
+
 ## Anti-Patterns to Avoid
 
 Several anti-patterns undermine agentic system reliability.

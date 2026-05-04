@@ -292,7 +292,33 @@ analyze_code = ComposableTool('analyze', analyze_func, {'content'}, {'issues'})
 pipeline = read_file.compose_with(analyze_code)
 ```
 
-### Pattern 2: Skill Libraries
+### Pattern 2: Model Backend Abstraction
+
+Many modern agent stacks treat the language model as a dependency that can be swapped without rewriting the rest of the agent loop. This is useful for reducing inference cost, meeting compliance requirements (for example, routing to an on-prem model), or avoiding lock-in while preserving the same UX and tooling.
+
+One practical approach is a **proxy-based interception pattern**: instead of changing the agent implementation, you intercept HTTP requests at the API boundary and forward them to an alternative backend that is compatible with the original API schema. The proxy can also normalize responses, rewrite model identifiers, and enforce policy (rate limits, allowed models, logging) without the agent needing to know.
+
+In many CLI agents, this can be as simple as an environment variable override. For example, tools in the Anthropic ecosystem often honour `ANTHROPIC_BASE_URL` and can be configured to send requests to a local proxy instead of the default endpoint.
+
+```bash
+# Example: route an Anthropic-compatible client through a local proxy
+export ANTHROPIC_BASE_URL="http://localhost:3200"
+export ANTHROPIC_API_KEY="${ALT_BACKEND_API_KEY}"
+export ANTHROPIC_MODEL="deepseek-v4-pro"  # or an OpenRouter/Fireworks model id
+```
+
+The proxy layer must preserve **compatibility requirements** that agent loops implicitly depend on:
+
+- **Schema parity:** request/response JSON fields and error formats must match closely enough that the client library and tool loop behave the same.
+- **Tool call conventions:** if the agent relies on structured tool-use messages, the backend must return those in the expected shape.
+- **Streaming semantics:** agents that stream tokens or tool events may require WebSocket or SSE behaviour that matches the original API.
+- **Operational equivalence:** timeouts, retries, and rate limits should fail in predictable ways; otherwise you get fragile behaviour at long horizons.
+
+Backend abstraction comes with trade-offs. Some models or providers may lack features the original platform assumes (for example vision inputs, native prompt caching, or protocol extensions like MCP tool routing). Even when the API surface is compatible, the model's behaviour may vary: cheaper backends often handle routine coding tasks well but can be weaker on complex, multi-step reasoning.
+
+**Case study: DeepClaude.** DeepClaude demonstrates this pattern by running a local proxy (commonly on `localhost:3200`) that intercepts Claude Code's Anthropic API traffic and forwards it to alternative Anthropic-compatible endpoints (such as DeepSeek-hosted models or proxy providers like OpenRouter/Fireworks). The key architectural point is that the “body” of the agent (filesystem tools, bash, git, subagent spawning, loop logic) remains unchanged, while only the “brain” (model backend) is swapped.
+
+### Pattern 3: Skill Libraries
 Organize reusable agent capabilities.
 
 ```python

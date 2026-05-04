@@ -172,6 +172,12 @@ claude
 gemini --tools read_file,write_file,google_search
 ```
 
+#### Third-Party Backend Swaps (DeepClaude)
+
+Some third-party tools extend Claude Code by keeping the CLI experience and tool loop intact while swapping the model backend. DeepClaude is a representative example: it runs a local proxy that redirects Claude Code's Anthropic API requests to alternative Anthropic-compatible endpoints (for example, hosted DeepSeek models or aggregator providers). This pattern is a concrete illustration of model-backend abstraction: the agent's scaffolding and tools stay the same, but the inference provider changes.
+
+This can significantly reduce cost, but it also introduces compatibility constraints. Features that depend on platform-specific capabilities (for example vision inputs, MCP integration, or prompt caching) may not work when routed to a backend that does not implement them. For the scaffolding pattern and trade-offs, see [Agentic Scaffolding](030-scaffolding.md).
+
 ## Tool Ecosystems and Protocol Support
 
 ### MCP (Model Context Protocol)
