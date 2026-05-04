@@ -232,6 +232,8 @@ Several anti-patterns undermine agentic system reliability.
 
 **Ignoring ambiguous ownership in multi-agent flows** leads to gaps and conflicts. Every path and component should have a clear owner.
 
+**Using cheaper model backends without task-appropriate routing** creates reliability gaps. Alternative model backends (for example, DeepSeek V4 Pro via proxy tools) reduce costs significantly but introduce intelligence variance. Models may match flagship performance on routine tasks (80% of workload) while falling short on complex reasoning (20% of workload). Deploying a single cheaper model across all tasks means the 20% complexity tier fails more often, increasing intervention rates and escaped defects. Task routing strategies that match model capability to task complexity avoid this failure mode. For architectural patterns, see [Agentic Scaffolding](030-scaffolding.md#model-backend-abstraction).
+
 ## A Minimal Reliability Checklist
 
 Before enabling broad production use, confirm the following items are complete. Snippets and examples should be clearly labelled as runnable, pseudocode, or simplified. Tool contracts should be versioned and validated. CI should include policy, security, and regression checks. Failure injection scenarios should be part of routine testing. Rollback and escalation paths should be documented and exercised.
