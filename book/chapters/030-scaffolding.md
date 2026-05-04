@@ -237,6 +237,74 @@ Use **containers** (Docker, Podman) for trusted agent code in controlled environ
 
 The architecture of transparent proxying plus ephemeral environments provides a reference pattern for high-security agent scaffolding, applicable beyond any specific tool implementation.
 
+### Model Backend Abstraction
+
+Agentic scaffolding often tightly couples the tool loop—file operations, bash execution, git, subagent spawning—to a specific language model provider. Model backend abstraction decouples these layers, treating the LLM as a swappable infrastructure component rather than a fixed dependency. This separation enables cost optimization, vendor flexibility, and compliance with data-residency requirements that mandate on-premise or region-specific inference.
+
+**Why it matters.** Frontier model output tokens can cost $15 or more per million. For autonomous coding agents generating thousands of tokens per session across many developers, this compounds quickly. Alternative backends—open-weights models served via OpenRouter, Fireworks AI, or self-hosted deployments—offer comparable performance on routine tasks at a fraction of the cost. Backend abstraction lets you reach these alternatives without rewriting agent scaffolding.
+
+#### Proxy-Based Interception
+
+The most practical implementation intercepts API calls at the HTTP boundary. A local proxy sits between the agent and the provider endpoint, rewriting the request's model identifier and authorization before forwarding:
+
+```bash
+# Override the endpoint the agent calls
+export ANTHROPIC_BASE_URL=http://localhost:3200
+export ANTHROPIC_API_KEY=your_alternative_key
+
+# The agent uses its standard model identifier; the proxy rewrites it
+claude "Refactor this function"
+```
+
+The proxy translates model identifiers (for example, mapping `claude-opus-4-6` to `deepseek-v4-pro`), normalizes response schemas so the tool loop receives the format it expects, and can support live-switching—a control endpoint lets you change the active backend without restarting the agent session.
+
+Example 3-2. Model backend proxy (illustrative pseudocode)
+
+```python
+from typing import Dict
+import os
+import requests
+
+class ModelBackendProxy:
+    """Routes agent API calls to an alternative backend."""
+
+    def __init__(self, target_url: str, model_map: Dict[str, str]) -> None:
+        self.target_url = target_url
+        self.model_map = model_map
+
+    def forward(self, request: dict) -> dict:
+        # Rewrite model identifier if a mapping exists
+        original_model = request.get("model", "")
+        request["model"] = self.model_map.get(original_model, original_model)
+
+        response = requests.post(
+            self.target_url + "/v1/messages",
+            json=request,
+            headers={"Authorization": f"Bearer {os.getenv('ALT_API_KEY')}"},
+        )
+        return response.json()
+```
+
+#### Compatibility Requirements
+
+For the proxy to work transparently, the alternative backend must be API-compatible with the original provider: it must accept the same request schema (system prompt, messages, tool definitions) and return responses the tool loop can parse. Backends that expose an OpenAI-compatible endpoint require an additional schema translation layer.
+
+Not all features transfer across backends. Common gaps include:
+
+- **Vision input**: models without multimodal support reject image-containing messages.
+- **MCP tool compatibility**: some backends do not implement the full tool-calling protocol.
+- **Native prompt caching**: provider-specific caching headers may be silently ignored.
+
+#### Capability Tradeoffs
+
+Switching to a lower-cost backend introduces a capability tradeoff. Community evaluation of leading open-weights alternatives against frontier models finds comparable performance on approximately 80% of routine coding tasks—file operations, test generation, straightforward refactoring—while frontier models remain stronger on complex reasoning, cross-file architectural decisions, and tasks requiring deep context retention.
+
+A pragmatic strategy routes tasks by complexity: use a cost-effective backend for high-volume routine work, and a frontier model for tasks that fail quality gates or are flagged as high-stakes. This routing can be implemented directly in the proxy.
+
+> **Note:** Model capabilities shift across releases. Re-evaluate backend performance after major version updates and treat parity claims as provisional until validated on your own task distribution.
+
+For coverage of native cost-reduction features from each platform vendor, see [Agent Platform Comparison](085-agent-platform-comparison.md#third-party-backend-substitution). For reliability failure modes specific to this pattern, see [Common Failure Modes, Testing, and Fixes](100-failure-modes-testing-fixes.md#cost-and-reliability-tradeoffs-with-alternative-backends).
+
 ### Communication Protocol
 Standardize how agents communicate.
 
