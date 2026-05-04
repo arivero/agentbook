@@ -237,6 +237,61 @@ Use **containers** (Docker, Podman) for trusted agent code in controlled environ
 
 The architecture of transparent proxying plus ephemeral environments provides a reference pattern for high-security agent scaffolding, applicable beyond any specific tool implementation.
 
+### Model Backend Abstraction
+
+Agentic scaffolding increasingly treats the language model as a swappable infrastructure component rather than a tightly coupled dependency. This pattern—model backend abstraction—separates the "brain" (language model) from the "body" (tool loop, file operations, bash execution, git operations), enabling cost optimization, vendor flexibility, and regulatory compliance for on-premise models.
+
+**Proxy-based interception pattern.** The most common implementation uses HTTP layer interception. A proxy sits between the agent scaffolding and the model API endpoint, intercepting requests, rewriting model identifiers and endpoint URLs, and forwarding to alternative backends. This preserves the agent's tool loop and orchestration logic while swapping the underlying model. The proxy can support live-switching between multiple backends, allowing runtime selection based on task complexity or cost constraints.
+
+DeepClaude (released May 2026) demonstrates this pattern by intercepting Claude Code API calls and redirecting them to Anthropic-compatible endpoints like DeepSeek V4 Pro, OpenRouter, or Fireworks AI. The agent code remains unchanged—file editing, bash execution, git operations, and autonomous loops all work identically—while inference costs drop from $15/M output tokens (Anthropic) to $0.87/M (DeepSeek), a 17x reduction.
+
+```python
+# Backend abstraction via proxy pattern
+import os
+import requests
+
+class ModelBackendProxy:
+    """Intercepts agent API calls and routes to alternative backends."""
+
+    def __init__(self, target_backend: str, model_map: dict):
+        self.backend_url = target_backend
+        self.model_map = model_map  # e.g., {"claude-opus": "deepseek-v4-pro"}
+
+    def forward_request(self, original_request: dict) -> dict:
+        # Rewrite model identifier
+        if original_request.get("model") in self.model_map:
+            original_request["model"] = self.model_map[original_request["model"]]
+
+        # Forward to alternative endpoint
+        response = requests.post(
+            self.backend_url + "/v1/messages",
+            json=original_request,
+            headers={"Authorization": f"Bearer {os.getenv('ALT_API_KEY')}"}
+        )
+
+        return response.json()
+```
+
+**Environment variable technique.** Many agent platforms support endpoint configuration via environment variables. Setting `ANTHROPIC_BASE_URL` or `OPENAI_BASE_URL` redirects API calls to a local proxy or alternative service without modifying agent code. This works when the alternative backend implements an API-compatible interface.
+
+```bash
+# Redirect Claude Code to local proxy on port 3200
+export ANTHROPIC_BASE_URL="http://localhost:3200"
+export ANTHROPIC_API_KEY="placeholder"  # Proxy handles real auth
+
+# Redirect to DeepSeek-compatible endpoint
+export ANTHROPIC_BASE_URL="https://api.deepseek.com/v1"
+export ANTHROPIC_API_KEY="$DEEPSEEK_API_KEY"
+```
+
+**Compatibility requirements.** Backend abstraction works when the alternative model implements a compatible API schema. Tool response formats must match—if the agent expects `tool_calls` in a specific JSON structure, the alternative backend must provide it. Error handling must be equivalent so the agent can recover from failures correctly. Streaming responses (for real-time output) require compatible chunking protocols. Model-specific features like vision input, prompt caching, or MCP tool integration may not transfer across backends, limiting feature parity.
+
+**Trade-offs in practice.** DeepClaude's documentation provides concrete guidance on what works and what does not. File operations, autonomous loops, subagent spawning, and git operations all function correctly with DeepSeek V4 Pro. Vision input fails (DeepSeek limitation). MCP tools fail (compatibility layer gap). Native prompt caching is unavailable (model-specific feature). Intelligence varies by task: DeepSeek V4 Pro matches Claude Opus on approximately 80% of routine coding tasks but Claude remains stronger on complex reasoning (the remaining 20%). This 80/20 split guides task routing—use cheaper models for routine work, reserve flagship models for complex problems.
+
+**Architectural implications.** Backend abstraction is most effective when scaffolding isolates model-specific code from core agent logic. Tool execution, state management, and orchestration should not depend on model-specific APIs. The agent loop should operate through a stable internal interface, with the model backend plugged in behind that interface. This approach treats models as interchangeable inference engines, making cost optimization and vendor migration operational rather than architectural decisions.
+
+For platforms that support this pattern natively, see [Agent Platform Comparison](085-agent-platform-comparison.md). For cost-reliability tradeoff analysis when using alternative backends, see [Common Failure Modes, Testing, and Fixes](100-failure-modes-testing-fixes.md).
+
 ### Communication Protocol
 Standardize how agents communicate.
 
