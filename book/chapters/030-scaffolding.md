@@ -237,6 +237,61 @@ Use **containers** (Docker, Podman) for trusted agent code in controlled environ
 
 The architecture of transparent proxying plus ephemeral environments provides a reference pattern for high-security agent scaffolding, applicable beyond any specific tool implementation.
 
+### Model Backend Abstraction
+
+Agentic scaffolding should treat the language model as a replaceable component rather than a tight coupling to a specific vendor. This separation of concerns—where the "brain" (language model) is distinct from the "body" (tool loop, file editing, execution environment)—enables cost optimization, vendor flexibility, and regulatory compliance without rebuilding the entire agent platform.
+
+**Why backend abstraction matters.** Many production agent deployments face economic constraints that make frontier model pricing prohibitive at scale. A 17x cost reduction (from $15/M output tokens to $0.87/M) can determine whether autonomous coding agents are viable for a project. Backend abstraction also addresses regulatory requirements for on-premise models, vendor lock-in concerns, and the ability to route different tasks to different models based on complexity.
+
+**Proxy-based interception pattern.** The most practical approach intercepts API calls at the HTTP boundary and rewrites them for alternative endpoints. The agent code remains unchanged—it imports libraries, constructs requests, and expects standard responses. But a proxy layer sits between the agent and the model API, translating requests and responses to maintain compatibility.
+
+```python
+# Backend abstraction via proxy pattern
+import os
+import requests
+
+class ModelBackendProxy:
+    """Intercepts agent API calls and routes to alternative backends."""
+
+    def __init__(self, target_backend: str, model_map: dict):
+        self.backend_url = target_backend
+        self.model_map = model_map  # e.g., {"claude-opus-4": "deepseek-v4-pro"}
+
+    def forward_request(self, original_request: dict) -> dict:
+        # Rewrite model identifier
+        if original_request.get("model") in self.model_map:
+            original_request["model"] = self.model_map[original_request["model"]]
+
+        # Forward to alternative endpoint
+        response = requests.post(
+            self.backend_url + "/v1/messages",
+            json=original_request,
+            headers={"Authorization": f"Bearer {os.getenv('ALT_API_KEY')}"}
+        )
+
+        return response.json()
+```
+
+**Environment variable technique.** Most agent platforms support base URL overrides through environment variables. Setting `ANTHROPIC_BASE_URL` or `OPENAI_BASE_URL` to point at a local proxy or alternative endpoint requires no code changes. The proxy listens on `localhost:3200`, the agent connects there instead of the vendor API, and requests are translated transparently.
+
+```bash
+# Redirect Claude Code to alternative backend
+export ANTHROPIC_BASE_URL=http://localhost:3200
+export ANTHROPIC_MODEL=deepseek-v4-pro
+
+# Redirect OpenAI-based agents
+export OPENAI_BASE_URL=http://localhost:3200
+export OPENAI_MODEL=custom-model
+```
+
+**Compatibility requirements.** Alternative backends must match the vendor API schema closely enough that agents cannot tell the difference. This includes request structure (system prompts, messages, tool definitions), response format (message content, tool calls, stop reasons), tool execution protocol (function calling, arguments JSON), and error handling (rate limits, validation errors, timeout behavior). Minor deviations in unused fields are acceptable; deviations in core agent functionality break the abstraction.
+
+**Feature parity gaps.** Not all model capabilities transfer between backends. Vision input, multimodal processing, and vendor-specific features like prompt caching or tool search may not work with alternative models. The Model Context Protocol (MCP) requires compatibility layers that many alternative endpoints lack. This means backend abstraction works best for text-based agentic workflows with standard tool calling, not for cutting-edge multimodal or protocol-specific features.
+
+**Performance and capability trade-offs.** Alternative models vary in reasoning capability, code generation quality, and instruction following. A model that performs comparably to Claude Opus on routine coding tasks (80% of workloads) may struggle with complex reasoning, ambiguous requirements, or novel problem-solving (20% of workloads). Production deployments should route tasks by complexity: use cheaper models for well-defined changes and frontier models for architectural decisions or debugging hard failures.
+
+**Example: DeepClaude.** DeepClaude (https://github.com/aattaran/deepclaude) demonstrates this pattern by enabling Claude Code to use DeepSeek V4 Pro, OpenRouter, or Fireworks AI backends. It maintains Claude Code's autonomous loop, subagent spawning, file operations, bash execution, and git integration while reducing inference costs by 17x. The tool includes a local proxy on `localhost:3200` with live-switching capabilities and environment variable configuration per session. It works for text-based coding tasks but does not support vision input or MCP tools due to model and compatibility limitations.
+
 ### Communication Protocol
 Standardize how agents communicate.
 

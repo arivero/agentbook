@@ -59,6 +59,8 @@ Claude Code is Anthropic's official agentic CLI, written in TypeScript and Node.
 
 **Project instructions.** Claude Code uses `CLAUDE.md` and `AGENTS.md` convention files for per-project and per-directory instructions, giving teams fine-grained control over agent behaviour in different parts of a codebase.
 
+**Third-party backend extensions.** Tools like DeepClaude (https://github.com/aattaran/deepclaude) enable Claude Code to use alternative model backends such as DeepSeek V4 Pro, OpenRouter, or Fireworks AI while maintaining the same UX and tooling. By intercepting API calls at the HTTP layer and redirecting to Anthropic-compatible endpoints, these tools reduce inference costs from $15/M output tokens (Anthropic) to $0.87/M (DeepSeek)—a 17x reduction. This makes autonomous coding agents economically viable for projects with budget constraints or high-volume workloads. The scaffolding (tool loop, file operations, bash, git, subagent spawning) remains unchanged, demonstrating that Claude Code's architecture separates model inference from agent orchestration. Trade-offs include reduced capability on complex reasoning tasks (DeepSeek V4 Pro matches Claude Opus on roughly 80 percent of routine coding tasks) and loss of vision input, MCP tool support, and prompt caching features. Backend abstraction works best for text-based coding workflows where cost matters more than frontier model capabilities. See [Agentic Scaffolding](030-scaffolding.md#model-backend-abstraction) for implementation patterns.
+
 ### OpenAI Codex CLI
 
 The Codex CLI is an open-source agent (Apache 2.0) written in Rust. It is the only CLI agent among the three with native OS-level sandboxing, making security a core differentiator.
