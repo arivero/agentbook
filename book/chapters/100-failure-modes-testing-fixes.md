@@ -228,6 +228,8 @@ Several anti-patterns undermine agentic system reliability.
 
 **Skipping regression suites after model or version upgrades** assumes backward compatibility that may not exist. Changes require validation.
 
+**Optimizing for cheap inference without a fallback plan** can turn cost savings into reliability regressions. If you introduce a proxy-based backend swap (for example routing an Anthropic-compatible agent through `ANTHROPIC_BASE_URL`), treat it like a model change: establish acceptance tests for tool calls, run a small canary set of representative tasks, and keep an explicit escalation path to a stronger backend for complex reasoning.
+
 **Relying on a single benchmark instead of diverse scenarios** creates blind spots. Real-world failures often occur in edge cases the benchmark does not cover.
 
 **Ignoring ambiguous ownership in multi-agent flows** leads to gaps and conflicts. Every path and component should have a clear owner.
