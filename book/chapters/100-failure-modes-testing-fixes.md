@@ -218,6 +218,22 @@ Track these metrics to evaluate reliability improvements over time.
 
 Avoid vanity metrics (for example, "number of agent runs") without quality and safety context.
 
+## Cost and Reliability Tradeoffs with Alternative Backends
+
+When organisations adopt backend substitution—routing an agent's API calls to a lower-cost alternative model (see [Model Backend Abstraction](030-scaffolding.md#model-backend-abstraction))—they accept a specific class of reliability risk that standard failure testing may not cover.
+
+**The capability gap on the long tail.** Community benchmarks and production experience suggest that leading open-weights alternatives match a frontier model's performance on roughly 80% of routine coding tasks: file operations, test generation, and straightforward refactoring. The remaining 20% involves complex reasoning, cross-file architectural decisions, and tasks requiring deep context retention, where frontier models retain a meaningful advantage. This creates a failure mode that is easy to miss: average-case quality looks acceptable, but hard cases degrade silently.
+
+**Mitigation strategies:**
+
+- **Task routing by complexity.** Implement a proxy-level classifier that routes straightforward tasks to the cost-effective backend and elevates complex or high-stakes tasks to the frontier model. A simple heuristic—task involves architectural changes, security-sensitive files, or cross-repository dependencies—often suffices as a starting point.
+- **Quality gate validation.** Run the same acceptance criteria suite on both backends. Where the alternative backend fails quality gates that the frontier model passes, route those task types to the frontier model permanently.
+- **Canary deployments.** Roll out the alternative backend to a subset of agent traffic. Monitor intervention rate and escaped defect rate (see Metrics That Actually Matter). If these metrics degrade, roll back before broadening rollout.
+
+**Feature parity failures.** Alternative backends may drop features silently rather than returning errors: a non-multimodal backend may return an empty response instead of a rejection when given an image-containing message, and MCP tool compatibility gaps may surface only in production. Include feature-specific integration tests in your validation suite—a minimal vision request, a minimal MCP tool call, a prompt-caching hint—and treat any deviation from expected behaviour as a compatibility gap requiring explicit handling.
+
+> **Anti-pattern to avoid:** switching to a cheaper backend for all tasks to reduce costs, then attributing quality regressions to "model nondeterminism." Maintain a baseline metric split between backends so regressions are attributable and reversible.
+
 ## Anti-Patterns to Avoid
 
 Several anti-patterns undermine agentic system reliability.

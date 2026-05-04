@@ -103,6 +103,8 @@ order: 99
 - JFrog. Critical mcp-remote RCE Vulnerability (CVE-2025-6514). <https://jfrog.com/blog/2025-6514-critical-mcp-remote-rce-vulnerability/>. Accessed: 2026-02-13.
 - Cyata / The Register. Anthropic Git MCP Server Flaws (CVE-2025-68145/68143/68144). <https://www.theregister.com/2026/01/20/anthropic_prompt_injection_flaws/>. Accessed: 2026-02-13.
 
+- DeepClaude: Claude Code agent loop with alternative model backends. <https://github.com/aattaran/deepclaude>. Accessed: 2026-05-04.
+
 - Gemini CLI repository. <https://github.com/google-gemini/gemini-cli>. Accessed: 2026-02-13.
 - Gemini CLI documentation. <https://geminicli.com/docs/>. Accessed: 2026-02-13.
 - Gemini CLI subagents. <https://geminicli.com/docs/core/subagents/>. Accessed: 2026-02-13.

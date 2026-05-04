@@ -325,6 +325,14 @@ API pricing varies significantly across vendors and models. The following table 
 
 > **Tip:** For cost-sensitive workloads, consider using lighter models (Gemini Flash, Claude Haiku, codex-mini) for routine tasks and reserving flagship models (Gemini 3 Pro, Opus 4.6, GPT-5.3-Codex) for complex tasks. All three platforms support model routing, letting you match model capability to task complexity.
 
+### Third-Party Backend Substitution
+
+Beyond each vendor's own cost-reduction features, an additional category of cost optimization has emerged: third-party proxy tools that route an agent's tool loop to an alternative model backend. These tools intercept the agent's API calls and redirect them to a different inference endpoint, preserving the scaffolding (tool loop, file operations, bash, git, subagent spawning) while swapping the model.
+
+DeepClaude (github.com/aattaran/deepclaude) is a representative example: it intercepts Claude Code's API calls and redirects them to Anthropic API-compatible endpoints such as DeepSeek V4 Pro, reducing per-session inference costs significantly while keeping Claude Code's autonomous workflow intact. The project drew hundreds of GitHub stars within its first day of release, indicating that cost barriers to autonomous coding agents are a widely felt pain point.
+
+Feature parity is not complete—vision input, MCP tools, and native prompt caching depend on capabilities the alternative backend may not support—and frontier models retain advantages on complex reasoning tasks. For the architectural pattern behind this approach and a capability tradeoff discussion, see [Agentic Scaffolding: Model Backend Abstraction](030-scaffolding.md#model-backend-abstraction).
+
 ## Enterprise Governance and Security
 
 Enterprise adoption requires more than raw model capability. Governance, compliance, and security controls often determine which platform an organization can use.
