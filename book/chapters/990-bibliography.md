@@ -38,6 +38,8 @@ order: 99
 - GitHub Copilot Memory. <https://docs.github.com/copilot/how-tos/context/copilot-memory>. Accessed: 2026-02-06.
 - GitHub Copilot Spaces. <https://docs.github.com/copilot/how-tos/context/copilot-spaces>. Accessed: 2026-02-06.
 - Anthropic computer use documentation. <https://docs.anthropic.com/en/docs/agents-and-tools/computer-use>. Accessed: 2026-02-06.
+- DeepClaude repository. <https://github.com/aattaran/deepclaude>. Accessed: 2026-05-04.
+- Hacker News discussion: DeepClaude. <https://news.ycombinator.com/item?id=48002136>. Accessed: 2026-05-04.
 - Cursor editor. <https://www.cursor.com/>. Accessed: 2026-02-05.
 - CodeGPT. <https://codegpt.co/>. Accessed: 2026-02-05.
 - Aider: AI pair programming in your terminal. <https://aider.chat/>. Accessed: 2026-02-06.

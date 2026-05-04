@@ -237,6 +237,50 @@ Use **containers** (Docker, Podman) for trusted agent code in controlled environ
 
 The architecture of transparent proxying plus ephemeral environments provides a reference pattern for high-security agent scaffolding, applicable beyond any specific tool implementation.
 
+### Model Backend Abstraction
+
+Many agent stacks conflate two separate layers:
+
+- The **agent body**: the tool loop, file editing primitives, shell execution, Git operations, and sub-agent orchestration.
+- The **agent brain**: the model endpoint and the vendor-specific API used to produce tokens.
+
+Treating the model as a swappable component can reduce cost, avoid vendor lock-in, and make it easier to satisfy requirements like on-prem or region-specific inference. The key idea is to preserve the body while redirecting only the brain.
+
+#### Proxy-based interception
+
+The most pragmatic pattern is to introduce a local proxy that sits at the HTTP boundary used by the agent runtime. The proxy forwards requests to a compatible endpoint, optionally rewriting model identifiers and normalizing request/response fields. When the API schema matches, the agent loop and tools remain unchanged.
+
+This style of abstraction can be implemented as either:
+
+- An explicit proxy process (localhost HTTP server) that agents point at.
+- A sidecar proxy in a container or microVM.
+- A gateway service shared by a fleet of agents.
+
+#### Environment variable routing
+
+Many agent runtimes already support base URL overrides so enterprise users can route traffic through an audit gateway. You can use the same mechanism for backend swapping.
+
+Example 3-1. Switching an Anthropic-compatible agent to a local proxy
+
+```bash
+export ANTHROPIC_BASE_URL="http://127.0.0.1:3200"
+export ANTHROPIC_MODEL="deepseek-v4-pro"  # proxy may map this to a backend-specific name
+```
+
+#### Compatibility requirements and trade-offs
+
+Backend abstraction only works when the replacement backend is compatible with the agent runtime's expectations:
+
+- **API shape compatibility:** request/response fields, streaming semantics, and error formats.
+- **Tool-call parity:** the model must reliably emit the tool-call structure the agent loop expects.
+- **Feature gaps:** some backends may not support vision input, MCP tools, or vendor-specific caching.
+
+In practice, teams often use a cheaper backend for routine work and fall back to a stronger model for the difficult tail of tasks.
+
+#### Case study: DeepClaude
+
+DeepClaude is an example of this pattern applied to Claude Code: it uses an `ANTHROPIC_BASE_URL` override to route Claude Code's API traffic to a local proxy (commonly on `localhost:3200`), which then forwards calls to Anthropic-compatible endpoints such as DeepSeek, OpenRouter, or Fireworks. The net effect is that Claude Code's UX and tool loop stay the same while the model backend changes.
+
 ### Communication Protocol
 Standardize how agents communicate.
 
