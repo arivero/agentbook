@@ -107,6 +107,61 @@ Test these controls by intentionally trying to violate them. An agent that canno
 
 **Fast fixes.** Add ownership rules per path or component so responsibilities are clear. Use optimistic locking with conflict resolution policy to handle concurrent access. Define role-specific done criteria so agents know when to stop.
 
+### 6) Cost and Reliability Tradeoffs
+
+**Symptoms.** Agent costs spiral unexpectedly due to expensive model usage. Tasks fail more frequently when using cheaper models. Unpredictable performance variation occurs between model backends. Critical features break when switching to alternative backends.
+
+**Typical causes.** No cost monitoring or budgeting leaves teams unaware of spending until bills arrive. Mismatched model capability to task complexity wastes money on trivial tasks or fails on complex ones. Backend-specific feature dependencies (vision input, prompt caching, MCP support) break when switching providers. Missing performance baselines make it impossible to detect degradation.
+
+**Fast fixes.** Profile tasks to identify which require frontier models versus cheaper alternatives. Implement backend abstraction with fallback to stronger models when cheaper ones fail. Test critical paths against alternative backends before production deployment. Monitor both cost and success rates to detect when cost optimization degrades reliability.
+
+#### The 80/20 Rule for Model Selection
+
+Most agent tasks fall into predictable capability tiers. Routine operations—file edits, simple refactors, template generation—work reliably on cheaper models. Complex reasoning—architectural decisions, debugging subtle logic errors, synthesizing information across many files—requires frontier model capabilities.
+
+The practical split is approximately 80/20: 80 percent of agent tasks work comparably on mid-tier models (for example, Claude Sonnet, GPT-4o-mini, Gemini Flash), while 20 percent benefit significantly from frontier models (Claude Opus, GPT-5, Gemini Pro). This creates an optimization opportunity: route easy tasks to cheaper models and reserve expensive models for hard problems.
+
+Backend abstraction (see [Agentic Scaffolding](030-scaffolding.md)) enables cost-optimized model routing. Tools like DeepClaude reduce inference costs by 17x (from approximately $15/M output tokens to $0.87/M) by redirecting Claude Code to DeepSeek V4 Pro or similar backends. However, cost optimization without measurement risks silent capability degradation.
+
+#### Testing Strategy for Alternative Backends
+
+Before deploying cheaper models in production:
+
+1. **Establish baseline performance.** Run your agent workflow on the default model and record success rates, error types, and output quality. This provides ground truth for comparison.
+
+2. **Profile task difficulty.** Categorize agent tasks by complexity. File operations, simple edits, and template-based generation are low complexity. Multi-file refactoring, architectural decisions, and debugging are high complexity.
+
+3. **Test critical paths.** Run your most important workflows on the alternative backend. Does it handle error cases correctly? Does it make the same decisions as the baseline model? Does it recover from failures appropriately?
+
+4. **Monitor capability boundaries.** Some backends lack features like vision input, prompt caching, or specific tool calling formats. Test that your workflow degrades gracefully or fails explicitly when these features are unavailable, rather than producing incorrect results silently.
+
+5. **Measure cost versus success rate.** A backend that costs 1/17th as much but fails 30 percent more often may not be a net win. Track both metrics together to understand true cost-effectiveness.
+
+6. **Use staged rollout.** Deploy alternative backends to a subset of tasks first. Expand usage only after validating that quality and reliability meet requirements.
+
+Example failure modes when using cheaper backends without validation:
+
+- **Silent capability loss:** Agent workflow assumes vision input exists, fails silently when backend does not support it, produces incorrect results without clear error message
+- **Tool calling incompatibility:** Backend implements slightly different tool calling format, agent interprets responses incorrectly, performs wrong operations
+- **Instruction following degradation:** Cheaper model misses constraints in system prompt, violates protected paths or policies, requires expensive human review to catch errors
+- **Context handling differences:** Alternative backend handles long contexts differently, drops critical information, produces outputs that ignore earlier conversation
+
+#### When to Use Cheaper Models
+
+Use mid-tier or alternative backends when:
+- **Task complexity is low** and failure is easily detectable (for example, linting, formatting, simple edits)
+- **Human review is part of the workflow** and can catch model errors before merge
+- **Cost is a barrier** to running agents at all, making imperfect but affordable automation valuable
+- **Testing and iteration cycles** benefit from faster/cheaper models during development
+
+Use frontier models when:
+- **Task complexity is high** and requires strong reasoning or synthesis
+- **Failure is expensive** and difficult to detect without expert review
+- **Output quality is critical** and cost is justified by reliability requirements
+- **Feature dependencies** require specific model capabilities (vision, advanced tool use, high-quality code generation)
+
+The right choice depends on your specific workflow, budget constraints, and tolerance for degraded performance. Backend abstraction provides the infrastructure to experiment and optimize based on measured results rather than assumptions.
+
 ## Testing Strategy for Agentic Workflows
 
 A robust strategy uses multiple test layers. No single test type is sufficient.

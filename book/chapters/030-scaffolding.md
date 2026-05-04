@@ -292,7 +292,101 @@ analyze_code = ComposableTool('analyze', analyze_func, {'content'}, {'issues'})
 pipeline = read_file.compose_with(analyze_code)
 ```
 
-### Pattern 2: Skill Libraries
+### Pattern 2: Model Backend Abstraction
+
+Agentic scaffolding can isolate the language model backend from the rest of the agent infrastructure, treating the LLM as a swappable component. This separation enables cost optimization, vendor flexibility, regulatory compliance (for example, on-premise model requirements), and testing with multiple backends without reimplementing tool loops, file operations, or orchestration logic.
+
+#### Proxy-Based Interception
+
+The proxy pattern intercepts HTTP API calls at the network boundary, translating requests between the agent's expected format and the actual backend. This allows agents designed for one vendor's API (for example, Anthropic) to communicate with compatible backends (DeepSeek, OpenRouter, Fireworks) without code changes.
+
+```python
+# Backend abstraction via proxy pattern
+import os
+import requests
+
+class ModelBackendProxy:
+    """Intercepts agent API calls and routes to alternative backends."""
+
+    def __init__(self, target_backend: str, model_map: dict):
+        self.backend_url = target_backend
+        self.model_map = model_map  # e.g., {"claude-opus": "deepseek-v4-pro"}
+
+    def forward_request(self, original_request: dict) -> dict:
+        # Rewrite model identifier
+        if original_request.get("model") in self.model_map:
+            original_request["model"] = self.model_map[original_request["model"]]
+
+        # Forward to alternative endpoint
+        response = requests.post(
+            self.backend_url + "/v1/messages",
+            json=original_request,
+            headers={"Authorization": f"Bearer {os.getenv('ALT_API_KEY')}"}
+        )
+
+        return response.json()
+```
+
+A local proxy (for example, running on `localhost:3200`) can provide live-switching between backends during development. This supports A/B testing of model performance on real tasks without changing agent code.
+
+#### Environment Variable Configuration
+
+The simplest way to redirect an agent to an alternative backend is through environment variable overrides. Most agent frameworks check for base URL configuration before using vendor defaults.
+
+```bash
+# Redirect Claude Code to DeepSeek via proxy
+export ANTHROPIC_BASE_URL=http://localhost:3200/v1
+export ANTHROPIC_API_KEY=placeholder  # Proxy rewrites this
+
+# Redirect OpenAI client to alternative backend
+export OPENAI_BASE_URL=https://api.fireworks.ai/inference/v1
+export OPENAI_API_KEY=$FIREWORKS_API_KEY
+
+# Run agent with alternative backend
+claude code-agent execute-task.sh
+```
+
+This technique requires no agent code changes and works for any framework that respects these environment variables.
+
+#### Compatibility Requirements
+
+Not all language models are interchangeable. Backend abstraction succeeds when:
+
+- **API schemas match.** Request and response formats must be compatible or translatable. Most Anthropic-compatible APIs implement the Messages API format, but field names and nesting may differ.
+- **Tool calling formats align.** Agents rely on structured tool invocation. If the backend's tool calling format differs, the proxy must translate between formats.
+- **Error handling matches.** Agents parse error codes and retry accordingly. Inconsistent error formats can cause agents to misinterpret failures.
+- **Streaming behavior is consistent.** Many agents use streaming responses for incremental output. Backends that do not support streaming or implement it differently require adaptation.
+
+#### Trade-offs and Limitations
+
+Backend abstraction introduces constraints:
+
+- **Feature parity gaps.** Not all backends support the same features. Vision input, function calling, and prompt caching vary across models. Agents that depend on these features may fail or degrade gracefully.
+- **Performance variance.** Alternative backends may be faster or slower than the original, affecting user experience. Latency, throughput, and token generation rates differ significantly.
+- **Capability differences.** Cheaper models often handle routine tasks well but struggle with complex reasoning. The 80/20 rule applies: 80 percent of tasks work comparably, 20 percent require stronger models.
+
+#### Case Study: DeepClaude
+
+DeepClaude (https://github.com/aattaran/deepclaude) demonstrates backend abstraction for Claude Code, reducing inference costs from approximately $15 per million output tokens (Anthropic) to $0.87 per million (DeepSeek V4 Pro)—a 17x cost reduction. The tool uses a proxy-based pattern:
+
+- Sets `ANTHROPIC_BASE_URL` and model environment variables per session
+- Maintains Claude Code's tool loop, file editing, bash execution, and git operations unchanged
+- Provides a local proxy on `localhost:3200` with control endpoints for live model switching
+
+**What works:** File operations, autonomous loops, subagent spawning, git operations
+**What doesn't work:** Vision input (DeepSeek limitation), MCP tools (compatibility layer gap), native prompt caching (model-specific feature)
+
+The 17x cost reduction makes autonomous coding agents economically viable for more developers and use cases, particularly for routine tasks where a less expensive model performs comparably to frontier models. For discussion of when to use cheaper models versus frontier models, see [Common Failure Modes, Testing, and Fixes](100-failure-modes-testing-fixes.md).
+
+Backend abstraction is particularly valuable when:
+- **Cost is a barrier** to running agents at scale or during development
+- **Vendor diversity** reduces dependency risk or satisfies procurement requirements
+- **Regulatory constraints** require on-premise or region-specific model hosting
+- **Testing and comparison** of multiple backends informs model selection decisions
+
+For platform-specific implementations, see [Agent Platform Comparison](085-agent-platform-comparison.md).
+
+### Pattern 3: Skill Libraries
 Organize reusable agent capabilities.
 
 ```python
@@ -321,7 +415,7 @@ from .testing import TestingSkill
 __all__ = ['CodeReviewSkill', 'DocumentationSkill', 'TestingSkill']
 ```
 
-### Pattern 3: Resource Management
+### Pattern 4: Resource Management
 Manage computational resources efficiently.
 
 ```python
@@ -346,7 +440,7 @@ class ResourceManager:
                 raise AgentTimeoutError(f"Agent {agent_id} timed out")
 ```
 
-### Pattern 4: Observability
+### Pattern 5: Observability
 Monitor and debug agent behavior.
 
 ```python
