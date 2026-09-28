@@ -34,6 +34,7 @@ exclude:
   - .git
   - .github
   - README.md
+  - research
   - vendor
   - Gemfile
   - Gemfile.lock
