@@ -27,7 +27,7 @@ A **tool** is an executable capability exposed via a protocol or command surface
 
 Discovery usually finds endpoints first; tool enumeration happens after connection, when the client can query what operations the tool server supports.
 
-Emerging patterns also enable tools to be **generated at runtime**: an agent writes a new tool implementation, registers it in a local capability index, and then executes it within the same session. These runtime-generated tools blur the boundary between discovery and creation—the agent discovers tools it built in earlier sessions while also building new ones on demand. When a tool registry may contain agent-generated artefacts, audit requirements differ from registries containing only human-authored, pre-reviewed tools. See [Skills and Tools Management](040-skills-tools.md) for the dynamic generation pattern and its trade-offs.
+A registry can also contain tools an agent generated in earlier sessions. Record the tool's origin, version, permissions, and review status so discovery can distinguish approved capabilities from unreviewed code. Apply an activation gate before reusing a generated tool in a sensitive workspace. See [Dynamic Tool Generation](040-skills-tools.md#dynamic-tool-generation) for the Tendril example.
 
 ### 2) Skill artefacts
 

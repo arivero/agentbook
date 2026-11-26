@@ -237,7 +237,7 @@ Use **containers** (Docker, Podman) for trusted agent code in controlled environ
 
 The architecture of transparent proxying plus ephemeral environments provides a reference pattern for high-security agent scaffolding, applicable beyond any specific tool implementation.
 
-Dynamic tool generation patterns—where agents write and register executable code at runtime—require the same isolation principles applied with particular care. When generated code executes in a Deno subprocess, Deno's permission flags (`--allow-net=api.example.com`, `--allow-read=/tmp/workspace`) scope each tool to exactly the resources it needs, preventing unintended side effects from agent-authored code. A configurable execution timeout constrains runaway tasks to a bounded window. See [Skills and Tools Management](040-skills-tools.md) for the full dynamic generation pattern and its trade-offs.
+Generated tools should run in an isolated process with explicit file and network permissions. Start with no network access, mount only the required input and output paths, and enforce a wall-clock timeout, CPU and memory limits, and an output cap. For untrusted code, enforce isolation at the operating-system or virtual-machine boundary. See [Dynamic Tool Generation](040-skills-tools.md#dynamic-tool-generation) for a case study.
 
 ### Communication Protocol
 Standardize how agents communicate.

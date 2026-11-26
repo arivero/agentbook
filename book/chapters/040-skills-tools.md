@@ -577,37 +577,15 @@ Dynamic tool generation inverts this pattern. Instead of choosing from a large f
 
 ### The Bootstrap Pattern: Tendril
 
-Tendril (<https://github.com/serverless-dna/tendril>) is an open-source agentic sandbox built with the AWS Strands Agents SDK (<https://github.com/strands-agents/sdk-typescript>) that demonstrates this pattern in a working implementation—an early-stage project that starts each session with exactly three tools:
+[Tendril](https://github.com/serverless-dna/tendril) is an experimental tool-generation agent built with the AWS Strands Agents SDK. It starts with three tools. `listCapabilities` reads the registry, `registerCapability` saves generated TypeScript and metadata, and `executeCode` runs code through its Deno subprocess wrapper. A later session can look up and reuse a previously generated capability.
 
-- **`listCapabilities`**: Returns the catalogue of previously generated tools from the registry.
-- **`registerCapability`**: Writes a new TypeScript function to disk and records its metadata in the registry index.
-- **`executeCode`**: Runs a registered capability inside a Deno subprocess with scoped permissions.
-
-The agent's system prompt reinforces autonomous behaviour: "NEVER ask 'would you like me to create a tool?'—just build it." When a user asks the agent to fetch Hacker News headlines, the agent does not ask permission; it calls `registerCapability` to write a `fetchHackerNews` TypeScript function, persists it to the local registry, then immediately executes it via `executeCode`.
-
-#### Registry Structure
-
-Tendril separates capability metadata from implementation:
-
-```text
-~/.tendril/
-├── index.json          # Metadata: name, description, trigger patterns
-└── tools/
-    ├── fetch-hn.ts     # Generated TypeScript implementation
-    └── summarise.ts    # Another generated tool
-```
-
-Each entry in `index.json` captures the capability name, a natural-language description, and patterns of user requests that should trigger it. Before building a new tool, the agent calls `listCapabilities` to check whether a relevant tool already exists—promoting reuse across sessions rather than rebuilding the same capability repeatedly.
-
-Tendril also implements the Agent Integrator Protocol (ACP) over JSON-RPC 2.0/NDJSON, the same protocol used by Claude Code, which validates the interoperability approach even as the dynamic generation pattern itself matures.
+The registry keeps metadata and source in a `tools` directory under the configured workspace. It stores capability names, descriptions, and trigger patterns in `tools/index.json` alongside the generated TypeScript files. This makes persistent capabilities inspectable and gives operators a place to record versions and review updates.
 
 ### Security Considerations
 
-Dynamic code generation substantially changes the security model compared to static tools. Generated tools are agent-authored code executed at runtime with real permissions. This makes sandbox isolation not optional but **required**.
+The [reviewed implementation](https://github.com/serverless-dna/tendril/tree/e671a4143d28de68289efd81580002041bb4cb6a/tendril-agent/src/loop) grants the subprocess read and write access to its configured workspace. An empty domain allowlist permits unrestricted network access. A separate timeout bounds wall-clock execution and the wrapper caps output. These controls serve different purposes and should be verified separately.
 
-Tendril addresses this through Deno's permission model: each tool execution receives only the permissions it explicitly needs. A tool that fetches from a specific API might receive `--allow-net=api.example.com` but no filesystem access. A file-processing tool might receive `--allow-read=/tmp` but no network access. A 45-second execution timeout prevents runaway tasks.
-
-> **⚠️ Security warning:** Dynamic tool generation must be paired with strong sandbox isolation. Without it, agent-generated code executes with the same permissions as the host process, creating an uncontrolled code execution surface. See [Agentic Scaffolding](030-scaffolding.md) for isolation patterns—containers, microVMs, and Deno subprocess scoping—applicable to dynamic generation. Never implement this pattern with `eval()` or equivalent mechanisms in an unsandboxed context.
+For untrusted generated code, use a dedicated workspace and an OS-enforced sandbox with outbound access denied by default. Add a specific network destination only when the tool requires it. Set resource limits and record the generated source and its permissions. Review capabilities before promoting them to a shared registry. See [Agentic Scaffolding](030-scaffolding.md#secure-execution-environments) for isolation options.
 
 ### Trade-offs
 
