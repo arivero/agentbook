@@ -3,6 +3,12 @@ name: PR Gate (Policy + Optional Auto-Approval)
 on:
   pull_request_target:
     types: [opened, reopened, synchronize, ready_for_review]
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: 'Pull request number to evaluate'
+        required: true
+        type: string
 
 permissions:
   checks: read
@@ -13,16 +19,36 @@ permissions:
 
 jobs:
   gate:
-    if: ${{ github.event.pull_request.state == 'open' && github.event.pull_request.draft == false }}
+    if: >-
+      ${{
+        github.event_name == 'workflow_dispatch' ||
+        (github.event.pull_request.state == 'open' && github.event.pull_request.draft == false)
+      }}
     runs-on: ubuntu-latest
     steps:
       - name: Evaluate risk policy and maintain labels
         id: policy
         uses: actions/github-script@v8
+        env:
+          PR_NUMBER: ${{ inputs.pr_number }}
         with:
           script: |
             const { owner, repo } = context.repo;
-            const pr = context.payload.pull_request;
+            let pr = context.payload.pull_request;
+            if (context.eventName === "workflow_dispatch") {
+              const input = process.env.PR_NUMBER ?? "";
+              const pull_number = Number(input);
+              if (!/^[1-9][0-9]*$/.test(input) || !Number.isSafeInteger(pull_number)) {
+                core.setFailed("Enter a positive integer for the pull request number.");
+                return;
+              }
+              const res = await github.rest.pulls.get({ owner, repo, pull_number });
+              pr = res.data;
+            }
+            if (pr?.state !== "open" || pr.draft !== false) {
+              core.info("Skipping policy evaluation because the pull request is closed or a draft.");
+              return;
+            }
             const issue_number = pr.number;
 
             const allowedPaths = [
@@ -119,23 +145,39 @@ jobs:
             }
 
             core.setOutput("low_risk", lowRisk ? "true" : "false");
+            core.setOutput("pull_number", String(pr.number));
+            core.setOutput("head_sha", pr.head.sha);
             core.setOutput("changed_files", String(changedFiles));
             core.setOutput("total_line_delta", String(totalLineDelta));
             core.setOutput("has_blocked_path", hasBlockedPath ? "true" : "false");
             core.setOutput("has_outside_allowed_path", hasOutsideAllowedPath ? "true" : "false");
 
       - name: Optional bot approval for low-risk PRs
-        if: ${{ steps.policy.outputs.low_risk == 'true' && secrets.PR_APPROVER_TOKEN != '' }}
+        if: ${{ steps.policy.outputs.low_risk == 'true' }}
         uses: actions/github-script@v8
+        env:
+          HAS_APPROVER_TOKEN: ${{ secrets.PR_APPROVER_TOKEN != '' }}
+          PR_NUMBER: ${{ steps.policy.outputs.pull_number }}
+          PR_HEAD_SHA: ${{ steps.policy.outputs.head_sha }}
         with:
-          github-token: ${{ secrets.PR_APPROVER_TOKEN }}
+          github-token: ${{ secrets.PR_APPROVER_TOKEN || github.token }}
           script: |
+            if (process.env.HAS_APPROVER_TOKEN !== "true") {
+              core.info("Skipping approval because no approver token is configured.");
+              return;
+            }
             const { owner, repo } = context.repo;
-            const pull_number = context.payload.pull_request.number;
+            const pull_number = Number(process.env.PR_NUMBER);
+            const commit_id = process.env.PR_HEAD_SHA;
+            const { data: pr } = await github.rest.pulls.get({ owner, repo, pull_number });
+            if (pr.state !== "open" || pr.draft !== false || pr.head.sha !== commit_id) {
+              core.info("Skipping approval because the pull request state or head changed after policy evaluation.");
+              return;
+            }
 
             const me = await github.rest.users.getAuthenticated();
             const approverLogin = me.data.login;
-            const prAuthor = context.payload.pull_request.user.login;
+            const prAuthor = pr.user.login;
 
             if (approverLogin === prAuthor) {
               core.info(`Skipping approval because approver (${approverLogin}) is the PR author.`);
@@ -162,6 +204,7 @@ jobs:
               owner,
               repo,
               pull_number,
+              commit_id,
               event: "APPROVE",
               body: "Auto-approved by PR policy gate (low-risk change set).",
             });
