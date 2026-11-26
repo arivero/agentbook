@@ -140,27 +140,15 @@ activation_gates:
 
 In this example, discovery scope is constrained first by the allowed domains and registries. Import and install are pinned and integrity-checked via the pinned versions and checksums. High-impact capabilities require explicit activation approval through the activation gates.
 
-### Example D: LocalGPT markdown-based memory as importable knowledge
+### Example D: LocalGPT Markdown memory as importable knowledge
 
-LocalGPT (<https://github.com/localgpt-app/localgpt>) uses markdown files as its primary knowledge management format, demonstrating a practical import/export pattern for agent memory and configuration.
+In the [February 2026 version of LocalGPT](https://github.com/localgpt-app/localgpt/tree/09c812e13f8b7c889d7607cd7c3e0536048c8d0a), users can edit a local knowledge file and have its contents indexed for later retrieval. This example shows how to keep the source of truth human-readable and treat the search index as derived state.
 
-**Memory structure:**
-```
-localgpt/
-├── MEMORY.md      # Conversational context and learned facts
-├── SOUL.md        # Agent persona and behavioral constraints
-└── HEARTBEAT.md   # Autonomous task schedules
-```
+1. **Discovery.** The memory index scans Markdown in the configured workspace and knowledge paths.
+2. **Import.** SQLite FTS5 indexes the text for keyword search and the vector index supports semantic retrieval. The filesystem watcher can refresh entries when users edit workspace files outside the application.
+3. **Use.** The agent retrieves indexed knowledge when a task calls for it. Files such as `SOUL.md` and `HEARTBEAT.md` also serve as inputs to persona and background-task behaviour, so edits to them warrant a higher level of trust than edits to ordinary reference material.
 
-**Import operation:** When LocalGPT starts, it reads these markdown files and indexes their content into an SQLite FTS5 database with semantic embeddings. This is a **discovery + import + activate** sequence: the system discovers markdown files in the workspace, imports their content into the retrieval index, and activates them for agent queries.
-
-**Export operation:** Conversely, when the agent learns new facts or receives configuration updates, it writes back to the markdown files. This makes the memory **human-readable and editable**—users can directly modify `MEMORY.md` to correct facts or update `SOUL.md` to change agent behavior, and changes take effect on the next import cycle.
-
-**Interoperability value:** The markdown format enables knowledge sharing across agent instances. A team can maintain a shared `MEMORY.md` in a Git repository, and each developer's LocalGPT instance imports the collective knowledge. This pattern scales from individual use (single-binary installation) to collaborative workflows (version-controlled memory) without requiring database infrastructure.
-
-**Security boundary:** LocalGPT treats markdown files as **trusted artefacts**. There is no signature verification or sandboxing—users who edit `HEARTBEAT.md` to schedule tasks are assumed to understand the implications. This trust model works for personal AI assistants where the user controls all inputs but would require additional controls (approval gates, execution sandboxing) in multi-tenant or untrusted environments.
-
-The pattern demonstrates how filesystem-based import/export can balance transparency, version control, and ease of use. For agents that need to explain their knowledge sources or allow manual curation, markdown-based memory provides a practical alternative to opaque database storage.
+For shared instances, review files that influence behaviour before loading them, and keep confidential knowledge outside shared workspaces.
 
 ## Key Takeaways
 

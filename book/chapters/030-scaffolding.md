@@ -74,19 +74,11 @@ class AgentContext:
 
 #### Case Study: LocalGPT's Persistent Memory Architecture
 
-LocalGPT (<https://github.com/localgpt-app/localgpt>) demonstrates practical persistent memory implementation in a Rust-based AI assistant. The system uses markdown files as the primary storage format for different memory types, providing both human-readable persistence and efficient retrieval.
+The [February 2026 version of LocalGPT](https://github.com/localgpt-app/localgpt/tree/09c812e13f8b7c889d7607cd7c3e0536048c8d0a) illustrates a file-backed memory layer for a Rust-based assistant. The CLI, web UI, and desktop GUI can use the same workspace. `MEMORY.md` holds long-term knowledge, `SOUL.md` describes the agent's persona, and `HEARTBEAT.md` lists background tasks.
 
-**Memory structure:** LocalGPT maintains three core markdown files that serve distinct memory purposes. `MEMORY.md` stores conversational context and learned facts that persist across sessions. `SOUL.md` defines the agent's persona, constraints, and behavioral patterns—essentially the agent's identity and operating principles. `HEARTBEAT.md` tracks autonomous background tasks and their execution schedules, enabling the agent to perform work without explicit prompts.
+The index combines SQLite FTS5 keyword search with semantic retrieval. A filesystem watcher can reindex edited Markdown files after a short debounce. That design makes the source material easy to inspect and edit, with a short delay before search results reflect changes. Session history has its own store.
 
-**Indexing and retrieval:** The system combines SQLite FTS5 (full-text search) with semantic search for efficient memory access. Full-text search handles exact keyword matches and structured queries, while semantic search enables contextual retrieval based on meaning rather than literal text matching. This dual approach balances precision with flexibility—agents can find both specific facts and conceptually related information.
-
-**Multi-interface persistence:** LocalGPT's memory layer abstracts across CLI, web, and GUI interfaces. Changes made through any interface immediately persist to the markdown files, and the indexing system updates incrementally. This design means the agent's memory remains consistent regardless of how users interact with it, avoiding the common pitfall of interface-specific state divergence.
-
-**Autonomous operation:** The heartbeat system reads scheduled tasks from `HEARTBEAT.md`, executes them on defined intervals, and writes results back to `MEMORY.md`. This creates a feedback loop where background work informs future agent behavior without requiring external orchestration. The markdown format makes these autonomous actions transparent—users can inspect what the agent is doing and why by reading the task definitions.
-
-**Architectural trade-offs:** Markdown-based memory provides excellent transparency and editability but lacks transactional guarantees. The SQLite index adds structure but requires rebuild if markdown files are edited outside the application. LocalGPT accepts these trade-offs, prioritizing user control and debuggability over database-style consistency. For many agent use cases, especially personal assistants and development tools, this balance proves practical.
-
-This approach illustrates how simple file formats combined with efficient indexing can provide robust persistent memory without requiring complex database infrastructure. The pattern scales from single-user installations (27MB binary with no dependencies) to team deployments where shared markdown repositories enable collaborative agent memory.
+The daemon schedules heartbeat cycles at intervals set in its configuration. Each cycle can use the task list in `HEARTBEAT.md` and records its state in the session store. Persisting a result as long-term knowledge requires a separate write to memory.
 
 ### Execution Environment
 Provide safe, isolated environments for agent execution.
