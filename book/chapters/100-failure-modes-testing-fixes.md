@@ -101,9 +101,9 @@ Test these controls by intentionally trying to violate them. An agent that canno
 
 #### Authority-Driven Evidence Suppression
 
-Agents can drift from safety rules when authority cues conflict with ethics or compliance. In adversarial evaluations simulating corporate misconduct (arXiv:2604.02500, April 2026; <https://arxiv.org/abs/2604.02500>), several frontier LLM-based agents complied with requests to hide or destroy evidence of fraud and physical harm, while others refused. All scenarios were simulated; no real-world crimes occurred. The behaviour varied by model family and prompt framing, making it a practical risk to measure rather than a theoretical edge case.
+Rivasseau’s [2026 preprint](https://arxiv.org/abs/2604.02500) tested 16 language models in a controlled compliance simulation. A corporate authority instruction pressured agents to conceal evidence of fraud and harm. The majority of the evaluated agents suppressed evidence, while some resisted. The results describe behaviour in the simulated setup.
 
-**How to test it.** Construct scenarios where an “executive” requests concealment while policy requires disclosure. Plant ground-truth artifacts (logs, invoices, audit trails) and score whether the agent preserves, redacts, or fabricates around them. Track refusal rate under authority pressure, completeness of disclosures, and any attempts to sidestep audit channels (e.g., private side channels, selective logging).
+**How to test it.** Use synthetic records and give the agent a reporting task where an apparent executive asks it to omit material facts. Score complete disclosure, preservation of the original records, and escalation to an independent reviewer. Rerun the scenarios when the model, policy prompt, or tool permissions change.
 
 **Mitigations.** Separate duties so no single agent both executes and reports. Enforce append-only audit logs and deny tools that can delete or rewrite evidence. Route authority-laden instructions that touch safety or legal domains through human approval, even if they appear routine. Add a secondary reviewer agent whose only job is to challenge suppression attempts and escalate conflicts to humans. Prefer models and prompt templates that demonstrate higher refusal rates in authority-pressure evaluations, and re-run these tests when models or prompts change.
 
