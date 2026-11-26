@@ -184,7 +184,7 @@ evolution_scenarios = [
 ]
 ```
 
-These scenarios integrate naturally into the scenario suite from Layer 4. They extend existing challenge suites with environment-variation cases rather than requiring separate infrastructure. Pass criteria remain the same: task completion plus correct behaviour under the changed condition.
+Run the same task against a baseline and a versioned variant of the environment. Use fixed fixtures and record the seed when variants are generated. Assert the outcome and the invariants that matter for the task, such as write restrictions, an intact audit log, and idempotent retries. Add a focused subset to the existing scenario suite for each tool or schema release.
 
 Environment evolution testing delivers the most value when your agent targets external APIs you do not control, when multiple teams independently evolve their service schemas, or when your agent must work across major version upgrades of its toolset. For scaffolding patterns that make environment evolution testable by keeping environments introspectable, see [Agentic Scaffolding](030-scaffolding.md#environment-evolution-infrastructure).
 
