@@ -146,6 +146,25 @@ Capture representative interactions and replay them against newer builds. Record
 
 Use these to detect drift in behaviour after prompt, tool, or model changes.
 
+## 3.5 Reproducible Execution Infrastructure
+
+Recorded traces vary in what they retain. A structured execution log lets a team compare failing and passing runs and identify the first decision or tool result that differed.
+
+[ContextSubstrate](https://github.com/scalefirstai/ContextSubstrate) packages a supplied JSON execution log as a content-addressed artefact. A pack contains the prompts, inputs, steps, outputs, and metadata the application chose to record. A SHA-256 identifier makes content changes detectable against a trusted reference. It does not establish who produced the log or whether it is complete.
+
+```bash
+ctx init
+ctx pack execution.json
+ctx log
+ctx show "$first_pack"
+ctx diff "$first_pack" "$second_pack" --human
+ctx replay "$first_pack"
+```
+
+Use the project's documented JSON log format and substitute pack hashes from `ctx log` for the variables. Replay can help locate differences in execution. Stochastic model outputs, changed external services, and missing inputs can limit reproduction. Use recorded responses or isolated fixtures when a regression test needs deterministic behaviour.
+
+Decide what to retain before collecting logs. Exclude credentials and redact sensitive prompts and tool outputs before packing. Limit access, define retention for packs and copies, and check that the resulting trace still contains enough information to explain a failure.
+
 ## 4. Scenario and Adversarial Evaluations
 
 Design "challenge suites" for known weak spots. These should include ambiguous requirements that could be interpreted multiple ways, contradictory documentation that forces the agent to choose, missing dependencies that test error handling, and partial outages and degraded APIs that test resilience. Include prompt-injection attempts in retrieved content to test security boundaries.
@@ -295,7 +314,7 @@ Reliable agentic systems are built, not assumed. Teams that combine clear contra
 In practice, your competitive advantage comes from how quickly you detect, contain, and permanently fix failures—not from avoiding them entirely.
 
 <!-- Edit notes:
-Sections expanded: Chapter Goals, Why Failures Are Different in Agentic Systems, all five failure taxonomy sections (Planning and Reasoning, Tooling and Integration, Context and Memory, Safety and Policy, Collaboration and Workflow), Static and Structural Checks, Deterministic Unit Tests, Recorded Integration Tests, Scenario and Adversarial Evaluations, Production Guardrail Tests, all five Pattern sections (Contract Hardening, Progressive Autonomy, Two-Phase Execution, Fallback and Circuit Breakers, Human-in-the-Loop Escalation), Incident Response Runbook, Metrics That Actually Matter, Anti-Patterns to Avoid, A Minimal Reliability Checklist, Chapter Summary
+Sections expanded: Chapter Goals, Why Failures Are Different in Agentic Systems, all five failure taxonomy sections (Planning and Reasoning, Tooling and Integration, Context and Memory, Safety and Policy, Collaboration and Workflow), Static and Structural Checks, Deterministic Unit Tests, Recorded Integration Tests, Reproducible Execution Infrastructure, Scenario and Adversarial Evaluations, Production Guardrail Tests, all five Pattern sections (Contract Hardening, Progressive Autonomy, Two-Phase Execution, Fallback and Circuit Breakers, Human-in-the-Loop Escalation), Incident Response Runbook, Metrics That Actually Matter, Anti-Patterns to Avoid, A Minimal Reliability Checklist, Chapter Summary
 Lists preserved: Code block (must remain as-is for runnable example), checklist format for Minimal Reliability Checklist (intentionally kept as checklist for usability)
 Ambiguous phrases left ambiguous: None identified
 -->
