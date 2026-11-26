@@ -162,3 +162,12 @@ OpenAI Agents SDK, Claude/Codex on GitHub, Aider, Devin, Windsurf, updated LangC
 AutoGen v0.4 docs, Google ADK, A2A protocol, Amazon Bedrock Agents, Vercel AI SDK.
 Fixed deprecated Codex skills URL (platform.openai.com -> developers.openai.com).
 -->
+
+- Fang, Z., Imani, M., & Lan, T. (2026). MINT: Minimal Information Neuro-Symbolic Tree for Objective-Driven Knowledge-Gap Reasoning and Active Elicitation. <https://arxiv.org/abs/2602.05048>.
+- Huang, C., Zhang, H., Xu, J., & Zheng, Z. (2026). Bilevel Optimization of Agent Skills via Monte Carlo Tree Search. <https://arxiv.org/abs/2604.15709>.
+- Laddha, S., Changbencharoen, L., Kuptivej, W., Shringla, S., Vaidheeswaran, A., & Bhaskar, Y. (2026). HumanMCP: A Human-Like Query Dataset for Evaluating MCP Tool Retrieval Performance. <https://arxiv.org/abs/2602.23367>.
+- Li, Y., Zhang, Z., Liu, Y., & Mao, C. (2026). LACE: Lattice Attention for Cross-thread Exploration. <https://arxiv.org/abs/2604.15529>.
+- Trinh, T., Elfeki, M., et al. (2026). HiL-Bench: Do Agents Know When to Ask for Help? <https://arxiv.org/abs/2604.09408>.
+- Tuddenham, J. (2026). I proved my AI agent can't skip the approval step (196 states, zero bypasses). <https://joshtuddenham.dev/blog/agent-safety/>.
+- Wen, Y. (Logon), & Chen, X. (2026). PseudoAct: Leveraging Pseudocode Synthesis for Flexible Planning and Action Control in Large Language Model Agents. <https://arxiv.org/abs/2602.23668>.
+- Hoeffding, W. (1963). Probability Inequalities for Sums of Bounded Random Variables. Journal of the American Statistical Association, 58(301), 13–30. <https://doi.org/10.1080/01621459.1963.10500830>.

@@ -1,6 +1,10 @@
 # Agentic Workflow Playbook for Agentbook
 
-This playbook defines the active GH-AW issue-management lifecycle used in this repository.
+This playbook describes the GH-AW issue-management lifecycle used in this repository.
+
+## Paused workflows
+
+Issue Routing Decision, Daily Research Updates, and Weekly Editorial Quality Pass are disabled in GitHub Actions. Intake acknowledges new issues and labels them for manual triage. The weekly scheduler is inactive. The workflow definitions remain available if maintainers decide to resume them.
 
 ## Canonical Issue Lifecycle
 
@@ -11,12 +15,12 @@ This playbook defines the active GH-AW issue-management lifecycle used in this r
 
 At any stage, any agent may reject by explaining the reason, adding `rejected`, and closing the issue.
 
-## Active workflow matrix
+## Workflow matrix
 
 | Stage | Trigger | Workflow file | Labels in | Labels out | Result |
 |---|---|---|---|---|---|
-| Intake ACK | `issues.opened` | `.github/workflows/issue-intake-ack.yml` | _(none)_ | `acknowledged` | Issue acknowledged and routed to agentic triage |
-| Routing decision | `workflow_dispatch` (from intake ACK) | `.github/workflows/issue-routing-decision.lock.yml` | `acknowledged` | `triaged-fast-track` or `triaged-for-research` | Agentic routing decision posted |
+| Intake ACK | `issues.opened` | `.github/workflows/issue-intake-ack.yml` | _(none)_ | `acknowledged` | Issue acknowledged and routed when routing is active |
+| Routing decision | `workflow_dispatch` (from intake ACK) | `.github/workflows/issue-routing-decision.lock.yml` | `acknowledged` | `triaged-fast-track` or `triaged-for-research` | Agentic routing decision posted when enabled |
 | Fast-track delivery | `issues.labeled` | `.github/workflows/issue-fast-track-close.lock.yml` | `triaged-fast-track` | `assigned` _(or `rejected`)_ | PR opened and issue closed |
 | Research pass | `issues.labeled` (`triaged-for-research`) | `.github/workflows/issue-research-pass.lock.yml` | `triaged-for-research` | _(none by default)_ | Research comment posted |
 | Phase 1 dispatcher | `issue_comment.created` (research completion comment) | `.github/workflows/issue-phase1-dispatch.yml` | `triaged-for-research` | _(dispatch only)_ | Selects engine in order Codex -> Claude -> Copilot |
@@ -25,7 +29,7 @@ At any stage, any agent may reject by explaining the reason, adding `rejected`, 
 | Phase 2 execution (selected engine) | `workflow_dispatch` | `.github/workflows/issue-phase2-*.lock.yml` | `triaged-for-research` | _(none by default)_ | Posts phase 2 long-task delivery plan |
 | Assignment dispatcher | `issue_comment.created` (phase 2 completion comment) | `.github/workflows/issue-assignment-dispatch.yml` | `triaged-for-research` | _(dispatch only)_ | Dispatches assignment workflow, then assigns and mentions all available coding agents for phase-3 handoff |
 | Assignment + close | `workflow_dispatch` | `.github/workflows/issue-assignment-close.lock.yml` | `triaged-for-research` | `assigned` | Posts assignment summary and closes issue |
-| Weekly editorial quality pass | `schedule`, `workflow_dispatch` | `.github/workflows/weekly-editorial-quality.lock.yml` | _(n/a)_ | _(n/a)_ | Editorial agent opens a prose-quality PR or no-ops |
+| Weekly editorial quality pass | `schedule`, `workflow_dispatch` | `.github/workflows/weekly-editorial-quality.lock.yml` | _(n/a)_ | _(n/a)_ | Paused |
 
 Slow-track downstream handoffs are comment-driven and dispatcher-based, so they do not depend on intermediate status labels. Configure `GH_AW_GITHUB_TOKEN` as a fine-grained PAT restricted to this repository with `Issues`, `Pull requests`, and `Contents` set to `Read and write`.
 

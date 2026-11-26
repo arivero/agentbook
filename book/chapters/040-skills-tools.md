@@ -432,6 +432,12 @@ class CodeReviewSkill(Skill):
         return await self.llm.generate(prompt)
 ```
 
+### Optimize Skill Structure and Content Separately
+
+A skill can improve because a new step belongs in the workflow or because the existing instructions become clearer. In [Bilevel Optimization of Agent Skills via Monte Carlo Tree Search](https://arxiv.org/abs/2604.15709), the outer search proposes structural edits to a skill package. An inner loop then refines the instructions and other component content. The evaluation after refinement supplies the reward for the candidate structure. The authors report improvements on operations-research question answering.
+
+For a practical trial, start from a pinned skill and model. Compare content-only edits with structural edits followed by the same amount of content refinement. Keep the search budget and tool access comparable, and reserve cases the search never sees for the final test. One useful starting question is whether splitting an overly broad step makes the agent more reliable on unfamiliar tasks.
+
 ## Importing and Using Skills
 
 ### Skill Registry
@@ -566,6 +572,12 @@ class DocumentedTool:
         
         return doc
 ```
+
+### Evaluate Tool Retrieval on User Requests
+
+[HumanMCP](https://arxiv.org/abs/2602.23367) pairs generated, persona-conditioned requests with tools drawn from a catalogue of 2,800 tools across 308 MCP servers. The paper separates getting relevant tools onto a shortlist from choosing one after retrieval. The queries are synthetic, so they offer a repeatable comparison and leave room for a separate test on genuine user phrasing, typos, and local terminology.
+
+For each test request, label every appropriate tool and include requests with no suitable tool. Measure how often a valid tool appears in the first $k$ results, how often the agent selects one, and whether it abstains on unsupported requests. Compare direct requests with paraphrases and underspecified requests. A high retrieval score alone leaves argument correctness and authorization to be checked separately.
 
 ## Dynamic Tool Generation
 

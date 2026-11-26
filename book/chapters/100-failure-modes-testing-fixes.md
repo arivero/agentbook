@@ -123,6 +123,14 @@ A robust strategy uses multiple test layers. No single test type is sufficient.
 
 Use static and structural checks to fail fast before expensive model execution. These include markdown and schema validation for instruction files, ensuring they are well-formed before agents try to parse them. Prompt template linting catches common errors in prompt construction. Tool interface compatibility checks verify that agents can call the tools they expect. Dependency and version constraint checks ensure the environment matches expectations.
 
+### Model Checking an Approval Gate
+
+Consider a bounded workflow for publishing a draft. In a Petri net, places represent conditions and transitions move tokens when their prerequisites are present. One token begins in Draft. Submitting moves it to Pending. A human decision moves it from Pending to Approved or Cancelled. Publishing consumes the Approved token and moves it to Published. The example has five reachable markings and four transitions, with Published and Cancelled as terminal states.
+
+Enumerating those markings verifies two separate properties. Every path to Published passes through approval. Every sequence of transitions is finite because the graph has no cycles. A request can still wait indefinitely in Pending if a human never responds. A liveness claim about real time would require a timeout transition or an assumption about the human response. In the implementation, the approval must refer to the exact draft being published. An edit after the approval should return the draft to Pending.
+
+Josh Tuddenham's [PetriFlow case study](https://joshtuddenham.dev/blog/agent-safety/) reports checking 196 reachable states of its example workflow, including the human approval gate and an iteration budget. The invariant applies to the modeled control states. Model output quality, tool side effects, and the fidelity of the deployed workflow require their own checks.
+
 ## 2. Deterministic Unit Tests (Without LLM Calls)
 
 Test orchestration logic, parsers, and guards deterministically without involving language models. Cover state transitions to ensure the workflow moves through stages correctly. Test retry and timeout behaviour to verify failure handling works as expected. Verify permission checks to ensure access controls are enforced. Test conflict resolution rules to confirm agents handle concurrent access correctly.
@@ -179,6 +187,12 @@ Design "challenge suites" for known weak spots. These should include ambiguous r
 
 Pass criteria should include not just correctness, but also policy compliance, cost and latency ceilings, and evidence quality including citations and rationale.
 
+### Test When to Ask for Help
+
+[HiL-Bench](https://arxiv.org/abs/2604.09408) uses software engineering and text-to-SQL tasks with human-validated blockers. Ask-F1 takes the harmonic mean of question precision and blocker recall. Precision is the fraction of questions that target a real blocker. Recall is the fraction of registered blockers resolved by those questions. The benchmark uses a fixed model to map questions to annotated blockers and return the corresponding clarifications. The authors report that training on a shaped reward improved help-seeking and task completion in their 32B-model experiment.
+
+For a local test, write down the blockers and accepted clarifications before running the agent. Include cases where evidence in the task environment resolves an apparent ambiguity. Compare task completion with complete information against completion when the agent must ask, and log both unnecessary questions and silently missed blockers. This distinguishes an escalation decision from the agent's ability to finish once it has the answer.
+
 ### Behavioral Safety Benchmarks
 
 Behavioral safety benchmarks measure whether agents follow safety constraints while pursuing a task. BeSafe-Bench (Li et al., 2026) covers web, mobile, embodied vision-language models, and vision-language-action systems. Its authors include nine categories of safety-critical risk, including privacy, financial harm, and physical safety.
@@ -188,6 +202,90 @@ Behavioral safety benchmarks measure whether agents follow safety constraints wh
 **Hybrid evaluation approach.** BeSafe-Bench uses a two-layer evaluation strategy. Rule-based checks catch obvious violations (accessing prohibited files, exceeding budget limits, physical collision). When rule-based detection is insufficient, LLM-as-judge reasoning assesses whether agent behaviour violated stated safety policies. This hybrid approach provides both deterministic safety gates and nuanced judgment for complex scenarios.
 
 **Applying this to your systems.** When designing evaluation suites, separate task-success metrics from safety-compliance metrics. An agent that completes 90% of tasks but violates critical safety constraints in 20% of runs is not production-ready. Test safety boundaries explicitly: present tasks where the most efficient path violates a constraint and verify the agent refuses or finds an alternative. Use both automated checks and LLM-based reasoning to catch violations that deterministic rules miss.
+
+## Random Audits of Frozen Claim Batches
+
+### What a Clean Sample Establishes
+
+Freeze a draft, its content hash, a list of $N$ claim units, and a binary violation rubric before drawing a random sample. Declare the sample size $k$, the unacceptable defect count $D_0$, and the false-certificate limit $\alpha$. Draw a uniformly random subset of $k$ distinct claim units. Suppose the audit adjudicates the rubric correctly and the artifact contains $D$ violating units. Exactly $\binom{N-D}{k}$ of the $\binom{N}{k}$ possible samples contain no violation. Hence
+
+$$
+\Pr_D(\text{clean sample})=\frac{\binom{N-D}{k}}{\binom{N}{k}},
+$$
+
+with the numerator zero when $k>N-D$. As $D$ increases, the number of clean samples decreases. Choose $k$ so that this probability at $D=D_0$ is at most $\alpha$. Certify $D<D_0$ only if all $k$ checked units are clean. Whenever the true count is at least $D_0$, the chance the procedure issues that certificate is at most $\alpha$.
+
+This is a guarantee over the random selection conditional on the fixed draft. All violations may share the same bad source or mistaken premise. For $D_0=\lceil\eta N\rceil$, each factor of the ratio for successive draws is at most $1-\eta$. A sufficient sample size is therefore $\lceil\log(\alpha)/\log(1-\eta)\rceil$, or a census if this exceeds $N$. The exact ratio usually gives a smaller budget. For $N=100$, $D_0=10$ and $\alpha=0.05$, the ratio is $0.05514210$ at $k=24$ and $0.04788656$ at $k=25$. The latter is the smallest valid budget.
+
+If the aim is to rule out even one violation, set $D_0=1$. One defective claim goes unexamined with probability $(N-k)/N$, so $k\geq(1-\alpha)N$ is necessary and sufficient for this clean-sample rule. For a highly consequential set of claims, a separate complete check can be more useful than a single confidence statement across the entire draft.
+
+### Imperfect Detection and Changes to the Draft
+
+For each sampled defective claim, suppose the auditor has detection probability at least $s$ conditional on the sampled set and all prior audit outcomes. If the sample contains $h$ defects, the chance of missing all of them is at most $(1-s)^h$ by multiplying successive conditional probabilities. Averaging over the possible samples gives
+
+$$
+\Pr(\text{no detected violation})\leq
+\sum_{h:\,0\leq h\leq D,\,0\leq k-h\leq N-D}
+\frac{\binom{D}{h}\binom{N-D}{k-h}}{\binom{N}{k}}(1-s)^h.
+$$
+
+The bound decreases with $D$, since adding a defect to a fixed population cannot reduce the number sampled. It reduces to the exact expression for a perfect auditor. At $D=1$, it is $1-sk/N$. An empirical average sensitivity or an auditor's self-reported confidence is insufficient to justify the conditional bound.
+
+After the sample is revealed, imagine repairing exactly those $k$ claims in an initially all-defective draft. Rechecking the same sample will always pass even though $N-k$ violations remain. The certificate must refer to the frozen version. A changed draft needs a fresh draw after commitment. When certifying a sequence of revisions, allocate error allowances whose sum is at most the desired overall limit.
+
+Record the artifact hash, rubric version, complete list of claim IDs and locations, $N$, $k$, $D_0$, $\alpha$, and the random seed after the draw. Each sampled claim needs a verdict, evidence pointer, and auditor identity. Decide up front whether repeated wording counts as one canonical claim or several occurrences and give both population sizes when relevant. Targeted checks can run alongside the uniform sample. Base the certificate on the declared uniform checks.
+
+### Reproduce the Comparison
+
+Use twelve claim occurrences with oracle labels, four violations in every scenario, and five adjudications per policy. IDs are ordered from lowest to highest model confidence. Targeted review checks IDs 0 through 4. Uniform review draws five of twelve. Mixed review checks IDs 0 and 1, then draws three of the other ten. Exhaustive enumeration gives the mean number of defects found and the probability of returning zero detections:
+
+| Defect placement | Targeted mean / zero | Uniform mean / zero | Mixed mean / zero |
+|---|---:|---:|---:|
+| Spread across the draft | 2.000 / 0% | 1.667 / 7.07% | 1.900 / 0% |
+| One shared wrong source | 0.000 / 100% | 1.667 / 7.07% | 1.200 / 16.67% |
+| One false claim repeated four times | 3.000 / 0% | 1.667 / 7.07% | 1.200 / 16.67% |
+| Concentrated in high-confidence claims | 0.000 / 100% | 1.667 / 7.07% | 1.200 / 16.67% |
+
+Runnable Python 3, standard library only:
+
+```python
+from itertools import combinations
+from math import comb
+
+patterns = {
+    "spread": {0, 3, 6, 9},
+    "shared source": {5, 6, 7, 8},
+    "repeated claim": {2, 3, 4, 5},
+    "high confidence": {8, 9, 10, 11},
+}
+uniform = list(combinations(range(12), 5))
+policies = {
+    "targeted": [tuple(range(5))],
+    "uniform": uniform,
+    "mixed": [(0, 1, *tail) for tail in combinations(range(2, 12), 3)],
+}
+
+for pattern, defects in patterns.items():
+    assert sum(defects.isdisjoint(s) for s in uniform) == comb(8, 5)
+    claim_ids = [2 if pattern == "repeated claim" and i in defects else i
+                 for i in range(12)]
+    for policy, samples in policies.items():
+        counts = [len(defects.intersection(sample)) for sample in samples]
+        unique_coverage = sum(
+            len({claim_ids[i] for i in sample}) for sample in samples
+        ) / len(samples)
+        print(pattern, policy, sum(counts) / len(counts),
+              counts.count(0) / len(counts), unique_coverage)
+
+initial_defects = set(range(12))
+for sample in uniform:
+    revised_defects = initial_defects.difference(sample)
+    assert revised_defects.isdisjoint(sample) and len(revised_defects) == 7
+```
+
+In the repeated-claim case there are nine canonical claims. The table uses the twelve-occurrence denominator and the code reports mean unique claims inspected separately. Every policy examines five occurrences. Since every scenario has four defects, a clean sample would be a false certificate if it were used to assert fewer than four defects. At a declared $\alpha=0.10$, the uniform rule is valid with five checks and the table gives its exact error rate. The other two policies cannot claim that same bound. Reusing the sample after repair yields a clean result for all $\binom{12}{5}=792$ draws despite leaving seven violations.
+
+For finite-population concentration bounds, see [Hoeffding's treatment of sampling without replacement](https://doi.org/10.1080/01621459.1963.10500830).
 
 ## 5. Testing for Environmental Change
 

@@ -22,12 +22,25 @@ jobs:
     env:
       ISSUE_NUMBER: ${{ inputs.issue_number || github.event.issue.number }}
     steps:
+      - name: Check whether routing is enabled
+        id: routing
+        run: |
+          state=$(gh api "repos/${{ github.repository }}/actions/workflows/issue-routing-decision.lock.yml" --jq '.state')
+          echo "state=$state" >> "$GITHUB_OUTPUT"
+        env:
+          GH_TOKEN: ${{ github.token }}
+
       - name: Acknowledge issue
         run: |
+          message="Thanks for opening this suggestion. It has been acknowledged and is waiting for manual triage."
+          if [[ "$ROUTING_STATE" == "active" ]]; then
+            message="Thanks for opening this suggestion. It has been acknowledged and is now queued for agentic routing."
+          fi
           gh issue comment "${ISSUE_NUMBER}" \
             --repo "${{ github.repository }}" \
-            --body "Thanks for opening this suggestion. It has been acknowledged and is now queued for agentic routing."
+            --body "$message"
         env:
+          ROUTING_STATE: ${{ steps.routing.outputs.state }}
           GH_TOKEN: ${{ github.token }}
 
       - name: Apply intake label
@@ -39,6 +52,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
 
       - name: Dispatch routing workflow
+        if: steps.routing.outputs.state == 'active'
         run: |
           gh workflow run "issue-routing-decision.lock.yml" \
             --repo "${{ github.repository }}" \

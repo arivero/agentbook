@@ -494,6 +494,10 @@ class ScientificVerificationPipeline:
         )
 ```
 
+### Audit Claims in a Frozen Draft
+
+A manuscript audit can check whether a citation supports the exact claim, whether an asserted identity follows from its stated assumptions, or whether a reported number matches a stored calculation. Freeze the manuscript and the claim list first. The [finite-population audit in Chapter 100](100-failure-modes-testing-fixes.md#random-audits-of-frozen-claim-batches) turns a uniform spot check into a bound on violations of the chosen rubric, even if one mistaken source affects many claims. A citation audit measures citation support. Mathematical validity requires the corresponding proof checks.
+
 ## Educational Scaffolding Agents
 
 ### Mathematics Education

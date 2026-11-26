@@ -502,6 +502,12 @@ In this repository, the scaffolding is implemented in concrete files:
 
 For workflow semantics, see [GitHub Agentic Workflows (GH-AW)](060-gh-agentic-workflows.md). For failure handling and validation strategy, see [Common Failure Modes, Testing, and Fixes](100-failure-modes-testing-fixes.md).
 
+## Pending Clarifications and Approval Gates
+
+Represent a pending clarification explicitly in scaffold state. Record the unknown proposition, the decisions it blocks, and the actions that can proceed safely while waiting. When the person answers, update the corresponding state before resuming. [MINT's objective-driven elicitation](020-orchestration.md#ask-for-the-missing-information-that-changes-the-plan) gives an example of choosing which unknown to resolve.
+
+An approval gate also needs a state transition. Keep it outside the model's free-form text and bind the decision to the proposed action. A workflow engine can check whether a transition consumes an approval token for that action. A [bounded Petri-net example](100-failure-modes-testing-fixes.md#model-checking-an-approval-gate) shows how to verify that property on the workflow model and where the runtime must enforce it.
+
 ## Environment Evolution Infrastructure
 
 Scaffolding that exposes environment structure programmatically is far easier to test for evolution. When tools self-describe their schemas, data entities carry type information, and schema definitions are queryable at runtime, agents can detect changes and adapt rather than failing silently.

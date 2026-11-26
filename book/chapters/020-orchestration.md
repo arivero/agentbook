@@ -98,6 +98,24 @@ class MultiTurnSearchAgent:
 ```
 
 This represents an emerging research direction in agent tool design, where the focus shifts from individual tool capabilities to deliberate coordination between tools within an agent's reasoning loop. For principles of tool design that enable such coordination, see Chapter 040 (Skills and Tools Management).
+### Plan Before Acting
+
+A reactive loop such as ReAct chooses its next action from observations gathered so far. A structured plan can express dependencies in advance. For a question about a book's author, retrieve the book record, use the author field to resolve the person, then retrieve evidence about that person. An explicit branch can return “insufficient evidence” when the author is ambiguous. Independent lookups can run concurrently. A bounded loop can limit retries at a flaky source.
+
+[PseudoAct](https://arxiv.org/abs/2602.23668) synthesizes a pseudocode plan before tool execution and interprets control flow such as conditions, loops, and parallel calls. In its experiments, the authors report FEVER accuracy of 88.24%, compared with 67.31% for their DFSDT baseline, a gain of 20.93 percentage points. Their HotpotQA comparison reports 82.14% and 73.21%, respectively. These are results for the reported setup. A deployed orchestrator still needs explicit tool contracts, loop bounds, and a way to revise a plan when its assumptions fail.
+
+### Coordinate Reasoning During Generation
+
+Independent parallel runs let an orchestrator compare several finished answers. A shared scratchpad can also let independent workers exchange intermediate findings through explicit messages. These approaches can be implemented at the application layer. [LACE](https://arxiv.org/abs/2604.15529) works inside the model. It adds cross-thread attention over intermediate representations and trains the model on synthetic examples of interacting reasoning paths. The authors report a gain of more than seven accuracy points over standard parallel search in their experiments.
+
+A useful comparison holds the base model and inference budget fixed, then measures accuracy and the diversity of the remaining errors. Sharing a promising lemma can save work. Sharing a false premise can make every thread repeat the same error. A system that needs an independent check should keep a verifier outside that shared context.
+
+### Ask for the Missing Information That Changes the Plan
+
+An issue asking for a report “for the last quarter” may omit which calendar defines the period. Compare the plausible calendars and check whether they change the rows included. If the report depends on the answer, ask a focused question. If every plausible reading gives the same safe first step, take it and record the ambiguity for later.
+
+[MINT](https://arxiv.org/abs/2602.05048) makes this choice explicit. It builds a symbolic tree over propositions about unknown objects or other facts and relates the branches to the task objective. The agent uses that structure to decide what to ask or infer. The authors use self-play to train the elicitation strategy and report planning improvements on their benchmark tasks involving unseen or unknown objects. In an application, start by tracking the missing fact, the decision that depends on it, and the branches a human answer would resolve.
+
 ### Git as Coordination Substrate
 
 Agents can coordinate through Git itself, using commits as the communication and state management layer. In this approach, agents read commit state from Git history, process tasks based on structured commit trailers (e.g., `aynig: state-name`), and respond by creating new commits with updated state. Git worktrees enable parallel agent execution, and the Git history becomes the complete audit trail.

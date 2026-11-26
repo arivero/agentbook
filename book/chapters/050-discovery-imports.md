@@ -69,6 +69,8 @@ Explicit configuration uses a pinned manifest that enumerates allowed sources an
 
 **Decision rule:** If provenance cannot be authenticated, prefer explicit configuration over dynamic discovery. Security concerns outweigh convenience when you cannot verify where an artefact came from.
 
+Discovery and selection can fail at different points. The catalogue may omit a tool, search may miss a valid tool already present, or the agent may choose the wrong candidate from its shortlist. [HumanMCP-style evaluation](040-skills-tools.md#evaluate-tool-retrieval-on-user-requests) helps measure the last two cases with the catalogue held fixed.
+
 ## Import, Install, Activate: Three Different Operations
 
 ### Import

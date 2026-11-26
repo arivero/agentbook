@@ -7,8 +7,8 @@ A **living, self-maintaining book** about agentic workflows, agent orchestration
 
 ## 🤖 What Makes This Book Special?
 
-This book doesn't just teach about agentic workflows—it **uses them**! The book automatically:
-- 📝 Processes community suggestions from GitHub issues
+This book doesn't just teach about agentic workflows—it **uses them**! The book uses automation to:
+- 📝 Acknowledge community suggestions from GitHub issues
 - ✍️ Updates content using AI agents
 - 📚 Maintains markdown sources and generates a PDF build
 - 🌐 Publishes to GitHub Pages
@@ -28,7 +28,7 @@ The book covers practical patterns for agentic workflows, safe orchestration, sk
 
 1. **Community Input**: Open an issue with a suggestion
 2. **Automated Intake**: A standard workflow posts an acknowledgment and applies `acknowledged`
-3. **Agentic Routing**: A GH-AW routing workflow classifies the suggestion
+3. **Manual Triage**: Maintainers classify suggestions while automated routing is paused
 4. **Agent Processing**:
    - **`triaged-fast-track`** for small low-risk fixes
    - **`triaged-for-research`** for larger/ambiguous updates (then research -> phase 1 -> phase 2 -> assignment)
@@ -44,7 +44,7 @@ We welcome contributions! Here's how:
 The primary way to contribute is by **opening an issue** with your suggestion:
 
 1. **[Open an issue](https://github.com/arivero/agentbook/issues/new/choose)** using our Content Suggestion template
-2. **Automated Processing**: Our GitHub Agentic Workflows (GH-AW) will analyze your suggestion
+2. **Triage**: A maintainer reviews your suggestion after automated intake
 3. **Follow Updates**: The issue moves through labels: `acknowledged` → `triaged-fast-track` or `triaged-for-research` → `assigned` (or `rejected`). Slow-track phases are tracked via agent comments.
 
 **What happens to suggestions:**

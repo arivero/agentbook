@@ -417,6 +417,12 @@ class TaskBoundary:
         return True
 ```
 
+### Clarifying Questions as Part of Task Execution
+
+Make a test issue whose requirements permit two incompatible implementations. For instance, ask a coding agent to add a usage export while omitting which timezone defines a calendar day. A targeted question should name the blocked decision and the information needed. The agent can still inspect the export code and prepare tests for both interpretations. Evaluate the result against cases where the missing information can already be recovered from the repository, so asking the maintainer carries a measurable cost.
+
+[HiL-Bench and Ask-F1](100-failure-modes-testing-fixes.md#test-when-to-ask-for-help) give a framework for scoring help-seeking alongside task completion.
+
 ### Incremental Changes
 
 Prefer small, focused changes over large rewrites:
