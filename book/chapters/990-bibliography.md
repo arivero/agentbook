@@ -70,7 +70,6 @@ order: 99
 - Coq. <https://coq.inria.fr/>. Accessed: 2026-02-05.
 - Isabelle. <https://isabelle.in.tum.de/>. Accessed: 2026-02-05.
 - Li, Z., Tian, H., Luo, L., Cao, Y., & Luo, P. (2026). DeepRead: Structure-aware multi-turn document reasoning. arXiv preprint arXiv:2602.05014. <https://arxiv.org/abs/2602.05014>. Accessed: 2026-02-08.
-- Lovén, L., Saleh, A., Farahani, R., Murturi, I., Gujar, S., Bordallo López, M., Donta, P. K., & Dustdar, S. (2026). Agentic Service Markets Across the Computing Continuum: A Polymatroidal Architecture. arXiv preprint arXiv:2603.05614. <https://arxiv.org/abs/2603.05614>. Accessed: 2026-11-26.
 - Google DeepMind. AlphaProof: AI solves IMO problems at silver medal level. <https://deepmind.google/blog/ai-solves-imo-problems-at-silver-medal-level/>. Accessed: 2026-02-13.
 - Google DeepMind. AlphaEvolve: A Gemini-powered coding agent for designing advanced algorithms. <https://deepmind.google/blog/alphaevolve-a-gemini-powered-coding-agent-for-designing-advanced-algorithms/>. Accessed: 2026-02-13.
 - Google DeepMind. Aletheia. <https://github.com/google-deepmind/superhuman/tree/main/aletheia>. Accessed: 2026-02-13.
@@ -147,6 +146,8 @@ order: 99
 - Datadog MCP server documentation. <https://docs.datadoghq.com/bits_ai/mcp_server/>. Accessed: 2026-02-13.
 - Grafana MCP server. <https://github.com/grafana/mcp-grafana>. Accessed: 2026-02-13.
 - Hugging Face MCP server. <https://github.com/huggingface/hf-mcp-server>. Accessed: 2026-02-13.
+
+- Lovén, L., Saleh, A., Farahani, R., Murturi, I., Gujar, S., Bordallo López, M., Donta, P. K., & Dustdar, S. (2026). Agentic Service Markets Across the Computing Continuum: A Polymatroidal Architecture. arXiv preprint arXiv:2603.05614. <https://arxiv.org/abs/2603.05614>. Accessed: 2026-11-26.
 
 <!-- Edit notes:
 Sections expanded: None (bibliography entries are an actual enumerable reference list that must remain as individual items)
