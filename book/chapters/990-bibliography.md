@@ -170,4 +170,4 @@ Fixed deprecated Codex skills URL (platform.openai.com -> developers.openai.com)
 - Trinh, T., Elfeki, M., et al. (2026). HiL-Bench: Do Agents Know When to Ask for Help? <https://arxiv.org/abs/2604.09408>.
 - Tuddenham, J. (2026). I proved my AI agent can't skip the approval step (196 states, zero bypasses). <https://joshtuddenham.dev/blog/agent-safety/>.
 - Wen, Y. (Logon), & Chen, X. (2026). PseudoAct: Leveraging Pseudocode Synthesis for Flexible Planning and Action Control in Large Language Model Agents. <https://arxiv.org/abs/2602.23668>.
-- Hoeffding, W. (1963). Probability Inequalities for Sums of Bounded Random Variables. Journal of the American Statistical Association, 58(301), 13–30. <https://doi.org/10.1080/01621459.1963.10500830>.
+- Hoeffding, W. (1963). Probability Inequalities for Sums of Bounded Random Variables. Journal of the American Statistical Association, 58(301), 13–30. <https://www.jstor.org/stable/2282952>.

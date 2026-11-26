@@ -285,7 +285,7 @@ for sample in uniform:
 
 In the repeated-claim case there are nine canonical claims. The table uses the twelve-occurrence denominator and the code reports mean unique claims inspected separately. Every policy examines five occurrences. Since every scenario has four defects, a clean sample would be a false certificate if it were used to assert fewer than four defects. At a declared $\alpha=0.10$, the uniform rule is valid with five checks and the table gives its exact error rate. The other two policies cannot claim that same bound. Reusing the sample after repair yields a clean result for all $\binom{12}{5}=792$ draws despite leaving seven violations.
 
-For finite-population concentration bounds, see [Hoeffding's treatment of sampling without replacement](https://doi.org/10.1080/01621459.1963.10500830).
+For finite-population concentration bounds, see [Hoeffding's treatment of sampling without replacement](https://www.jstor.org/stable/2282952).
 
 ## 5. Testing for Environmental Change
 
