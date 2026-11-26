@@ -381,6 +381,12 @@ class AgentObserver:
         return self._build_trace(agent_id)
 ```
 
+### Pattern 5: Device-Edge-Cloud Continuum
+
+A single agent workflow may keep sensitive input on a device, aggregate tasks at an edge node, and call a cloud accelerator for inference. Its scaffolding must account for capacity, data residency, and deadlines across those tier boundaries.
+
+Expose the amount of work a tier can take, its deadline and data-handling limits, and the conditions under which it must refuse work. Admission must enforce those limits before transferring data. Where dependencies cross, an integrator can manage the internal allocations and publish a simpler resource interface. Measure the amount of work admitted as well as completed-request latency. A narrower interface may improve allocation quality while reducing available capacity. See [Multi-Agent Resource Allocation at Scale](020-orchestration.md#multi-agent-resource-allocation-at-scale) for the conditions behind this result.
+
 ## Building Scaffolding: Step by Step
 
 ### Step 1: Define Your Agent Ecosystem

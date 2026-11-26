@@ -312,6 +312,16 @@ Agent Teams integrates naturally with the orchestration patterns described earli
 
 For coding-specific applications of Agent Teams, see [Agents for Coding](080-agents-for-coding.md) where Claude Code's subagent architecture leverages these primitives. For workflow integration, see [GitHub Agentic Workflows](060-gh-agentic-workflows.md) where Agent Teams can be used as the execution engine.
 
+## Multi-Agent Resource Allocation at Scale
+
+A workflow can allocate compute, bandwidth, or service capacity through a central scheduler or through a market in which requests compete for capacity. Lovén et al.'s [Agentic Service Markets Across the Computing Continuum](https://arxiv.org/abs/2603.05614) analyses when such a market can clear exactly within each allocation round.
+
+In the authors' model, a service request depends on a group of leaf resources. A family of these groups is **laminar** when any two are disjoint or one fully contains the other. For example, groups `{A, B}` and `{A, B, C}` are nested, while `{A, B}` and `{B, C}` cross. Crossing can occur even when the service-dependency graph is acyclic.
+
+Under the paper's assumptions, laminar resource groups admit exact decentralised price-based allocation. Truthful bidding is supported by the specified Vickrey–Clarke–Groves mechanism. A crossing can invalidate exactness or truthfulness, and some crossing families still admit clearing prices. These are statements about the model's allocation mechanism rather than guarantees about the runtime behaviour of arbitrary agent systems.
+
+A **cross-domain integrator** can manage a crossing group internally and offer a laminar interface to the wider market. In the paper's node-level evaluation, this recovered exactness in the tested setting while admitting less volume. For a deployment, map which capacity groups overlap and record admission rate, deadline misses, and translation overhead. Compare the integrator with a central scheduler on the same workload before choosing one.
+
 ## Challenges and Solutions
 
 **Challenge: Agent Conflicts.** When multiple agents modify the same resources, they can overwrite each other's changes or create inconsistent state. The **solution** is to use locks, transactions, or coordinator patterns that ensure only one agent modifies a resource at a time.
