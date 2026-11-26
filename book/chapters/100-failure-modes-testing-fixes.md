@@ -291,6 +291,8 @@ Several anti-patterns undermine agentic system reliability.
 
 **Skipping regression suites after model or version upgrades** assumes backward compatibility that may not exist. Changes require validation.
 
+**Changing the model backend without validating compatibility** can introduce regressions in tool calls, streaming responses, retries, and approval prompts. Run the same acceptance and policy tests against both backends, canary the change on representative tasks, and record intervention rates and cost per successful task. Define when to route work back to the baseline provider. See [Model Backend Abstraction](030-scaffolding.md#model-backend-abstraction).
+
 **Relying on a single benchmark instead of diverse scenarios** creates blind spots. Real-world failures often occur in edge cases the benchmark does not cover.
 
 **Ignoring ambiguous ownership in multi-agent flows** leads to gaps and conflicts. Every path and component should have a clear owner.
