@@ -72,6 +72,14 @@ class AgentContext:
         return self.history
 ```
 
+#### Case Study: LocalGPT's Persistent Memory Architecture
+
+The [February 2026 version of LocalGPT](https://github.com/localgpt-app/localgpt/tree/09c812e13f8b7c889d7607cd7c3e0536048c8d0a) illustrates a file-backed memory layer for a Rust-based assistant. The CLI, web UI, and desktop GUI can use the same workspace. `MEMORY.md` holds long-term knowledge, `SOUL.md` describes the agent's persona, and `HEARTBEAT.md` lists background tasks.
+
+The index combines SQLite FTS5 keyword search with semantic retrieval. A filesystem watcher can reindex edited Markdown files after a short debounce. That design makes the source material easy to inspect and edit, with a short delay before search results reflect changes. Session history has its own store.
+
+The daemon schedules heartbeat cycles at intervals set in its configuration. Each cycle can use the task list in `HEARTBEAT.md` and records its state in the session store. Persisting a result as long-term knowledge requires a separate write to memory.
+
 ### Execution Environment
 Provide safe, isolated environments for agent execution.
 
@@ -115,6 +123,8 @@ Different isolation technologies offer varying levels of security, performance, 
 | Containers | 1-5 seconds | Moderate | Low | Most agent workflows |
 | MicroVMs | &lt;1 second | Strong | Low-Medium | High-security agents |
 | Full VMs | 30-60 seconds | Strongest | High | Maximum isolation |
+
+Pair isolation with structured execution logs when you need to compare successful and failing runs. An execution substrate can package the recorded inputs and tool events as a content-addressed artefact. See [Reproducible Execution Infrastructure](100-failure-modes-testing-fixes.md#35-reproducible-execution-infrastructure) for the debugging workflow.
 
 #### Secret Management Patterns
 
@@ -237,6 +247,8 @@ Use **containers** (Docker, Podman) for trusted agent code in controlled environ
 
 The architecture of transparent proxying plus ephemeral environments provides a reference pattern for high-security agent scaffolding, applicable beyond any specific tool implementation.
 
+Generated tools should run in an isolated process with explicit file and network permissions. Start with no network access, mount only the required input and output paths, and enforce a wall-clock timeout, CPU and memory limits, and an output cap. For untrusted code, enforce isolation at the operating-system or virtual-machine boundary. See [Dynamic Tool Generation](040-skills-tools.md#dynamic-tool-generation) for a case study.
+
 ### Communication Protocol
 Standardize how agents communicate.
 
@@ -261,6 +273,24 @@ class MessageBus {
   }
 }
 ```
+
+### Model Backend Abstraction
+
+The model endpoint and the tool loop can evolve independently. A client can connect directly to a replacement endpoint that supports the same API. A proxy is useful when you need to adapt request formats, translate model identifiers, or switch providers through one stable endpoint.
+
+Compatibility includes tool calls and tool results, streaming event order, cancellation, and error handling. Endpoint compatibility alone does not predict task quality. For an agent that can write files or call services, verify the approval flow and tool permissions as well as task success.
+
+#### Case Study: DeepClaude
+
+[DeepClaude](https://github.com/aattaran/deepclaude) configures Claude Code to use Anthropic-compatible endpoints. Its launcher can select a configured backend directly. For example, after following the project's installation instructions and configuring a DeepSeek API key, run:
+
+```bash
+deepclaude --backend ds
+```
+
+The optional local proxy supports features such as remote control and switching providers within a session. The tool loop still runs in Claude Code. The selected provider determines which model features are available and receives the associated prompts and tool context. Check that the new data destination is authorised for the workload.
+
+The project's compatibility notes describe limitations for image input, MCP tools, and Anthropic-specific cache controls on the DeepSeek route. Check the exact provider configuration and evaluate it on representative tasks before changing the default backend.
 
 ## Scaffolding Patterns
 
@@ -371,6 +401,12 @@ class AgentObserver:
         return self._build_trace(agent_id)
 ```
 
+### Pattern 5: Device-Edge-Cloud Continuum
+
+A single agent workflow may keep sensitive input on a device, aggregate tasks at an edge node, and call a cloud accelerator for inference. Its scaffolding must account for capacity, data residency, and deadlines across those tier boundaries.
+
+Expose the amount of work a tier can take, its deadline and data-handling limits, and the conditions under which it must refuse work. Admission must enforce those limits before transferring data. Where dependencies cross, an integrator can manage the internal allocations and publish a simpler resource interface. Measure the amount of work admitted as well as completed-request latency. A narrower interface may improve allocation quality while reducing available capacity. See [Multi-Agent Resource Allocation at Scale](020-orchestration.md#multi-agent-resource-allocation-at-scale) for the conditions behind this result.
+
 ## Building Scaffolding: Step by Step
 
 ### Step 1: Define Your Agent Ecosystem
@@ -465,6 +501,22 @@ In this repository, the scaffolding is implemented in concrete files:
 - Lifecycle policy: `WORKFLOW_PLAYBOOK.md`
 
 For workflow semantics, see [GitHub Agentic Workflows (GH-AW)](060-gh-agentic-workflows.md). For failure handling and validation strategy, see [Common Failure Modes, Testing, and Fixes](100-failure-modes-testing-fixes.md).
+
+## Environment Evolution Infrastructure
+
+Scaffolding that exposes environment structure programmatically is far easier to test for evolution. When tools self-describe their schemas, data entities carry type information, and schema definitions are queryable at runtime, agents can detect changes and adapt rather than failing silently.
+
+Three design choices make environment evolution testable:
+
+**Schema introspection at the tool boundary.** Tools that expose their current input and output schemas—for example, through an OpenAPI-style definition or an MCP resource manifest—allow scaffolding to detect schema drift before it causes failures. An agent can compare the schema it was initialised with against the schema returned at runtime, and route mismatches to a recovery path rather than proceeding with stale assumptions.
+
+**Versioned tool identities.** When tools carry explicit version information alongside their names, agents and orchestrators can manage the lifecycle of parallel versions—keeping `search_v1` available during migration while `search_v2` becomes the default. Scaffolding that enforces version pinning in agent configuration files makes schema migrations auditable and reversible.
+
+**Change-propagation contracts.** In systems where a data-entity update affects multiple tools (adding a required field to a `User` entity affects every tool that creates or updates users), the scaffolding layer can enforce that all affected tools declare their dependency on the entity type. When the entity evolves, the registry surfaces the full list of tools that need corresponding updates, preventing half-consistent states.
+
+The ProEvolve framework formalises these patterns as typed relational graphs: data, tools, and schemas as nodes with typed edges encoding dependencies (Li et al., arXiv:2603.05910, March 2026). Transformation rules propagate changes coherently across all connected components—the same graph structure that enables benchmark diversity makes production scaffolding easier to test, because a change to the graph is a well-defined operation with known propagation consequences rather than a free-form modification that may leave parts of the environment inconsistent.
+
+For testing strategies that cover environment evolution scenarios, see [Common Failure Modes, Testing, and Fixes](100-failure-modes-testing-fixes.md#5-testing-for-environmental-change).
 
 ## Best Practices
 

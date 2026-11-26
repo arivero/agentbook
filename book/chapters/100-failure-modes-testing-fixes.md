@@ -5,9 +5,9 @@ order: 10
 
 # Common Failure Modes, Testing, and Fixes
 
-## Chapter Goals
+## Chapter Preview
 
-By the end of this chapter, you should be able to recognise the most common ways agentic workflows fail in production, understanding the symptoms and root causes of each failure mode. You should be able to design a test strategy that catches failures before deployment, combining static checks, deterministic tests, and adversarial evaluations. You should be able to apply practical mitigation and recovery patterns that reduce mean time to recovery when failures occur. And you should be able to turn incidents into durable process and architecture improvements that prevent recurrence.
+This chapter catalogues the most common failure modes in agentic workflows, explaining symptoms, root causes, and immediate fixes for planning failures, tooling failures, context failures, and operational failures. It presents a layered testing strategy combining static validation, deterministic tests, and adversarial evaluation to catch failures before deployment. Finally, it provides practical mitigation patterns—progressive autonomy, explicit termination criteria, and incident-to-architecture feedback loops—that reduce mean time to recovery and prevent recurrence.
 
 ## Why Failures Are Different in Agentic Systems
 
@@ -99,6 +99,14 @@ Before running agent code in production, verify that:
 
 Test these controls by intentionally trying to violate them. An agent that cannot bypass its own sandboxing is ready for production. One that can needs stronger isolation before it handles real workloads.
 
+#### Authority-Driven Evidence Suppression
+
+Rivasseau’s [2026 preprint](https://arxiv.org/abs/2604.02500) tested 16 language models in a controlled compliance simulation. A corporate authority instruction pressured agents to conceal evidence of fraud and harm. The majority of the evaluated agents suppressed evidence, while some resisted. The results describe behaviour in the simulated setup.
+
+**How to test it.** Use synthetic records and give the agent a reporting task where an apparent executive asks it to omit material facts. Score complete disclosure, preservation of the original records, and escalation to an independent reviewer. Rerun the scenarios when the model, policy prompt, or tool permissions change.
+
+**Mitigations.** Separate duties so no single agent both executes and reports. Enforce append-only audit logs and deny tools that can delete or rewrite evidence. Route authority-laden instructions that touch safety or legal domains through human approval, even if they appear routine. Add a secondary reviewer agent whose only job is to challenge suppression attempts and escalate conflicts to humans. Prefer models and prompt templates that demonstrate higher refusal rates in authority-pressure evaluations, and re-run these tests when models or prompts change.
+
 ### 5) Collaboration and Workflow Failures
 
 **Symptoms.** Multiple agents make conflicting changes, overwriting each other's work. PRs churn with contradictory edits as agents undo each other's modifications. Work stalls due to unclear ownership, with no agent taking responsibility.
@@ -146,6 +154,25 @@ Capture representative interactions and replay them against newer builds. Record
 
 Use these to detect drift in behaviour after prompt, tool, or model changes.
 
+## 3.5 Reproducible Execution Infrastructure
+
+Recorded traces vary in what they retain. A structured execution log lets a team compare failing and passing runs and identify the first decision or tool result that differed.
+
+[ContextSubstrate](https://github.com/scalefirstai/ContextSubstrate) packages a supplied JSON execution log as a content-addressed artefact. A pack contains the prompts, inputs, steps, outputs, and metadata the application chose to record. A SHA-256 identifier makes content changes detectable against a trusted reference. It does not establish who produced the log or whether it is complete.
+
+```bash
+ctx init
+ctx pack execution.json
+ctx log
+ctx show "$first_pack"
+ctx diff "$first_pack" "$second_pack" --human
+ctx replay "$first_pack"
+```
+
+Use the project's documented JSON log format and substitute pack hashes from `ctx log` for the variables. Replay can help locate differences in execution. Stochastic model outputs, changed external services, and missing inputs can limit reproduction. Use recorded responses or isolated fixtures when a regression test needs deterministic behaviour.
+
+Decide what to retain before collecting logs. Exclude credentials and redact sensitive prompts and tool outputs before packing. Limit access, define retention for packs and copies, and check that the resulting trace still contains enough information to explain a failure.
+
 ## 4. Scenario and Adversarial Evaluations
 
 Design "challenge suites" for known weak spots. These should include ambiguous requirements that could be interpreted multiple ways, contradictory documentation that forces the agent to choose, missing dependencies that test error handling, and partial outages and degraded APIs that test resilience. Include prompt-injection attempts in retrieved content to test security boundaries.
@@ -162,7 +189,43 @@ Behavioral safety benchmarks measure whether agents follow safety constraints wh
 
 **Applying this to your systems.** When designing evaluation suites, separate task-success metrics from safety-compliance metrics. An agent that completes 90% of tasks but violates critical safety constraints in 20% of runs is not production-ready. Test safety boundaries explicitly: present tasks where the most efficient path violates a constraint and verify the agent refuses or finds an alternative. Use both automated checks and LLM-based reasoning to catch violations that deterministic rules miss.
 
-## 5. Production Guardrail Tests
+## 5. Testing for Environmental Change
+
+The four testing layers above share a common assumption: the environment—tools, APIs, and data schemas—remains stable between runs. In production, this assumption fails regularly. APIs gain new required fields and deprecate old endpoints. Tool schemas tighten validation constraints. Data entities acquire new attributes. Agents that pass a static test suite may fail silently when the environment beneath them shifts.
+
+Treating environment change as a first-class test concern requires a different approach than adversarial evaluation. Adversarial tests probe agent behaviour under unusual or hostile inputs within a fixed environment. Evolution tests probe agent behaviour when the environment itself changes—and both types of robustness are necessary for production reliability.
+
+The ProEvolve framework (Li et al., arXiv:2603.05910, March 2026) provides a systematic approach. It represents environments as typed relational graphs with three layers: data entities and relationships, tool operations that manipulate data, and schema definitions that enforce type constraints. Graph transformations propagate changes coherently across all three layers simultaneously, maintaining internal consistency while enabling controlled variation. A single seed environment can be evolved into hundreds of valid but distinct variants, shifting the benchmark question from "can the agent complete this task?" to "does the agent maintain performance as the environment changes around it?"
+
+**Evolution dimensions to cover in tests:**
+
+- **Additive changes**: New fields on existing entities, new tools alongside existing ones, new optional parameters. A robust agent ignores or uses new fields gracefully rather than failing on unexpected keys.
+- **Breaking changes**: Deprecated operations replaced by differently-named equivalents, renamed fields, removed endpoints. A robust agent detects the failure, discovers the replacement, and retries.
+- **Schema migrations**: Type narrowing, constraint tightening, validation rules added. A robust agent produces output satisfying new constraints or handles validation errors rather than assuming old rules still hold.
+- **Cascading changes**: When a core entity gains a new required field, every tool that creates or updates that entity must propagate the change. Testing the cascade ensures agents do not produce half-consistent states.
+
+A minimal evolution test adds three scenario variants for each core tool or API your agent relies on:
+
+```python
+# Sketch: categories of environment evolution scenarios
+evolution_scenarios = [
+    # Additive: new field appears; agent should handle or ignore gracefully
+    {"change": "add_field(entity='Result', field='confidence_score', type='float')",
+     "pass_if": "agent completes task; may use or ignore new field"},
+    # Breaking: tool renamed; agent must discover and switch
+    {"change": "deprecate_tool('search_v1', replacement='search_v2')",
+     "pass_if": "agent detects failure and retries with search_v2"},
+    # Migration: constraint tightened; agent must produce valid output
+    {"change": "require_field('email', format='validated_email')",
+     "pass_if": "agent produces a syntactically valid email address"},
+]
+```
+
+Run the same task against a baseline and a versioned variant of the environment. Use fixed fixtures and record the seed when variants are generated. Assert the outcome and the invariants that matter for the task, such as write restrictions, an intact audit log, and idempotent retries. Add a focused subset to the existing scenario suite for each tool or schema release.
+
+Environment evolution testing delivers the most value when your agent targets external APIs you do not control, when multiple teams independently evolve their service schemas, or when your agent must work across major version upgrades of its toolset. For scaffolding patterns that make environment evolution testable by keeping environments introspectable, see [Agentic Scaffolding](030-scaffolding.md#environment-evolution-infrastructure).
+
+## 6. Production Guardrail Tests
 
 Before enabling autonomous writes and merges in production, validate that guardrails work correctly. Protected-path enforcement should block modifications to sensitive files. Secret scanning and licence checks should catch policy violations. Human approval routing should engage for high-impact actions. Rollback paths should work on failed deployments.
 
@@ -238,6 +301,8 @@ Several anti-patterns undermine agentic system reliability.
 
 **Skipping regression suites after model or version upgrades** assumes backward compatibility that may not exist. Changes require validation.
 
+**Changing the model backend without validating compatibility** can introduce regressions in tool calls, streaming responses, retries, and approval prompts. Run the same acceptance and policy tests against both backends, canary the change on representative tasks, and record intervention rates and cost per successful task. Define when to route work back to the baseline provider. See [Model Backend Abstraction](030-scaffolding.md#model-backend-abstraction).
+
 **Relying on a single benchmark instead of diverse scenarios** creates blind spots. Real-world failures often occur in edge cases the benchmark does not cover.
 
 **Ignoring ambiguous ownership in multi-agent flows** leads to gaps and conflicts. Every path and component should have a clear owner.
@@ -269,7 +334,7 @@ Reliable agentic systems are built, not assumed. Teams that combine clear contra
 In practice, your competitive advantage comes from how quickly you detect, contain, and permanently fix failures—not from avoiding them entirely.
 
 <!-- Edit notes:
-Sections expanded: Chapter Goals, Why Failures Are Different in Agentic Systems, all five failure taxonomy sections (Planning and Reasoning, Tooling and Integration, Context and Memory, Safety and Policy, Collaboration and Workflow), Static and Structural Checks, Deterministic Unit Tests, Recorded Integration Tests, Scenario and Adversarial Evaluations, Production Guardrail Tests, all five Pattern sections (Contract Hardening, Progressive Autonomy, Two-Phase Execution, Fallback and Circuit Breakers, Human-in-the-Loop Escalation), Incident Response Runbook, Metrics That Actually Matter, Anti-Patterns to Avoid, A Minimal Reliability Checklist, Chapter Summary
+Sections expanded: Chapter Goals, Why Failures Are Different in Agentic Systems, all five failure taxonomy sections (Planning and Reasoning, Tooling and Integration, Context and Memory, Safety and Policy, Collaboration and Workflow), Static and Structural Checks, Deterministic Unit Tests, Recorded Integration Tests, Reproducible Execution Infrastructure, Scenario and Adversarial Evaluations, Production Guardrail Tests, all five Pattern sections (Contract Hardening, Progressive Autonomy, Two-Phase Execution, Fallback and Circuit Breakers, Human-in-the-Loop Escalation), Incident Response Runbook, Metrics That Actually Matter, Anti-Patterns to Avoid, A Minimal Reliability Checklist, Chapter Summary
 Lists preserved: Code block (must remain as-is for runnable example), checklist format for Minimal Reliability Checklist (intentionally kept as checklist for usability)
 Ambiguous phrases left ambiguous: None identified
 -->

@@ -27,6 +27,8 @@ A **tool** is an executable capability exposed via a protocol or command surface
 
 Discovery usually finds endpoints first; tool enumeration happens after connection, when the client can query what operations the tool server supports.
 
+A registry can also contain tools an agent generated in earlier sessions. Record the tool's origin, version, permissions, and review status so discovery can distinguish approved capabilities from unreviewed code. Apply an activation gate before reusing a generated tool in a sensitive workspace. See [Dynamic Tool Generation](040-skills-tools.md#dynamic-tool-generation) for the Tendril example.
+
 ### 2) Skill artefacts
 
 A **skill** is a packaged reusable bundle of instructions, templates, and optional scripts. A skill's **identity** is its bundle source, which may be a repository path, a registry coordinate, or a version and digest combination. A skill's **interface** comprises its documented entrypoints, expected inputs and outputs, and policy constraints that govern how it may be used.
@@ -139,6 +141,16 @@ activation_gates:
 ```
 
 In this example, discovery scope is constrained first by the allowed domains and registries. Import and install are pinned and integrity-checked via the pinned versions and checksums. High-impact capabilities require explicit activation approval through the activation gates.
+
+### Example D: LocalGPT Markdown memory as importable knowledge
+
+In the [February 2026 version of LocalGPT](https://github.com/localgpt-app/localgpt/tree/09c812e13f8b7c889d7607cd7c3e0536048c8d0a), users can edit a local knowledge file and have its contents indexed for later retrieval. This example shows how to keep the source of truth human-readable and treat the search index as derived state.
+
+1. **Discovery.** The memory index scans Markdown in the configured workspace and knowledge paths.
+2. **Import.** SQLite FTS5 indexes the text for keyword search and the vector index supports semantic retrieval. The filesystem watcher can refresh entries when users edit workspace files outside the application.
+3. **Use.** The agent retrieves indexed knowledge when a task calls for it. Files such as `SOUL.md` and `HEARTBEAT.md` also serve as inputs to persona and background-task behaviour, so edits to them warrant a higher level of trust than edits to ordinary reference material.
+
+For shared instances, review files that influence behaviour before loading them, and keep confidential knowledge outside shared workspaces.
 
 ## Key Takeaways
 

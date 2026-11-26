@@ -567,6 +567,41 @@ class DocumentedTool:
         return doc
 ```
 
+## Dynamic Tool Generation
+
+### The Token Overhead Problem
+
+Traditional agent design pre-defines all possible tools at initialisation time. An agent with many specialised tools sees all their descriptions on every request, regardless of how many it actually needs. As toolsets grow to handle more use cases, enumerating available tools can consume a significant portion of the available context window. This is sometimes called the "too many tools" problem.
+
+Dynamic tool generation inverts this pattern. Instead of choosing from a large fixed toolset, an agent starts with a small set of **meta-tools**—capabilities specifically designed to build other capabilities—and generates specialised tools on demand. Once generated, tools persist in a registry, so future sessions can reuse them without regenerating them.
+
+### The Bootstrap Pattern: Tendril
+
+[Tendril](https://github.com/serverless-dna/tendril) is an experimental tool-generation agent built with the AWS Strands Agents SDK. It starts with three tools. `listCapabilities` reads the registry, `registerCapability` saves generated TypeScript and metadata, and `executeCode` runs code through its Deno subprocess wrapper. A later session can look up and reuse a previously generated capability.
+
+The registry keeps metadata and source in a `tools` directory under the configured workspace. It stores capability names, descriptions, and trigger patterns in `tools/index.json` alongside the generated TypeScript files. This makes persistent capabilities inspectable and gives operators a place to record versions and review updates.
+
+### Security Considerations
+
+The [reviewed implementation](https://github.com/serverless-dna/tendril/tree/e671a4143d28de68289efd81580002041bb4cb6a/tendril-agent/src/loop) grants the subprocess read and write access to its configured workspace. An empty domain allowlist permits unrestricted network access. A separate timeout bounds wall-clock execution and the wrapper caps output. These controls serve different purposes and should be verified separately.
+
+For untrusted generated code, use a dedicated workspace and an OS-enforced sandbox with outbound access denied by default. Add a specific network destination only when the tool requires it. Set resource limits and record the generated source and its permissions. Review capabilities before promoting them to a shared registry. See [Agentic Scaffolding](030-scaffolding.md#secure-execution-environments) for isolation options.
+
+### Trade-offs
+
+| Dimension | Static Toolset | Dynamic Generation |
+|-----------|----------------|--------------------|
+| Context window usage | Grows with toolset size | Bounded by meta-tool count |
+| Security audit surface | Fixed at deployment | Expands at runtime |
+| Capability evolution | Requires redeployment | Autonomous growth |
+| Failure modes | Tool selection errors | Code generation errors |
+| Debugging | Tool source is human-authored | Tool source is agent-authored |
+| Maturity | Production-standard | Emerging |
+
+Dynamic generation is most appropriate when the set of needed tools is not fully predictable at design time, toolsets would otherwise grow too large to enumerate efficiently, or you want an agent to extend its capabilities across sessions. Choose static tools when auditability, compliance, or precise control over the executable surface are paramount.
+
+> **Note on maturity:** Tendril and the broader dynamic generation pattern are early-stage. Use them in experimental or exploratory contexts. For production systems handling sensitive data or requiring compliance audits, prefer static, pre-audited toolsets until the pattern has accumulated more production validation.
+
 ## Integrations: Connecting Tools to Real-World Surfaces
 
 **Integrations** sit above tools and skills. They represent packaged connectors to real systems (chat apps, device surfaces, data sources, or automation backends) that deliver a coherent user experience. Think of them as the **distribution layer** for tools and skills: they bundle auth, event routing, permissions, and UX entry points.
@@ -657,6 +692,8 @@ OpenClaw is the largest project in a rapidly growing personal AI assistant categ
 **Open Interpreter** (<https://github.com/openinterpreter/open-interpreter>) provides a natural language interface for controlling computers. Its "New Computer Update" (late 2024) was a complete rewrite supporting a standard interface between language models and computer operations. While less focused on multi-channel messaging than OpenClaw, Open Interpreter fills a complementary niche: using an LLM to drive local computer actions (file management, browser automation, system administration) through plain language.
 
 **Leon** (<https://getleon.ai/>) is an open-source personal assistant built in JavaScript with natural speech recognition, task management, and extendable skills. It is installable via npm on Linux, Mac, or Windows, and appeals to developers who want a lightweight, self-hosted assistant without the full complexity of OpenClaw's multi-channel architecture.
+
+**LocalGPT** ([February 2026 version](https://github.com/localgpt-app/localgpt/tree/09c812e13f8b7c889d7607cd7c3e0536048c8d0a)) is a local assistant written in Rust. It can load OpenClaw-style `SKILL.md` files, including recognised metadata and eligibility checks for required binaries or environment variables. Format compatibility lets readers reuse a skill definition when its dependencies and capabilities are available. See the [LocalGPT memory case study](030-scaffolding.md#case-study-localgpts-persistent-memory-architecture) for its workspace design.
 
 These projects collectively represent a broad trend: users increasingly expect AI assistants that run locally, remember context across sessions and channels, and respect data privacy by default. The architectural patterns that OpenClaw popularised—gateway/runtime separation, plugin-based skills, model-agnostic backends—are now standard across the category.
 

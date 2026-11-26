@@ -29,7 +29,7 @@ The progression of coding agents follows a clear trajectory through four phases.
 
 ### Current Capabilities
 
-Modern coding agents can perform a range of sophisticated tasks.
+Coding agents today handle multiple development tasks autonomously.
 
 **Understand requirements.** Agents can parse natural language specifications and translate them to code, bridging the gap between human intent and machine-executable instructions.
 
