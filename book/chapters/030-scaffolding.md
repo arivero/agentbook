@@ -237,24 +237,6 @@ Use **containers** (Docker, Podman) for trusted agent code in controlled environ
 
 The architecture of transparent proxying plus ephemeral environments provides a reference pattern for high-security agent scaffolding, applicable beyond any specific tool implementation.
 
-### Model Backend Abstraction
-
-The model endpoint and the tool loop can evolve independently. A client can connect directly to a replacement endpoint that supports the same API. A proxy is useful when you need to adapt request formats, translate model identifiers, or switch providers through one stable endpoint.
-
-Compatibility includes tool calls and tool results, streaming event order, cancellation, and error handling. Endpoint compatibility alone does not predict task quality. For an agent that can write files or call services, verify the approval flow and tool permissions as well as task success.
-
-#### Case Study: DeepClaude
-
-[DeepClaude](https://github.com/aattaran/deepclaude) configures Claude Code to use Anthropic-compatible endpoints. Its launcher can select a configured backend directly. For example, after following the project's installation instructions and configuring a DeepSeek API key, run:
-
-```bash
-deepclaude --backend ds
-```
-
-The optional local proxy supports features such as remote control and switching providers within a session. The tool loop still runs in Claude Code. The selected provider determines which model features are available and receives the associated prompts and tool context. Check that the new data destination is authorised for the workload.
-
-The project's compatibility notes describe limitations for image input, MCP tools, and Anthropic-specific cache controls on the DeepSeek route. Check the exact provider configuration and evaluate it on representative tasks before changing the default backend.
-
 ### Communication Protocol
 Standardize how agents communicate.
 
@@ -279,6 +261,24 @@ class MessageBus {
   }
 }
 ```
+
+### Model Backend Abstraction
+
+The model endpoint and the tool loop can evolve independently. A client can connect directly to a replacement endpoint that supports the same API. A proxy is useful when you need to adapt request formats, translate model identifiers, or switch providers through one stable endpoint.
+
+Compatibility includes tool calls and tool results, streaming event order, cancellation, and error handling. Endpoint compatibility alone does not predict task quality. For an agent that can write files or call services, verify the approval flow and tool permissions as well as task success.
+
+#### Case Study: DeepClaude
+
+[DeepClaude](https://github.com/aattaran/deepclaude) configures Claude Code to use Anthropic-compatible endpoints. Its launcher can select a configured backend directly. For example, after following the project's installation instructions and configuring a DeepSeek API key, run:
+
+```bash
+deepclaude --backend ds
+```
+
+The optional local proxy supports features such as remote control and switching providers within a session. The tool loop still runs in Claude Code. The selected provider determines which model features are available and receives the associated prompts and tool context. Check that the new data destination is authorised for the workload.
+
+The project's compatibility notes describe limitations for image input, MCP tools, and Anthropic-specific cache controls on the DeepSeek route. Check the exact provider configuration and evaluate it on representative tasks before changing the default backend.
 
 ## Scaffolding Patterns
 
