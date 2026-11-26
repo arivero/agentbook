@@ -101,6 +101,7 @@ order: 99
 - Snowflake. Cortex Code: Snowflake-native AI coding agent. <https://www.snowflake.com/en/product/features/cortex-code/>. Accessed: 2026-02-13.
 - GitHub Copilot Memory documentation. <https://docs.github.com/copilot/concepts/agents/copilot-memory>. Accessed: 2026-02-13.
 - JFrog. Critical mcp-remote RCE Vulnerability (CVE-2025-6514). <https://jfrog.com/blog/2025-6514-critical-mcp-remote-rce-vulnerability/>. Accessed: 2026-02-13.
+- Li, G., Xie, Y., Liu, Y., Dong, Z., Pan, X., Zheng, T., Choi, J., Morais, M. J., Jha, B., Mishra, S., Zhou, B., Luo, C., Cheng, M. X., & Song, D. (2026). The World Won't Stay Still: Programmable Evolution for Agent Benchmarks. arXiv preprint arXiv:2603.05910. <https://arxiv.org/abs/2603.05910>. Accessed: 2026-03-09.
 - Cyata / The Register. Anthropic Git MCP Server Flaws (CVE-2025-68145/68143/68144). <https://www.theregister.com/2026/01/20/anthropic_prompt_injection_flaws/>. Accessed: 2026-02-13.
 
 - Gemini CLI repository. <https://github.com/google-gemini/gemini-cli>. Accessed: 2026-02-13.
