@@ -239,47 +239,21 @@ The architecture of transparent proxying plus ephemeral environments provides a 
 
 ### Model Backend Abstraction
 
-Many agent stacks conflate two separate layers:
+The model endpoint and the tool loop can evolve independently. A client can connect directly to a replacement endpoint that supports the same API. A proxy is useful when you need to adapt request formats, translate model identifiers, or switch providers through one stable endpoint.
 
-- The **agent body**: the tool loop, file editing primitives, shell execution, Git operations, and sub-agent orchestration.
-- The **agent brain**: the model endpoint and the vendor-specific API used to produce tokens.
+Compatibility includes tool calls and tool results, streaming event order, cancellation, and error handling. Endpoint compatibility alone does not predict task quality. For an agent that can write files or call services, verify the approval flow and tool permissions as well as task success.
 
-Treating the model as a swappable component can reduce cost, avoid vendor lock-in, and make it easier to satisfy requirements like on-prem or region-specific inference. The key idea is to preserve the body while redirecting only the brain.
+#### Case Study: DeepClaude
 
-#### Proxy-based interception
-
-The most pragmatic pattern is to introduce a local proxy that sits at the HTTP boundary used by the agent runtime. The proxy forwards requests to a compatible endpoint, optionally rewriting model identifiers and normalizing request/response fields. When the API schema matches, the agent loop and tools remain unchanged.
-
-This style of abstraction can be implemented as either:
-
-- An explicit proxy process (localhost HTTP server) that agents point at.
-- A sidecar proxy in a container or microVM.
-- A gateway service shared by a fleet of agents.
-
-#### Environment variable routing
-
-Many agent runtimes already support base URL overrides so enterprise users can route traffic through an audit gateway. You can use the same mechanism for backend swapping.
-
-Example 3-1. Switching an Anthropic-compatible agent to a local proxy
+[DeepClaude](https://github.com/aattaran/deepclaude) configures Claude Code to use Anthropic-compatible endpoints. Its launcher can select a configured backend directly. For example, after following the project's installation instructions and configuring a DeepSeek API key, run:
 
 ```bash
-export ANTHROPIC_BASE_URL="http://127.0.0.1:3200"
-export ANTHROPIC_MODEL="deepseek-v4-pro"  # proxy may map this to a backend-specific name
+deepclaude --backend ds
 ```
 
-#### Compatibility requirements and trade-offs
+The optional local proxy supports features such as remote control and switching providers within a session. The tool loop still runs in Claude Code. The selected provider determines which model features are available and receives the associated prompts and tool context. Check that the new data destination is authorised for the workload.
 
-Backend abstraction only works when the replacement backend is compatible with the agent runtime's expectations:
-
-- **API shape compatibility:** request/response fields, streaming semantics, and error formats.
-- **Tool-call parity:** the model must reliably emit the tool-call structure the agent loop expects.
-- **Feature gaps:** some backends may not support vision input, MCP tools, or vendor-specific caching.
-
-In practice, teams often use a cheaper backend for routine work and fall back to a stronger model for the difficult tail of tasks.
-
-#### Case study: DeepClaude
-
-DeepClaude is an example of this pattern applied to Claude Code: it uses an `ANTHROPIC_BASE_URL` override to route Claude Code's API traffic to a local proxy (commonly on `localhost:3200`), which then forwards calls to Anthropic-compatible endpoints such as DeepSeek, OpenRouter, or Fireworks. The net effect is that Claude Code's UX and tool loop stay the same while the model backend changes.
+The project's compatibility notes describe limitations for image input, MCP tools, and Anthropic-specific cache controls on the DeepSeek route. Check the exact provider configuration and evaluate it on representative tasks before changing the default backend.
 
 ### Communication Protocol
 Standardize how agents communicate.

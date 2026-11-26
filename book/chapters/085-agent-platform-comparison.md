@@ -59,7 +59,7 @@ Claude Code is Anthropic's official agentic CLI, written in TypeScript and Node.
 
 **Project instructions.** Claude Code uses `CLAUDE.md` and `AGENTS.md` convention files for per-project and per-directory instructions, giving teams fine-grained control over agent behaviour in different parts of a codebase.
 
-**Third-party backend swapping.** Tools such as DeepClaude demonstrate a proxy-based extension pattern: keep Claude Code's agent loop and tools unchanged while routing its model API calls to an Anthropic-compatible backend via `ANTHROPIC_BASE_URL`. This can materially reduce inference cost, but may drop features that depend on vendor-specific capabilities (for example vision, MCP, or prompt caching).
+**Third-party backend swapping.** [DeepClaude](https://github.com/aattaran/deepclaude) can configure Claude Code to send model requests directly to compatible providers. An optional local proxy enables remote-control or live-switching use cases. Check model features, tool compatibility, and data handling before changing providers. See [Model Backend Abstraction](030-scaffolding.md#model-backend-abstraction) for the distinction.
 
 ### OpenAI Codex CLI
 
