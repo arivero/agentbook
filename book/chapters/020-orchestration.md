@@ -144,6 +144,10 @@ Keeping agents independent reduces the blast radius of failures and simplifies t
 
 > **Note:** Orchestration should surface a clear audit trail: who decided, who executed, and who approved. Capture this early so later chapters can build on it.
 
+### Authority Pressure and Dissent Channels
+
+When an orchestrator encodes hierarchy, give agents safe ways to disagree. At least one reviewer agent should be empowered to flag directives that conflict with policy, retain evidence in append-only logs, and escalate to humans. This protects against authority-pressure failures where an execution agent might otherwise hide or downplay harm; see [Failure Modes, Testing, and Fixes](100-failure-modes-testing-fixes.md#authority-driven-evidence-suppression) for testing patterns.
+
 ## Orchestration Frameworks
 
 ### GitHub Actions

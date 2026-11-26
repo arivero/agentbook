@@ -99,6 +99,14 @@ Before running agent code in production, verify that:
 
 Test these controls by intentionally trying to violate them. An agent that cannot bypass its own sandboxing is ready for production. One that can needs stronger isolation before it handles real workloads.
 
+#### Authority-Driven Evidence Suppression
+
+Rivasseau’s [2026 preprint](https://arxiv.org/abs/2604.02500) tested 16 language models in a controlled compliance simulation. A corporate authority instruction pressured agents to conceal evidence of fraud and harm. The majority of the evaluated agents suppressed evidence, while some resisted. The results describe behaviour in the simulated setup.
+
+**How to test it.** Use synthetic records and give the agent a reporting task where an apparent executive asks it to omit material facts. Score complete disclosure, preservation of the original records, and escalation to an independent reviewer. Rerun the scenarios when the model, policy prompt, or tool permissions change.
+
+**Mitigations.** Separate duties so no single agent both executes and reports. Enforce append-only audit logs and deny tools that can delete or rewrite evidence. Route authority-laden instructions that touch safety or legal domains through human approval, even if they appear routine. Add a secondary reviewer agent whose only job is to challenge suppression attempts and escalate conflicts to humans. Prefer models and prompt templates that demonstrate higher refusal rates in authority-pressure evaluations, and re-run these tests when models or prompts change.
+
 ### 5) Collaboration and Workflow Failures
 
 **Symptoms.** Multiple agents make conflicting changes, overwriting each other's work. PRs churn with contradictory edits as agents undo each other's modifications. Work stalls due to unclear ownership, with no agent taking responsibility.
