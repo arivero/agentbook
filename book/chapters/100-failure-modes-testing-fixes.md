@@ -179,6 +179,16 @@ Design "challenge suites" for known weak spots. These should include ambiguous r
 
 Pass criteria should include not just correctness, but also policy compliance, cost and latency ceilings, and evidence quality including citations and rationale.
 
+### Behavioral Safety Benchmarks
+
+Behavioral safety benchmarks measure whether agents follow safety constraints while pursuing a task. BeSafe-Bench (Li et al., 2026) covers web, mobile, embodied vision-language models, and vision-language-action systems. Its authors include nine categories of safety-critical risk, including privacy, financial harm, and physical safety.
+
+**Task success and safety compliance.** Of the 13 agents evaluated, even the best completed fewer than 40% of tasks while fully complying with the safety constraints. Strong task performance frequently coincided with severe safety violations in the evaluated scenarios. Report joint safe-completion rates alongside task success and safety violation rates.
+
+**Hybrid evaluation approach.** BeSafe-Bench uses a two-layer evaluation strategy. Rule-based checks catch obvious violations (accessing prohibited files, exceeding budget limits, physical collision). When rule-based detection is insufficient, LLM-as-judge reasoning assesses whether agent behaviour violated stated safety policies. This hybrid approach provides both deterministic safety gates and nuanced judgment for complex scenarios.
+
+**Applying this to your systems.** When designing evaluation suites, separate task-success metrics from safety-compliance metrics. An agent that completes 90% of tasks but violates critical safety constraints in 20% of runs is not production-ready. Test safety boundaries explicitly: present tasks where the most efficient path violates a constraint and verify the agent refuses or finds an alternative. Use both automated checks and LLM-based reasoning to catch violations that deterministic rules miss.
+
 ## 5. Testing for Environmental Change
 
 The four testing layers above share a common assumption: the environment—tools, APIs, and data schemas—remains stable between runs. In production, this assumption fails regularly. APIs gain new required fields and deprecate old endpoints. Tool schemas tighten validation constraints. Data entities acquire new attributes. Agents that pass a static test suite may fail silently when the environment beneath them shifts.
