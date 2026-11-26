@@ -658,6 +658,8 @@ OpenClaw is the largest project in a rapidly growing personal AI assistant categ
 
 **Leon** (<https://getleon.ai/>) is an open-source personal assistant built in JavaScript with natural speech recognition, task management, and extendable skills. It is installable via npm on Linux, Mac, or Windows, and appeals to developers who want a lightweight, self-hosted assistant without the full complexity of OpenClaw's multi-channel architecture.
 
+**LocalGPT** ([February 2026 version](https://github.com/localgpt-app/localgpt/tree/09c812e13f8b7c889d7607cd7c3e0536048c8d0a)) is a local assistant written in Rust. It can load OpenClaw-style `SKILL.md` files, including recognised metadata and eligibility checks for required binaries or environment variables. Format compatibility lets readers reuse a skill definition when its dependencies and capabilities are available. See the [LocalGPT memory case study](030-scaffolding.md#case-study-localgpts-persistent-memory-architecture) for its workspace design.
+
 These projects collectively represent a broad trend: users increasingly expect AI assistants that run locally, remember context across sessions and channels, and respect data privacy by default. The architectural patterns that OpenClaw popularised—gateway/runtime separation, plugin-based skills, model-agnostic backends—are now standard across the category.
 
 ## Related Architectures and Frameworks

@@ -140,6 +140,16 @@ activation_gates:
 
 In this example, discovery scope is constrained first by the allowed domains and registries. Import and install are pinned and integrity-checked via the pinned versions and checksums. High-impact capabilities require explicit activation approval through the activation gates.
 
+### Example D: LocalGPT Markdown memory as importable knowledge
+
+In the [February 2026 version of LocalGPT](https://github.com/localgpt-app/localgpt/tree/09c812e13f8b7c889d7607cd7c3e0536048c8d0a), users can edit a local knowledge file and have its contents indexed for later retrieval. This example shows how to keep the source of truth human-readable and treat the search index as derived state.
+
+1. **Discovery.** The memory index scans Markdown in the configured workspace and knowledge paths.
+2. **Import.** SQLite FTS5 indexes the text for keyword search and the vector index supports semantic retrieval. The filesystem watcher can refresh entries when users edit workspace files outside the application.
+3. **Use.** The agent retrieves indexed knowledge when a task calls for it. Files such as `SOUL.md` and `HEARTBEAT.md` also serve as inputs to persona and background-task behaviour, so edits to them warrant a higher level of trust than edits to ordinary reference material.
+
+For shared instances, review files that influence behaviour before loading them, and keep confidential knowledge outside shared workspaces.
+
 ## Key Takeaways
 
 Treat **artefact**, **discovery**, **import**, **install**, and **activate** as distinct terms with precise meanings. Discovering a tool endpoint is not the same as activating its capabilities—each stage requires different security controls. Use taxonomy-first language: tool, skill, agent, and workflow fragment are different artefact types with different identity and interface properties.

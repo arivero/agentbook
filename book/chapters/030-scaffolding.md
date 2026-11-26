@@ -72,6 +72,14 @@ class AgentContext:
         return self.history
 ```
 
+#### Case Study: LocalGPT's Persistent Memory Architecture
+
+The [February 2026 version of LocalGPT](https://github.com/localgpt-app/localgpt/tree/09c812e13f8b7c889d7607cd7c3e0536048c8d0a) illustrates a file-backed memory layer for a Rust-based assistant. The CLI, web UI, and desktop GUI can use the same workspace. `MEMORY.md` holds long-term knowledge, `SOUL.md` describes the agent's persona, and `HEARTBEAT.md` lists background tasks.
+
+The index combines SQLite FTS5 keyword search with semantic retrieval. A filesystem watcher can reindex edited Markdown files after a short debounce. That design makes the source material easy to inspect and edit, with a short delay before search results reflect changes. Session history has its own store.
+
+The daemon schedules heartbeat cycles at intervals set in its configuration. Each cycle can use the task list in `HEARTBEAT.md` and records its state in the session store. Persisting a result as long-term knowledge requires a separate write to memory.
+
 ### Execution Environment
 Provide safe, isolated environments for agent execution.
 
