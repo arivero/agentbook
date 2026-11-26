@@ -247,6 +247,8 @@ Use **containers** (Docker, Podman) for trusted agent code in controlled environ
 
 The architecture of transparent proxying plus ephemeral environments provides a reference pattern for high-security agent scaffolding, applicable beyond any specific tool implementation.
 
+Generated tools should run in an isolated process with explicit file and network permissions. Start with no network access, mount only the required input and output paths, and enforce a wall-clock timeout, CPU and memory limits, and an output cap. For untrusted code, enforce isolation at the operating-system or virtual-machine boundary. See [Dynamic Tool Generation](040-skills-tools.md#dynamic-tool-generation) for a case study.
+
 ### Communication Protocol
 Standardize how agents communicate.
 

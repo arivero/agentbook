@@ -567,6 +567,41 @@ class DocumentedTool:
         return doc
 ```
 
+## Dynamic Tool Generation
+
+### The Token Overhead Problem
+
+Traditional agent design pre-defines all possible tools at initialisation time. An agent with many specialised tools sees all their descriptions on every request, regardless of how many it actually needs. As toolsets grow to handle more use cases, enumerating available tools can consume a significant portion of the available context window. This is sometimes called the "too many tools" problem.
+
+Dynamic tool generation inverts this pattern. Instead of choosing from a large fixed toolset, an agent starts with a small set of **meta-tools**—capabilities specifically designed to build other capabilities—and generates specialised tools on demand. Once generated, tools persist in a registry, so future sessions can reuse them without regenerating them.
+
+### The Bootstrap Pattern: Tendril
+
+[Tendril](https://github.com/serverless-dna/tendril) is an experimental tool-generation agent built with the AWS Strands Agents SDK. It starts with three tools. `listCapabilities` reads the registry, `registerCapability` saves generated TypeScript and metadata, and `executeCode` runs code through its Deno subprocess wrapper. A later session can look up and reuse a previously generated capability.
+
+The registry keeps metadata and source in a `tools` directory under the configured workspace. It stores capability names, descriptions, and trigger patterns in `tools/index.json` alongside the generated TypeScript files. This makes persistent capabilities inspectable and gives operators a place to record versions and review updates.
+
+### Security Considerations
+
+The [reviewed implementation](https://github.com/serverless-dna/tendril/tree/e671a4143d28de68289efd81580002041bb4cb6a/tendril-agent/src/loop) grants the subprocess read and write access to its configured workspace. An empty domain allowlist permits unrestricted network access. A separate timeout bounds wall-clock execution and the wrapper caps output. These controls serve different purposes and should be verified separately.
+
+For untrusted generated code, use a dedicated workspace and an OS-enforced sandbox with outbound access denied by default. Add a specific network destination only when the tool requires it. Set resource limits and record the generated source and its permissions. Review capabilities before promoting them to a shared registry. See [Agentic Scaffolding](030-scaffolding.md#secure-execution-environments) for isolation options.
+
+### Trade-offs
+
+| Dimension | Static Toolset | Dynamic Generation |
+|-----------|----------------|--------------------|
+| Context window usage | Grows with toolset size | Bounded by meta-tool count |
+| Security audit surface | Fixed at deployment | Expands at runtime |
+| Capability evolution | Requires redeployment | Autonomous growth |
+| Failure modes | Tool selection errors | Code generation errors |
+| Debugging | Tool source is human-authored | Tool source is agent-authored |
+| Maturity | Production-standard | Emerging |
+
+Dynamic generation is most appropriate when the set of needed tools is not fully predictable at design time, toolsets would otherwise grow too large to enumerate efficiently, or you want an agent to extend its capabilities across sessions. Choose static tools when auditability, compliance, or precise control over the executable surface are paramount.
+
+> **Note on maturity:** Tendril and the broader dynamic generation pattern are early-stage. Use them in experimental or exploratory contexts. For production systems handling sensitive data or requiring compliance audits, prefer static, pre-audited toolsets until the pattern has accumulated more production validation.
+
 ## Integrations: Connecting Tools to Real-World Surfaces
 
 **Integrations** sit above tools and skills. They represent packaged connectors to real systems (chat apps, device surfaces, data sources, or automation backends) that deliver a coherent user experience. Think of them as the **distribution layer** for tools and skills: they bundle auth, event routing, permissions, and UX entry points.

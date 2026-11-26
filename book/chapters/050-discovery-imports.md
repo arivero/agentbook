@@ -27,6 +27,8 @@ A **tool** is an executable capability exposed via a protocol or command surface
 
 Discovery usually finds endpoints first; tool enumeration happens after connection, when the client can query what operations the tool server supports.
 
+A registry can also contain tools an agent generated in earlier sessions. Record the tool's origin, version, permissions, and review status so discovery can distinguish approved capabilities from unreviewed code. Apply an activation gate before reusing a generated tool in a sensitive workspace. See [Dynamic Tool Generation](040-skills-tools.md#dynamic-tool-generation) for the Tendril example.
+
 ### 2) Skill artefacts
 
 A **skill** is a packaged reusable bundle of instructions, templates, and optional scripts. A skill's **identity** is its bundle source, which may be a repository path, a registry coordinate, or a version and digest combination. A skill's **interface** comprises its documented entrypoints, expected inputs and outputs, and policy constraints that govern how it may be used.
