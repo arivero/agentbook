@@ -148,24 +148,22 @@ Use these to detect drift in behaviour after prompt, tool, or model changes.
 
 ## 3.5 Reproducible Execution Infrastructure
 
-Recorded traces are only as strong as the logging discipline behind them. For production debugging you also need a substrate that makes each execution tamper-evident, replayable, and diffable so you can prove what happened and why.
+Recorded traces vary in what they retain. A structured execution log lets a team compare failing and passing runs and identify the first decision or tool result that differed.
 
-**Content-addressed context packs.** Tools like **ContextSubstrate** (`ctx`) snapshot a full agent run—prompts, tool inputs, tool outputs, model responses, timestamps, errors—into an immutable context pack addressed by a SHA-256 hash. Packs live in a `.ctx/` store, deduplicate identical artefacts, and fail verification if anything is modified after capture.
-
-**Git-like workflows for debugging.** Treat execution snapshots as first-class artefacts you can log, diff, and replay:
+[ContextSubstrate](https://github.com/scalefirstai/ContextSubstrate) packages a supplied JSON execution log as a content-addressed artefact. A pack contains the prompts, inputs, steps, outputs, and metadata the application chose to record. A SHA-256 identifier makes content changes detectable against a trusted reference. It does not establish who produced the log or whether it is complete.
 
 ```bash
-ctx init                     # create .ctx store for execution artefacts
-ctx pack --run run.jsonl     # turn a structured execution log into an immutable pack
-ctx log                      # list packs with their content hashes
-ctx show <pack>              # inspect prompts, tool calls, outputs
-ctx diff <packA> <packB>     # compare two runs to see where behaviour diverged
-ctx replay <pack>            # best-effort reproduction using captured inputs and tool calls
+ctx init
+ctx pack execution.json
+ctx log
+ctx show "$first_pack"
+ctx diff "$first_pack" "$second_pack" --human
+ctx replay "$first_pack"
 ```
 
-**Operational uses.** Immutable execution packs make incident forensics faster (diff the failing run against the last good pack), improve regression testing (replay before and after a prompt change), and give audit trails for compliance-sensitive workflows.
+Use the project's documented JSON log format and substitute pack hashes from `ctx log` for the variables. Replay can help locate differences in execution. Stochastic model outputs, changed external services, and missing inputs can limit reproduction. Use recorded responses or isolated fixtures when a regression test needs deterministic behaviour.
 
-**Integration notes.** This is complementary to orchestration frameworks—it does not run agents. You need your orchestrator to emit structured execution logs (JSONL is typical). Replay is best-effort: model sampling and external API variance mean outputs may differ, but the sequence of decisions and tool calls is preserved for inspection. Avoid using it for latency-sensitive hot paths; use it for high-value runs where provenance and debuggability matter.
+Decide what to retain before collecting logs. Exclude credentials and redact sensitive prompts and tool outputs before packing. Limit access, define retention for packs and copies, and check that the resulting trace still contains enough information to explain a failure.
 
 ## 4. Scenario and Adversarial Evaluations
 

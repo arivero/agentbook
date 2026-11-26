@@ -109,7 +109,7 @@ As agents move into production, observability and evaluation are becoming first-
 
 #### Version-Controlled Agent Execution
 
-Tracing shows you live decision flow; teams also need immutable artefacts that can be replayed and diffed after the fact. Execution substrates such as ContextSubstrate store each agent run as a content-addressed context pack (prompts, tool calls, outputs, errors) with git-like `log`, `diff`, and `replay` commands. This pattern makes post-incident forensics and regression testing reproducible and audit-friendly, complementing observability pipelines rather than replacing them. See [Reproducible Execution Infrastructure](100-failure-modes-testing-fixes.md#35-reproducible-execution-infrastructure) for the workflow details.
+Execution traces can be stored in content-addressed packs for later inspection. ContextSubstrate, for example, packages the provided execution log and offers commands for comparing packs and replaying recorded runs. See [Reproducible Execution Infrastructure](100-failure-modes-testing-fixes.md#35-reproducible-execution-infrastructure) for reproducibility and retention limits.
 
 ### Shared Memory and Context Spaces
 

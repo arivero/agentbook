@@ -116,7 +116,7 @@ Different isolation technologies offer varying levels of security, performance, 
 | MicroVMs | &lt;1 second | Strong | Low-Medium | High-security agents |
 | Full VMs | 30-60 seconds | Strongest | High | Maximum isolation |
 
-Isolation alone is not enough for incident response. Pair the sandbox with an execution substrate that snapshots each run as an immutable, content-addressed pack (for example, ContextSubstrate) so you can replay and diff failures later. See [Reproducible Execution Infrastructure](100-failure-modes-testing-fixes.md#35-reproducible-execution-infrastructure) for the debugging workflow.
+Pair isolation with structured execution logs when you need to compare successful and failing runs. An execution substrate can package the recorded inputs and tool events as a content-addressed artefact. See [Reproducible Execution Infrastructure](100-failure-modes-testing-fixes.md#35-reproducible-execution-infrastructure) for the debugging workflow.
 
 #### Secret Management Patterns
 
