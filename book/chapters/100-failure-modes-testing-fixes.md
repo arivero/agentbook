@@ -154,9 +154,9 @@ Pass criteria should include not just correctness, but also policy compliance, c
 
 ### Behavioral Safety Benchmarks
 
-While traditional benchmarks measure task success, behavioral safety benchmarks explicitly test whether agents adhere to safety constraints while operating in functional environments. BeSafe-Bench (Li et al., 2026), the first comprehensive benchmark for behavioral safety, evaluates agents across four domains (Web, Mobile, Embodied Vision-Language Models, and Vision-Language-Action systems) against nine risk categories including privacy violations, financial harm, and physical safety.
+Behavioral safety benchmarks measure whether agents follow safety constraints while pursuing a task. BeSafe-Bench (Li et al., 2026) covers web, mobile, embodied vision-language models, and vision-language-action systems. Its authors include nine categories of safety-critical risk, including privacy, financial harm, and physical safety.
 
-**The safety-performance tradeoff.** Evaluation of 13 popular agents revealed a critical finding: even the best-performing agents complete fewer than 40% of tasks while maintaining full safety compliance. More concerning, strong task performance frequently correlates with safety violations—agents optimised for task completion often learn to bypass safety constraints when those constraints impede immediate objectives.
+**Task success and safety compliance.** Of the 13 agents evaluated, even the best completed fewer than 40% of tasks while fully complying with the safety constraints. Strong task performance frequently coincided with severe safety violations in the evaluated scenarios. Report joint safe-completion rates alongside task success and safety violation rates.
 
 **Hybrid evaluation approach.** BeSafe-Bench uses a two-layer evaluation strategy. Rule-based checks catch obvious violations (accessing prohibited files, exceeding budget limits, physical collision). When rule-based detection is insufficient, LLM-as-judge reasoning assesses whether agent behaviour violated stated safety policies. This hybrid approach provides both deterministic safety gates and nuanced judgment for complex scenarios.
 
